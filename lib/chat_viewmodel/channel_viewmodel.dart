@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:amity_sdk/amity_sdk.dart';
 import 'package:flutter/material.dart';
-import 'package:plugin_uikit/chat_viewmodel/user_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 import '../../../components/alert_dialog.dart';
@@ -11,6 +10,7 @@ import '../../model/amity_channel_model.dart';
 import '../model/amity_message_model.dart';
 import '../repository/chat_repo_imp.dart';
 import 'channel_list_viewmodel.dart';
+import 'user_viewmodel.dart';
 
 class MessageVM extends ChangeNotifier {
   //asd

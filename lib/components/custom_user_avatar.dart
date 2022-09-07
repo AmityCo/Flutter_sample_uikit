@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
 
 import 'package:optimized_cached_image/optimized_cached_image.dart';
-import 'package:plugin_uikit/chat_viewmodel/configuration_viewmodel.dart';
 import 'package:provider/provider.dart';
 
+import '../chat_viewmodel/configuration_viewmodel.dart';
 import '../utils/env_manager.dart';
 
 getAvatarImage(String? url, {double? radius, String? fileId}) {
   if (url != null) {
     var imageOPS = OptimizedCacheImage(
-      imageBuilder: (context, imageProvider) => Container(
-        child: CircleAvatar(
-            radius: radius,
-            backgroundColor: Colors.transparent,
-            backgroundImage: (imageProvider)),
-      ),
+      imageBuilder: (context, imageProvider) => CircleAvatar(
+          radius: radius,
+          backgroundColor: Colors.transparent,
+          backgroundImage: (imageProvider)),
       imageUrl: url,
       fit: BoxFit.fill,
       placeholder: (context, url) => CircleAvatar(

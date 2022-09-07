@@ -4,13 +4,12 @@ import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:get_time_ago/get_time_ago.dart';
 import 'package:intl/intl.dart';
-import 'package:plugin_uikit/chat_viewmodel/configuration_viewmodel.dart';
-import 'package:plugin_uikit/view/chat/user_list_screen.dart';
 
 import 'package:provider/provider.dart';
 
 import '../../chat_viewmodel/channel_list_viewmodel.dart';
 import '../../chat_viewmodel/channel_viewmodel.dart';
+import '../../chat_viewmodel/configuration_viewmodel.dart';
 import '../../chat_viewmodel/user_viewmodel.dart';
 import '../../components/custom_user_avatar.dart';
 import 'chat_screen.dart';

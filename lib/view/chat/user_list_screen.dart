@@ -124,6 +124,9 @@ class _UserListState extends State<UserList> {
 
                   // color: ApplicationColors.lightGrey,
                   child: FadedSlideAnimation(
+                    beginOffset: Offset(0, 0.3),
+                    endOffset: Offset(0, 0),
+                    slideCurve: Curves.linearToEaseOut,
                     child: Column(
                       children: [
                         getLength() < 1
@@ -151,9 +154,6 @@ class _UserListState extends State<UserList> {
                               ),
                       ],
                     ),
-                    beginOffset: Offset(0, 0.3),
-                    endOffset: Offset(0, 0),
-                    slideCurve: Curves.linearToEaseOut,
                   ),
                 ),
               ),

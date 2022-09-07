@@ -157,7 +157,7 @@ class AmityChatRepoImp implements AmityChatRepo {
       {Function(String? data, String? error)? callback}) async {
     socket.emitWithAck('channel.startReading', {"channelId": "$channelId"},
         ack: (data) async {
-      var amityResponse = await AmityResponse.fromJson(data);
+      var amityResponse = AmityResponse.fromJson(data);
       var responsedata = amityResponse.data;
       if (amityResponse.status == "success") {
         //success
@@ -241,6 +241,26 @@ class AmityChatRepoImp implements AmityChatRepo {
       } else {
         //error
         log("merkSeen: error: ${amityResponse.message}");
+      }
+    });
+  }
+
+  Future<void> getChannelById(
+      {required String channelId,
+      required Function(ChannelList? data, String? error) callback}) async {
+    log("getChannelById...");
+    socket.emitWithAck('v3/channel.get', {"channelId": channelId}, ack: (data) {
+      var amityResponse = AmityResponse.fromJson(data);
+      var responsedata = amityResponse.data;
+      if (amityResponse.status == "success") {
+        //success
+        var channel = ChannelList.fromJson(responsedata!.json!);
+
+        callback(channel, null);
+      } else {
+        //error
+
+        callback(null, amityResponse.message);
       }
     });
   }

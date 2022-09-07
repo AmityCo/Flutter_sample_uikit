@@ -1,18 +1,102 @@
-# amity_uikit_beta_service
+# Amity UIKit for Flutter[Beta Service]
 
-A new Flutter plugin project.
+Amity UIkit opensource developed by SLE team to enable social feature in Flutter.
 
-## Getting Started
+## Usage
+Example main.dart
 
-This project is a starting point for a Flutter
-[plug-in package](https://flutter.dev/developing-packages/),
-a specialized package that includes platform-specific implementation code for
-Android and/or iOS.
+```dart
 
-For help getting started with Flutter development, view the
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+void main() async {
+  ///Step 1: Initialize amity SDK with the following function
+  WidgetsFlutterBinding.ensureInitialized();
+  AmitySLEUIKit()
+      .initUIKit("<API_KEY>", "REGION<sg,eu,us>");
 
-The plugin project was generated without specifying the `--platforms` flag, no platforms are currently supported.
-To add platforms, run `flutter create -t plugin --platforms <platforms> .` in this directory.
-You can also find a detailed instruction on how to add platforms in the `pubspec.yaml` at https://flutter.dev/docs/development/packages-and-plugins/developing-packages#plugin-platforms.
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    ///Step2: Wrap Material App with AmitySLEProvider and Builder
+    return AmitySLEProvider(
+      child: Builder(builder: (context2) {
+        ///If you want to change color of uikit use the following metgod here
+        AmitySLEUIKit().configAmityThemeColor(context2, (config) {
+          config.primaryColor = Colors.green;
+          config.messageRoomConfig.backgroundColor = Colors.green;
+        });
+        return MaterialApp(
+          navigatorKey: NavigationService.navigatorKey,
+          title: 'Flutter Demo',
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+          ),
+          home: InitialWidget(),
+        );
+      }),
+    );
+  }
+}
+
+class InitialWidget extends StatelessWidget {
+  const InitialWidget({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  ///Step 3: login with Amity
+                  AmitySLEUIKit().registerDevice(context, "<UserId>");
+                },
+                child: const Text("Login to Amity"),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  ///Step 4: Navigate To chat Room page
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const AmitySLEChannelScreen(),
+                  ));
+                },
+                child: const Text("Navigate to UIKIT: Channel List page"),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  ///Step 4.1: Navigate To channel List page
+                  AmitySLEUIKit.openChatRoomPage(context, "<Channel_ID>");
+                },
+                child: const Text("Navigate to UIKIT: Chat room page"),
+              ),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+}
+
+```
+

@@ -1,7 +1,7 @@
 name: amity_uikit_beta_service
-description: A new Flutter plugin project.
-version: 0.0.1
-homepage:
+description: Amity UIkit opensource developed by SLE team to enable social feature in Flutter.
+version: 0.1.1
+homepage: https://github.com/ThanakornThanom/ThanakornThanom--flutter_amity_uikit_beta_service
 
 environment:
   sdk: ">=2.17.6 <3.0.0"
