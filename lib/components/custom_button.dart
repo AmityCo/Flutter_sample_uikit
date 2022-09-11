@@ -1,6 +1,7 @@
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class CustomButton extends StatelessWidget {
   final String? label;
   final Widget? icon;
@@ -16,6 +17,7 @@ class CustomButton extends StatelessWidget {
   final Color? borderColor;
 
   CustomButton({
+    super.key,
     this.label,
     this.icon,
     this.iconGap,
@@ -47,11 +49,13 @@ class CustomButton extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              icon ?? SizedBox.shrink(),
-              icon != null ? SizedBox(width: iconGap ?? 20) : SizedBox.shrink(),
+              icon ?? const SizedBox.shrink(),
+              icon != null
+                  ? SizedBox(width: iconGap ?? 20)
+                  : const SizedBox.shrink(),
               isLoading != null
                   ? (isLoading!
-                      ? Container(
+                      ? const SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(
@@ -71,8 +75,8 @@ class CustomButton extends StatelessWidget {
                           color: textColor ?? theme.scaffoldBackgroundColor,
                           fontSize: textSize ?? 16),
                     ),
-              trailing != null ? Spacer() : SizedBox.shrink(),
-              trailing ?? SizedBox.shrink(),
+              trailing != null ? const Spacer() : const SizedBox.shrink(),
+              trailing ?? const SizedBox.shrink(),
             ],
           ),
         ),

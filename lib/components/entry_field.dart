@@ -6,7 +6,7 @@ class EntryField extends StatelessWidget {
   final Widget? prefix;
   final String? initialValue;
 
-  EntryField({this.controller, this.hint, this.prefix, this.initialValue});
+  const EntryField({super.key, this.controller, this.hint, this.prefix, this.initialValue});
 
   @override
   Widget build(BuildContext context) {

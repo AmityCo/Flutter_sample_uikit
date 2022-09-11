@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:provider/provider.dart';
 
-import '../chat_viewmodel/configuration_viewmodel.dart';
+import '../viewmodel/configuration_viewmodel.dart';
 import '../utils/env_manager.dart';
 
 getAvatarImage(String? url, {double? radius, String? fileId}) {
@@ -23,7 +23,7 @@ getAvatarImage(String? url, {double? radius, String? fileId}) {
           color: Colors.white,
         ),
       ),
-      errorWidget: (context, url, error) => Icon(Icons.error),
+      errorWidget: (context, url, error) => const Icon(Icons.error),
     );
     return imageOPS;
   } else if (fileId != null) {
@@ -32,7 +32,7 @@ getAvatarImage(String? url, {double? radius, String? fileId}) {
           backgroundColor: Colors.transparent,
           backgroundImage: (imageProvider)),
       imageUrl:
-          "https://api.${env!.region}.amity.co/api/v3/files/${fileId}/download?size=full",
+          "https://api.${env!.region}.amity.co/api/v3/files/$fileId/download?size=full",
       fit: BoxFit.fill,
       placeholder: (context, url) => CircleAvatar(
         radius: radius,
@@ -42,7 +42,7 @@ getAvatarImage(String? url, {double? radius, String? fileId}) {
           color: Colors.white,
         ),
       ),
-      errorWidget: (context, url, error) => Icon(Icons.error),
+      errorWidget: (context, url, error) => const Icon(Icons.error),
     );
     return imageOPS;
   } else {
@@ -60,16 +60,14 @@ getAvatarImage(String? url, {double? radius, String? fileId}) {
 getCommuAvatarImage(String? url, {double? radius, String? fileId}) {
   if (url != null) {
     var imageOPS = OptimizedCacheImage(
-      imageBuilder: (context, imageProvider) => Container(
-        child: CircleAvatar(
-            radius: radius,
-            backgroundColor: Colors.transparent,
-            backgroundImage: (imageProvider)),
-      ),
+      imageBuilder: (context, imageProvider) => CircleAvatar(
+          radius: radius,
+          backgroundColor: Colors.transparent,
+          backgroundImage: (imageProvider)),
       imageUrl: url,
       fit: BoxFit.fill,
       placeholder: (context, url) => const CommuPlaceHolderWidget(),
-      errorWidget: (context, url, error) => Icon(Icons.error),
+      errorWidget: (context, url, error) => const Icon(Icons.error),
     );
     return imageOPS;
   } else if (fileId != null) {
@@ -78,7 +76,7 @@ getCommuAvatarImage(String? url, {double? radius, String? fileId}) {
           backgroundColor: Colors.transparent,
           backgroundImage: (imageProvider)),
       imageUrl:
-          "https://api.${env!.region}.amity.co/api/v3/files/${fileId}/download?size=full",
+          "https://api.${env!.region}.amity.co/api/v3/files/$fileId/download?size=full",
       fit: BoxFit.fill,
       placeholder: (context, url) => const CommuPlaceHolderWidget(),
       errorWidget: (context, url, error) => const Icon(Icons.error),
@@ -115,6 +113,6 @@ getImageProvider(String? url) {
   if (url != null) {
     return NetworkImage(url);
   } else {
-    return AssetImage("assets/images/user_placeholder.png");
+    return const AssetImage("assets/images/user_placeholder.png");
   }
 }

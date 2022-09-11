@@ -5,10 +5,10 @@ import 'package:animation_wrappers/animations/faded_scale_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../chat_viewmodel/channel_list_viewmodel.dart';
-import '../../chat_viewmodel/channel_viewmodel.dart';
-import '../../chat_viewmodel/custom_image_picker.dart';
-import '../../chat_viewmodel/user_viewmodel.dart';
+import '../../viewmodel/channel_list_viewmodel.dart';
+import '../../viewmodel/channel_viewmodel.dart';
+import '../../viewmodel/custom_image_picker.dart';
+import '../../viewmodel/user_viewmodel.dart';
 import '../../components/custom_user_avatar.dart';
 
 import 'chat_screen.dart';
@@ -22,10 +22,10 @@ class CreateChatGroup extends StatefulWidget {
   final List<String> userIds;
 
   @override
-  _CreateChatGroupState createState() => _CreateChatGroupState();
+  CreateChatGroupState createState() => CreateChatGroupState();
 }
 
-class _CreateChatGroupState extends State<CreateChatGroup> {
+class CreateChatGroupState extends State<CreateChatGroup> {
   String displayName = "";
   @override
   void dispose() {
@@ -72,12 +72,12 @@ class _CreateChatGroupState extends State<CreateChatGroup> {
     return Consumer<UserVM>(builder: (context, vm, _) {
       return Scaffold(
           appBar: AppBar(
-            title: Text("Setup group", style: TextStyle(color: Colors.black)),
+            title: const Text("Setup group", style: TextStyle(color: Colors.black)),
             leading: GestureDetector(
               onTap: () {
                 Navigator.of(context).pop();
               },
-              child: Icon(Icons.chevron_left, color: Colors.black, size: 35),
+              child: const Icon(Icons.chevron_left, color: Colors.black, size: 35),
             ),
             actions: [
               displayName != ""
@@ -85,7 +85,7 @@ class _CreateChatGroupState extends State<CreateChatGroup> {
                       onPressed: () {
                         onCreateTap();
                       },
-                      child: Text("Create"),
+                      child: const Text("Create"),
                     )
                   : Container()
             ],
@@ -94,7 +94,7 @@ class _CreateChatGroupState extends State<CreateChatGroup> {
               child: Column(
             children: [
               Container(
-                margin: EdgeInsets.only(top: 20, bottom: 20),
+                margin: const EdgeInsets.only(top: 20, bottom: 20),
                 width: double.infinity,
                 alignment: Alignment.center,
                 child: Stack(
@@ -124,12 +124,12 @@ class _CreateChatGroupState extends State<CreateChatGroup> {
                       right: 0,
                       top: 7,
                       child: Container(
-                        padding: EdgeInsets.all(5),
+                        padding: const EdgeInsets.all(5),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: theme.primaryColor,
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.camera_alt,
                           size: 18,
                         ),
@@ -139,7 +139,7 @@ class _CreateChatGroupState extends State<CreateChatGroup> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
                 child: TextField(
                   onChanged: (value) {
                     setState(() {

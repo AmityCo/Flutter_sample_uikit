@@ -16,7 +16,7 @@ import 'user_viewmodel.dart';
 class ChannelVM extends ChangeNotifier {
   ScrollController? scrollController = ScrollController();
   AmityChatRepoImp channelRepoImp = AmityChatRepoImp();
-  List<Channels> _amityChannelList = [];
+  final List<Channels> _amityChannelList = [];
   Map<String, ChannelUsers> channelUserMap = {};
   List<Channels> getChannelList() {
     return _amityChannelList;
@@ -39,6 +39,7 @@ class ChannelVM extends ChangeNotifier {
 
       channel.setLatestMessage(
           messages.messages![0].data!.text ?? "Not Text message: 📷");
+
       if (messages.messages![0].userId !=
           AmityCoreClient.getCurrentUser().userId) {
         ///add unread count by 1
@@ -158,7 +159,7 @@ class ChannelVM extends ChangeNotifier {
     await channelRepoImp.createConversationChannel(userIds,
         (data, error) async {
       if (data != null) {
-        log("createConversationChannel: success ${data}");
+        log("createConversationChannel: success $data");
 
         callback(data, null);
       } else {
@@ -182,7 +183,7 @@ class ChannelVM extends ChangeNotifier {
     ///get channel where channel id == new message channelId
 
     try {
-      if (_amityChannelList.length > 0) {
+      if (_amityChannelList.isNotEmpty) {
         var channel = _amityChannelList
             .firstWhere((amityMessage) => amityMessage.channelId == channelId);
 

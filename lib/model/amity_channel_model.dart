@@ -10,42 +10,42 @@ class ChannelList {
     if (json['channels'] != null) {
       channels = <Channels>[];
       json['channels'].forEach((v) {
-        channels!.add(new Channels.fromJson(v));
+        channels!.add(Channels.fromJson(v));
       });
     }
     if (json['channelUsers'] != null) {
       channelUsers = <ChannelUsers>[];
       json['channelUsers'].forEach((v) {
-        channelUsers!.add(new ChannelUsers.fromJson(v));
+        channelUsers!.add(ChannelUsers.fromJson(v));
       });
     }
     if (json['users'] != null) {
       users = <Users>[];
       json['users'].forEach((v) {
-        users!.add(new Users.fromJson(v));
+        users!.add(Users.fromJson(v));
       });
     }
     if (json['files'] != null) {
       files = <Files>[];
       json['files'].forEach((v) {
-        files!.add(new Files.fromJson(v));
+        files!.add(Files.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.channels != null) {
-      data['channels'] = this.channels!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (channels != null) {
+      data['channels'] = channels!.map((v) => v.toJson()).toList();
     }
-    if (this.channelUsers != null) {
-      data['channelUsers'] = this.channelUsers!.map((v) => v.toJson()).toList();
+    if (channelUsers != null) {
+      data['channelUsers'] = channelUsers!.map((v) => v.toJson()).toList();
     }
-    if (this.users != null) {
-      data['users'] = this.users!.map((v) => v.toJson()).toList();
+    if (users != null) {
+      data['users'] = users!.map((v) => v.toJson()).toList();
     }
-    if (this.files != null) {
-      data['files'] = this.files!.map((v) => v.toJson()).toList();
+    if (files != null) {
+      data['files'] = files!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -102,16 +102,15 @@ class Channels {
   Channels.fromJson(Map<String, dynamic> json) {
     channelId = json['channelId'];
     isDistinct = json['isDistinct'];
-    metadata = json['metadata'] != null
-        ? new Metadata.fromJson(json['metadata'])
-        : null;
+    metadata =
+        json['metadata'] != null ? Metadata.fromJson(json['metadata']) : null;
     type = json['type'];
     if (json['tags'] != null) {
-      List<String> _tags = [];
+      List<String> tags = [];
       json['tags'].forEach((v) {
-        _tags.add(v);
+        tags.add(v);
       });
-      tags = _tags;
+      tags = tags;
     }
     isMuted = json['isMuted'];
     isRateLimited = json['isRateLimited'];
@@ -132,30 +131,30 @@ class Channels {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['channelId'] = this.channelId;
-    data['isDistinct'] = this.isDistinct;
-    if (this.metadata != null) {
-      data['metadata'] = this.metadata!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['channelId'] = channelId;
+    data['isDistinct'] = isDistinct;
+    if (metadata != null) {
+      data['metadata'] = metadata!.toJson();
     }
-    data['type'] = this.type;
-    data['tags'] = this.tags;
-    data['isMuted'] = this.isMuted;
-    data['isRateLimited'] = this.isRateLimited;
-    data['muteTimeout'] = this.muteTimeout;
-    data['rateLimit'] = this.rateLimit;
-    data['rateLimitWindow'] = this.rateLimitWindow;
-    data['rateLimitTimeout'] = this.rateLimitTimeout;
-    data['displayName'] = this.displayName;
-    data['messageAutoDeleteEnabled'] = this.messageAutoDeleteEnabled;
-    data['autoDeleteMessageByFlagLimit'] = this.autoDeleteMessageByFlagLimit;
-    data['memberCount'] = this.memberCount;
-    data['messageCount'] = this.messageCount;
-    data['lastActivity'] = this.lastActivity;
-    data['createdAt'] = this.createdAt;
-    data['updatedAt'] = this.updatedAt;
-    data['avatarFileId'] = this.avatarFileId;
-    data['isDeleted'] = this.isDeleted;
+    data['type'] = type;
+    data['tags'] = tags;
+    data['isMuted'] = isMuted;
+    data['isRateLimited'] = isRateLimited;
+    data['muteTimeout'] = muteTimeout;
+    data['rateLimit'] = rateLimit;
+    data['rateLimitWindow'] = rateLimitWindow;
+    data['rateLimitTimeout'] = rateLimitTimeout;
+    data['displayName'] = displayName;
+    data['messageAutoDeleteEnabled'] = messageAutoDeleteEnabled;
+    data['autoDeleteMessageByFlagLimit'] = autoDeleteMessageByFlagLimit;
+    data['memberCount'] = memberCount;
+    data['messageCount'] = messageCount;
+    data['lastActivity'] = lastActivity;
+    data['createdAt'] = createdAt;
+    data['updatedAt'] = updatedAt;
+    data['avatarFileId'] = avatarFileId;
+    data['isDeleted'] = isDeleted;
     return data;
   }
 
@@ -171,10 +170,10 @@ class Channels {
 class Metadata {
   // Metadata({});
 
-  Metadata.fromJson(Map<String, dynamic> json) {}
+  Metadata.fromJson(Map<String, dynamic> json);
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     return data;
   }
 }
@@ -226,20 +225,20 @@ class ChannelUsers {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['userId'] = this.userId;
-    data['channelId'] = this.channelId;
-    data['membership'] = this.membership;
-    data['isBanned'] = this.isBanned;
-    data['lastActivity'] = this.lastActivity;
-    data['roles'] = this.roles;
-    data['permissions'] = this.permissions;
-    data['readToSegment'] = this.readToSegment;
-    data['lastMentionedSegment'] = this.lastMentionedSegment;
-    data['isMuted'] = this.isMuted;
-    data['muteTimeout'] = this.muteTimeout;
-    data['createdAt'] = this.createdAt;
-    data['updatedAt'] = this.updatedAt;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['userId'] = userId;
+    data['channelId'] = channelId;
+    data['membership'] = membership;
+    data['isBanned'] = isBanned;
+    data['lastActivity'] = lastActivity;
+    data['roles'] = roles;
+    data['permissions'] = permissions;
+    data['readToSegment'] = readToSegment;
+    data['lastMentionedSegment'] = lastMentionedSegment;
+    data['isMuted'] = isMuted;
+    data['muteTimeout'] = muteTimeout;
+    data['createdAt'] = createdAt;
+    data['updatedAt'] = updatedAt;
     return data;
   }
 }
@@ -290,7 +289,7 @@ class Users {
     flagCount = json['flagCount'];
 
     metadata = json['metadata'] != null
-        ? new Metadata.fromJson(json['metadata'])
+        ? Metadata.fromJson(json['metadata'])
         : null;
     isGlobalBan = json['isGlobalBan'];
     createdAt = json['createdAt'];
@@ -298,24 +297,24 @@ class Users {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['_id'] = this.sId;
-    data['path'] = this.path;
-    data['userId'] = this.userId;
-    data['roles'] = this.roles;
-    data['permissions'] = this.permissions;
-    data['displayName'] = this.displayName;
-    data['description'] = this.description;
-    data['avatarFileId'] = this.avatarFileId;
-    data['avatarCustomUrl'] = this.avatarCustomUrl;
-    data['flagCount'] = this.flagCount;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['_id'] = sId;
+    data['path'] =  path;
+    data['userId'] =  userId;
+    data['roles'] =  roles;
+    data['permissions'] =  permissions;
+    data['displayName'] =  displayName;
+    data['description'] =  description;
+    data['avatarFileId'] =  avatarFileId;
+    data['avatarCustomUrl'] =  avatarCustomUrl;
+    data['flagCount'] =  flagCount;
 
-    if (this.metadata != null) {
-      data['metadata'] = this.metadata!.toJson();
+    if ( metadata != null) {
+      data['metadata'] =  metadata!.toJson();
     }
-    data['isGlobalBan'] = this.isGlobalBan;
-    data['createdAt'] = this.createdAt;
-    data['updatedAt'] = this.updatedAt;
+    data['isGlobalBan'] =  isGlobalBan;
+    data['createdAt'] =  createdAt;
+    data['updatedAt'] =  updatedAt;
     return data;
   }
 }
@@ -346,12 +345,12 @@ class Files {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['fileId'] = this.fileId;
-    data['fileUrl'] = this.fileUrl;
-    data['type'] = this.type;
-    data['createdAt'] = this.createdAt;
-    data['updatedAt'] = this.updatedAt;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['fileId'] =  fileId;
+    data['fileUrl'] =  fileUrl;
+    data['type'] =  type;
+    data['createdAt'] =  createdAt;
+    data['updatedAt'] =  updatedAt;
     // if (this.attributes != null) {
     //   data['attributes'] = this.attributes!.toJson();
     // }
@@ -375,18 +374,18 @@ class Attributes {
     size = json['size'];
     mimeType = json['mimeType'];
     metadata = json['metadata'] != null
-        ? new Metadata.fromJson(json['metadata'])
+        ? Metadata.fromJson(json['metadata'])
         : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['name'] = this.name;
-    data['extension'] = this.extension;
-    data['size'] = this.size;
-    data['mimeType'] = this.mimeType;
-    if (this.metadata != null) {
-      data['metadata'] = this.metadata!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['name'] =  name;
+    data['extension'] =  extension;
+    data['size'] =  size;
+    data['mimeType'] =  mimeType;
+    if ( metadata != null) {
+      data['metadata'] =  metadata!.toJson();
     }
     return data;
   }
@@ -403,24 +402,24 @@ class FileMetadata {
 
   FileMetadata.fromJson(Map<String, dynamic> json) {
     exif =
-        json['exif'] != null ? new FileMetadata.fromJson(json['exif']) : null;
-    gps = json['gps'] != null ? new FileMetadata.fromJson(json['gps']) : null;
+        json['exif'] != null ? FileMetadata.fromJson(json['exif']) : null;
+    gps = json['gps'] != null ? FileMetadata.fromJson(json['gps']) : null;
     height = json['height'];
     width = json['width'];
     isFull = json['isFull'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.exif != null) {
-      data['exif'] = this.exif!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if ( exif != null) {
+      data['exif'] =  exif!.toJson();
     }
-    if (this.gps != null) {
-      data['gps'] = this.gps!.toJson();
+    if ( gps != null) {
+      data['gps'] =  gps!.toJson();
     }
-    data['height'] = this.height;
-    data['width'] = this.width;
-    data['isFull'] = this.isFull;
+    data['height'] =  height;
+    data['width'] =  width;
+    data['isFull'] =  isFull;
     return data;
   }
 }

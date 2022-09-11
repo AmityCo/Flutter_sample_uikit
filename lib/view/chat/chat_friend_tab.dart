@@ -1,16 +1,13 @@
-import 'dart:math';
-
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:get_time_ago/get_time_ago.dart';
-import 'package:intl/intl.dart';
 
 import 'package:provider/provider.dart';
 
-import '../../chat_viewmodel/channel_list_viewmodel.dart';
-import '../../chat_viewmodel/channel_viewmodel.dart';
-import '../../chat_viewmodel/configuration_viewmodel.dart';
-import '../../chat_viewmodel/user_viewmodel.dart';
+import '../../viewmodel/channel_list_viewmodel.dart';
+import '../../viewmodel/channel_viewmodel.dart';
+import '../../viewmodel/configuration_viewmodel.dart';
+import '../../viewmodel/user_viewmodel.dart';
 import '../../components/custom_user_avatar.dart';
 import 'chat_screen.dart';
 
@@ -32,13 +29,13 @@ class AmitySLEChannelScreenState extends State<AmitySLEChannelScreen> {
   @override
   void initState() {
     Future.delayed(Duration.zero, () async {
-      String token = "";
       if (Provider.of<UserVM>(context, listen: false).accessToken == "") {
-        token =
-            await Provider.of<UserVM>(context, listen: false).initAccessToken();
+        await Provider.of<UserVM>(context, listen: false).initAccessToken();
       } else {
-        token = Provider.of<UserVM>(context, listen: false).accessToken;
+        Provider.of<UserVM>(context, listen: false).accessToken;
       }
+
+      // ignore: use_build_context_synchronously
       Provider.of<ChannelVM>(context, listen: false).initVM();
     });
     super.initState();
@@ -64,10 +61,10 @@ class AmitySLEChannelScreenState extends State<AmitySLEChannelScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final mediaQuery = MediaQuery.of(context);
-    final bHeight = mediaQuery.size.height -
-        mediaQuery.padding.top -
-        AppBar().preferredSize.height;
+    // final mediaQuery = MediaQuery.of(context);
+    // final bHeight = mediaQuery.size.height -
+    //     mediaQuery.padding.top -
+    //     AppBar().preferredSize.height;
 
     final theme = Theme.of(context);
     return Consumer<ChannelVM>(builder: (context, vm, _) {
@@ -78,8 +75,8 @@ class AmitySLEChannelScreenState extends State<AmitySLEChannelScreen> {
         },
         child: Scaffold(
           body: FadedSlideAnimation(
-            beginOffset: Offset(0, 0.3),
-            endOffset: Offset(0, 0),
+            beginOffset: const Offset(0, 0.3),
+            endOffset: const Offset(0, 0),
             slideCurve: Curves.linearToEaseOut,
             child: Column(
               children: [
@@ -98,7 +95,7 @@ class AmitySLEChannelScreenState extends State<AmitySLEChannelScreen> {
                         var messageCount =
                             vm.getChannelList()[index].unreadCount;
 
-                        bool _rand = messageCount > 0 ? true : false;
+                        bool rand = messageCount > 0 ? true : false;
                         // if ((Random().nextInt(10)) % 2 == 0) {
                         //   _rand = true;
                         // } else {
@@ -131,7 +128,7 @@ class AmitySLEChannelScreenState extends State<AmitySLEChannelScreen> {
                                 Positioned(
                                   top: 0,
                                   right: 0,
-                                  child: _rand
+                                  child: rand
                                       ? Container(
                                           decoration: BoxDecoration(
                                             color: Provider.of<
@@ -141,7 +138,7 @@ class AmitySLEChannelScreenState extends State<AmitySLEChannelScreen> {
                                             shape: BoxShape.circle,
                                           ),
                                           padding:
-                                              EdgeInsets.fromLTRB(4, 0, 4, 2),
+                                              const EdgeInsets.fromLTRB(4, 0, 4, 2),
                                           child: Center(
                                             child: Text(
                                               vm
@@ -163,7 +160,7 @@ class AmitySLEChannelScreenState extends State<AmitySLEChannelScreen> {
                               vm.getChannelList()[index].displayName ??
                                   "Display name",
                               style: TextStyle(
-                                color: _rand
+                                color: rand
                                     ? Provider.of<AmityUIConfiguration>(context)
                                         .primaryColor
                                     : Provider.of<AmityUIConfiguration>(context)

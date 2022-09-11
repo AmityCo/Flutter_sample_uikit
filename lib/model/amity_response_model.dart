@@ -11,14 +11,14 @@ class AmityResponse {
     message = json['message'];
     code = json['code'];
 
-    data = json['data'] != null ? new AmityData(json['data']) : null;
+    data = json['data'] != null ? AmityData(json['data']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['status'] = this.status;
-    data['message'] = this.message;
-    data['code'] = this.code;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['status'] =  status;
+    data['message'] =  message;
+    data['code'] =  code;
 
     return data;
   }

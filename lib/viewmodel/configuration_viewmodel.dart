@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class AmityUIConfiguration extends ChangeNotifier {
   var primaryColor = Colors.grey;
   var placeHolderIcon = Icons.chat;
   var displaynameColor = Colors.black;
+
   ChannelListConfig channelListConfig = ChannelListConfig();
   MessageRoomConfig messageRoomConfig = MessageRoomConfig();
 

@@ -100,3 +100,18 @@ class InitialWidget extends StatelessWidget {
 
 ```
 
+## Note
+
+For Android
+Please enable multiDexEnabled in android/app/build.gradle
+
+```
+    defaultConfig {
+        multiDexEnabled true
+
+    }
+
+```
+
+
+

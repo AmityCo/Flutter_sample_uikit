@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:socket_io_client/socket_io_client.dart';
@@ -17,7 +16,7 @@ class AmityChatRepoImp implements AmityChatRepo {
   @override
   Future<void> initRepo(String accessToken) async {
     log("initRepo...");
-    socket = await io.io(
+    socket =  io.io(
         'wss://api.${env!.region}.amity.co/?token=$accessToken',
         io.OptionBuilder().setTransports(["websocket"]).build());
     socket.onConnectError((data) => log("onConnectError:$data"));
@@ -42,7 +41,7 @@ class AmityChatRepoImp implements AmityChatRepo {
           callback}) async {
     log("fetchChannelById...");
     socket.emitWithAck('v3/message.query', {
-      "channelId": "$channelId",
+      "channelId": channelId,
       "options": {"last": limit, "token": paginationToken}
     }, ack: (data) {
       var amityResponse = AmityResponse.fromJson(data);
@@ -64,7 +63,7 @@ class AmityChatRepoImp implements AmityChatRepo {
   Future<void> listenToChannel(Function(AmityMessage) callback) async {
     log("listenToChannelById...");
     socket.on('message.didCreate', (data) async {
-      var messageObj = await AmityMessage.fromJson(data);
+      var messageObj = AmityMessage.fromJson(data);
 
       callback(messageObj);
     });
@@ -97,9 +96,9 @@ class AmityChatRepoImp implements AmityChatRepo {
     log("sendTextMessage...");
     log("fetchChannelById...");
     socket.emitWithAck('v3/message.create', {
-      "channelId": "$channelId",
+      "channelId": channelId,
       "type": "text",
-      "data": {"text": "$text"}
+      "data": {"text": text}
     }, ack: (data) {
       var amityResponse = AmityResponse.fromJson(data);
       var responsedata = amityResponse.data;
@@ -147,7 +146,7 @@ class AmityChatRepoImp implements AmityChatRepo {
   Future<void> listenToChannelList(Function(Channels) callback) async {
     log("listenToChannelListUpdate...");
     socket.on('v3.channel.didCreate', (data) async {
-      var channelObj = await ChannelList.fromJson(data);
+      var channelObj = ChannelList.fromJson(data);
 
       callback(channelObj.channels![0]);
     });
@@ -155,10 +154,9 @@ class AmityChatRepoImp implements AmityChatRepo {
 
   Future<void> startReading(String channelId,
       {Function(String? data, String? error)? callback}) async {
-    socket.emitWithAck('channel.startReading', {"channelId": "$channelId"},
+    socket.emitWithAck('channel.startReading', {"channelId": channelId},
         ack: (data) async {
       var amityResponse = AmityResponse.fromJson(data);
-      var responsedata = amityResponse.data;
       if (amityResponse.status == "success") {
         //success
         log("startReading: success");
@@ -215,9 +213,9 @@ class AmityChatRepoImp implements AmityChatRepo {
   Future<void> stopReading(String channelId,
       {Function(String? data, String? error)? callback}) async {
     socket.emitWithAck('channel.stopReading', {
-      {"channelId": "$channelId"}
+      {"channelId": channelId}
     }, ack: (data) async {
-      var amityResponse = await AmityResponse.fromJson(data);
+      var amityResponse = AmityResponse.fromJson(data);
       if (amityResponse.status == "success") {
         //success
         log("stopReading: success");
@@ -232,9 +230,9 @@ class AmityChatRepoImp implements AmityChatRepo {
 
   Future<void> markSeen(String channelId) async {
     socket.emitWithAck('v3/channel.maekSeen', {
-      {"channelId": "$channelId", "readToSegment": 100}
+      {"channelId": channelId, "readToSegment": 100}
     }, ack: (data) async {
-      var amityResponse = await AmityResponse.fromJson(data);
+      var amityResponse = AmityResponse.fromJson(data);
       if (amityResponse.status == "success") {
         //success
         log("merkSeen: success");

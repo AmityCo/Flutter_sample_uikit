@@ -3,18 +3,15 @@
 import 'dart:developer';
 
 import 'package:amity_sdk/amity_sdk.dart';
-import 'package:amity_uikit_beta_service/view/chat/chat_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
-import 'chat_viewmodel/amity_viewmodel.dart';
-import 'chat_viewmodel/channel_list_viewmodel.dart';
-import 'chat_viewmodel/channel_viewmodel.dart';
-import 'chat_viewmodel/configuration_viewmodel.dart';
-import 'chat_viewmodel/custom_image_picker.dart';
-import 'chat_viewmodel/user_viewmodel.dart';
-import 'model/amity_channel_model.dart';
+import 'viewmodel/amity_viewmodel.dart';
+import 'viewmodel/channel_list_viewmodel.dart';
+import 'viewmodel/configuration_viewmodel.dart';
+import 'viewmodel/custom_image_picker.dart';
+import 'viewmodel/user_viewmodel.dart';
 import 'utils/env_manager.dart';
 
 class AmitySLEUIKit {
@@ -73,14 +70,9 @@ class AmitySLEUIKit {
   static Future<void> openChatRoomPage(
       BuildContext context, String channelId) async {
     await Future.delayed(Duration.zero, () async {
-      String token = "";
       if (Provider.of<UserVM>(context, listen: false).accessToken == "") {
-        token =
-            await Provider.of<UserVM>(context, listen: false).initAccessToken();
-      } else {
-        token = Provider.of<UserVM>(context, listen: false).accessToken;
-      }
-      // ignore: use_build_context_synchronously
+      } else {}
+
       Provider.of<ChannelVM>(context, listen: false).initVM();
     });
 

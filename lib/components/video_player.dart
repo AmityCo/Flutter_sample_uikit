@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:amity_sdk/amity_sdk.dart';
@@ -6,8 +5,6 @@ import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:video_player/video_player.dart';
 
@@ -23,6 +20,7 @@ class _LocalVideoPlayerState extends State<LocalVideoPlayer> {
   late VideoPlayerController videoPlayerController;
   ChewieController? chewieController;
 
+  @override
   void initState() {
     super.initState();
     initializePlayer();
@@ -36,7 +34,7 @@ class _LocalVideoPlayerState extends State<LocalVideoPlayer> {
   }
 
   Future<void> initializePlayer() async {
-    videoPlayerController = await VideoPlayerController.file(widget.file);
+    videoPlayerController = VideoPlayerController.file(widget.file);
     await videoPlayerController.initialize();
     ChewieController controller = ChewieController(
       showControlsOnInitialize: true,
@@ -56,12 +54,13 @@ class _LocalVideoPlayerState extends State<LocalVideoPlayer> {
     });
   }
 
+  @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(true ? 10 : 0),
+      borderRadius: BorderRadius.circular(10),
       child: Container(
         height: 250,
-        color: Color.fromRGBO(0, 0, 0, 1),
+        color: const Color.fromRGBO(0, 0, 0, 1),
         child: Center(
           child: chewieController != null &&
                   chewieController!.videoPlayerController.value.isInitialized
@@ -106,6 +105,7 @@ class _MyVideoPlayer2State extends State<MyVideoPlayer2> {
   late VideoPlayerController videoPlayerController;
   ChewieController? chewieController;
 
+  @override
   void initState() {
     var postData = widget.post.data as VideoData;
     if (postData.thumbnail != null) {
@@ -135,21 +135,23 @@ class _MyVideoPlayer2State extends State<MyVideoPlayer2> {
     final videoData = widget.post.data as VideoData;
 
     await videoData.getVideo(AmityVideoQuality.HIGH).then((AmityVideo video) {
-      if (this.mounted) {
+      if (mounted) {
         setState(() {
           videoUrl = video.fileUrl;
-          log(">>>>>>>>>>>>>>>>>>>>>>>>${videoUrl}");
+          log(">>>>>>>>>>>>>>>>>>>>>>>>$videoUrl");
         });
       }
     });
 
-    videoPlayerController = await VideoPlayerController.network(videoUrl);
+    videoPlayerController = VideoPlayerController.network(videoUrl);
     await videoPlayerController.initialize();
 
     var chewieProgressColors = ChewieProgressColors(
         // backgroundColor: Theme.of(context).primaryColor,
         // bufferedColor: Theme.of(context).primaryColor
+        // ignore: use_build_context_synchronously
         handleColor: Theme.of(context).primaryColor,
+        // ignore: use_build_context_synchronously
         playedColor: Theme.of(context).primaryColor);
 
     ChewieController controller = ChewieController(
@@ -178,6 +180,7 @@ class _MyVideoPlayer2State extends State<MyVideoPlayer2> {
     });
   }
 
+  @override
   Widget build(BuildContext context) {
     return FadeAnimation(
       child: Center(
@@ -188,7 +191,7 @@ class _MyVideoPlayer2State extends State<MyVideoPlayer2> {
               borderRadius: BorderRadius.circular(widget.isInFeed ? 10 : 0),
               child: Container(
                 height: 250,
-                color: Color.fromRGBO(0, 0, 0, 1),
+                color: const Color.fromRGBO(0, 0, 0, 1),
                 child: Center(
                     child: !widget.isInFeed
                         ? chewieController != null &&
@@ -204,7 +207,7 @@ class _MyVideoPlayer2State extends State<MyVideoPlayer2> {
                               )
                             : Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
+                                children: const [
                                   // CircularProgressIndicator(
                                   //   color: Theme.of(context).primaryColor,
                                   // )
@@ -218,11 +221,9 @@ class _MyVideoPlayer2State extends State<MyVideoPlayer2> {
                                     child: Row(
                                   children: [
                                     Expanded(
-                                      child: Container(
-                                        child: Image(
-                                          image: imageProvider,
-                                          fit: BoxFit.fitHeight,
-                                        ),
+                                      child: Image(
+                                        image: imageProvider,
+                                        fit: BoxFit.fitHeight,
                                       ),
                                     ),
                                   ],
@@ -233,12 +234,12 @@ class _MyVideoPlayer2State extends State<MyVideoPlayer2> {
                             fit: BoxFit.fill,
                             placeholder: (context, url) => Column(
                               mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
+                              children: const [
                                 //  CircularProgressIndicator()
                               ],
                             ),
                             errorWidget: (context, url, error) =>
-                                Icon(Icons.error),
+                                const Icon(Icons.error),
                           )),
               ),
             ),

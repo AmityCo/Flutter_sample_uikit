@@ -30,12 +30,12 @@ class ImagePickerVM extends ChangeNotifier {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 ListTile(
-                    leading: Icon(Icons.photo),
-                    title: Text('Gallery'),
+                    leading: const Icon(Icons.photo),
+                    title: const Text('Gallery'),
                     onTap: () async {
                       Navigator.pop(context);
                       final XFile? image =
@@ -50,17 +50,17 @@ class ImagePickerVM extends ChangeNotifier {
                         log("check amity image ${amityImage!.fileId}");
                         notifyListeners();
                       }).onError((error, stackTrace) async {
-                        log("error: ${error}");
+                        log("error: $error");
                         await AmityDialog().showAlertErrorDialog(
                             title: "Error!", message: error.toString());
                       });
                     }),
-                Divider(
+                const Divider(
                   color: Colors.grey,
                 ),
                 ListTile(
-                  leading: new Icon(Icons.camera_alt),
-                  title: new Text('Camera'),
+                  leading: const Icon(Icons.camera_alt),
+                  title: const Text('Camera'),
                   onTap: () async {
                     Navigator.pop(context);
                     final XFile? image =
@@ -75,7 +75,7 @@ class ImagePickerVM extends ChangeNotifier {
                       notifyListeners();
                       Navigator.pop(context);
                     }).onError((error, stackTrace) async {
-                      log("error: ${error}");
+                      log("error: $error");
                       await AmityDialog().showAlertErrorDialog(
                           title: "Error!", message: error.toString());
                     });

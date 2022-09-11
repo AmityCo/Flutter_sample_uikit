@@ -3,23 +3,22 @@ import 'dart:developer';
 import 'package:amity_sdk/amity_sdk.dart';
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
-import '../../chat_viewmodel/channel_list_viewmodel.dart';
-import '../../chat_viewmodel/channel_viewmodel.dart';
-import '../../chat_viewmodel/user_viewmodel.dart';
+import '../../viewmodel/channel_list_viewmodel.dart';
+import '../../viewmodel/channel_viewmodel.dart';
+import '../../viewmodel/user_viewmodel.dart';
 import '../../components/custom_user_avatar.dart';
 import 'chat_screen.dart';
 import 'create_group_chat_screen.dart';
 
 class UserList extends StatefulWidget {
-  UserList(Key key);
+  const UserList({super.key});
   @override
-  _UserListState createState() => _UserListState();
+  UserListState createState() => UserListState();
 }
 
-class _UserListState extends State<UserList> {
+class UserListState extends State<UserList> {
   @override
   void dispose() {
     super.dispose();
@@ -37,17 +36,19 @@ class _UserListState extends State<UserList> {
   }
 
   int getLength() {
-    if (Provider.of<UserVM>(context, listen: false).getUserList().isEmpty)
+    if (Provider.of<UserVM>(context, listen: false).getUserList().isEmpty) {
       return 0;
+    }
     int length =
         Provider.of<UserVM>(context, listen: false).getUserList().length;
-    log("check length of user list ${length}");
+    log("check length of user list $length");
     return length;
   }
 
   int getSelectedLength() {
-    if (Provider.of<UserVM>(context, listen: false).selectedUserList.isEmpty)
+    if (Provider.of<UserVM>(context, listen: false).selectedUserList.isEmpty) {
       return 0;
+    }
     int length =
         Provider.of<UserVM>(context, listen: false).selectedUserList.length;
 
@@ -95,12 +96,14 @@ class _UserListState extends State<UserList> {
     return Consumer<UserVM>(builder: (context, vm, _) {
       return Scaffold(
         appBar: AppBar(
-          title: Text("Select Users", style: TextStyle(color: Colors.black)),
+          title:
+              const Text("Select Users", style: TextStyle(color: Colors.black)),
           leading: GestureDetector(
             onTap: () {
               Navigator.of(context).pop();
             },
-            child: Icon(Icons.chevron_left, color: Colors.black, size: 35),
+            child:
+                const Icon(Icons.chevron_left, color: Colors.black, size: 35),
           ),
           actions: [
             getSelectedLength() > 0
@@ -108,7 +111,7 @@ class _UserListState extends State<UserList> {
                     onPressed: () {
                       onNextTap();
                     },
-                    child: Text(true
+                    child: const Text(true
                         // getSelectedLength() > 1
                         ? "Next"
                         : "Create"))
@@ -119,13 +122,13 @@ class _UserListState extends State<UserList> {
           child: Column(
             children: [
               Expanded(
-                child: Container(
+                child: SizedBox(
                   height: bHeight,
 
                   // color: ApplicationColors.lightGrey,
                   child: FadedSlideAnimation(
-                    beginOffset: Offset(0, 0.3),
-                    endOffset: Offset(0, 0),
+                    beginOffset: const Offset(0, 0.3),
+                    endOffset: const Offset(0, 0),
                     slideCurve: Curves.linearToEaseOut,
                     child: Column(
                       children: [
@@ -138,7 +141,7 @@ class _UserListState extends State<UserList> {
                               )
                             : Expanded(
                                 child: ListView.builder(
-                                  physics: BouncingScrollPhysics(),
+                                  physics: const BouncingScrollPhysics(),
                                   // shrinkWrap: true,
                                   itemCount: getLength(),
                                   itemBuilder: (context, index) {
@@ -166,7 +169,7 @@ class _UserListState extends State<UserList> {
 }
 
 class UserWidget extends StatelessWidget {
-  UserWidget(
+  const UserWidget(
       {Key? key, required this.user, required this.theme, required this.index})
       : super(key: key);
 
@@ -179,17 +182,17 @@ class UserWidget extends StatelessWidget {
     return Card(
       elevation: 0,
       child: Padding(
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         child: Column(
           children: [
             ListTile(
-              contentPadding: EdgeInsets.all(0),
+              contentPadding: const EdgeInsets.all(0),
               onTap: () {
                 Provider.of<UserVM>(context, listen: false).setSelectedUserList(
                     Provider.of<UserVM>(context, listen: false)
                         .getUserList()[index]
                         .userId!);
-                log("click index ${index} ${Provider.of<UserVM>(context, listen: false).selectedUserList}");
+                log("click index $index ${Provider.of<UserVM>(context, listen: false).selectedUserList}");
               },
               leading: FadeAnimation(child: getAvatarImage(user.avatarUrl!)),
               title: Text(
@@ -208,7 +211,7 @@ class UserWidget extends StatelessWidget {
                     )
                   : null,
             ),
-            Divider(
+            const Divider(
               color: Colors.grey,
             )
           ],

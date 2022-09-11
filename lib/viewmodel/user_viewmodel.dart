@@ -8,7 +8,7 @@ import '../utils/env_manager.dart';
 
 class UserVM extends ChangeNotifier {
   ///testtt
-  List<AmityUser> _userList = [];
+  final List<AmityUser> _userList = [];
   List<String> selectedUserList = [];
   String accessToken = "";
   List<AmityUser> getUserList() {
@@ -43,19 +43,20 @@ class UserVM extends ChangeNotifier {
   }
 
   Future<AmityUser?> getUserByID(String id) async {
+    AmityUser? amityUser;
     await AmityCoreClient.newUserRepository().getUser(id).then((user) {
       log("IsGlobalban: ${user.isGlobalBan}");
-      return user;
+      amityUser = user;
     }).onError((error, stackTrace) async {
       log(error.toString());
       await AmityDialog()
           .showAlertErrorDialog(title: "Error!", message: error.toString());
-      return AmityUser();
     });
+    return amityUser;
   }
 
   void setSelectedUserList(String id) {
-    if (selectedUserList.length > 0 && selectedUserList.contains(id)) {
+    if (selectedUserList.isNotEmpty && selectedUserList.contains(id)) {
       selectedUserList.remove(id);
     } else {
       selectedUserList.add(id);

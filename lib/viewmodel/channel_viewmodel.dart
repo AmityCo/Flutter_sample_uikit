@@ -26,7 +26,7 @@ class MessageVM extends ChangeNotifier {
   ///init
   Future<void> initVM(String channelId, Channels channel) async {
     this.channelId = channelId;
-    this.isChatLoading = true;
+    isChatLoading = true;
     Future.delayed(Duration.zero, () {
       notifyListeners();
     });

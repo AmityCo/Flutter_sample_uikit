@@ -5,10 +5,8 @@ import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
-
-import '../../chat_viewmodel/channel_viewmodel.dart';
-import '../../chat_viewmodel/configuration_viewmodel.dart';
+import '../../viewmodel/channel_viewmodel.dart';
+import '../../viewmodel/configuration_viewmodel.dart';
 import '../../components/custom_user_avatar.dart';
 import '../../model/amity_channel_model.dart';
 import '../../model/amity_message_model.dart';
@@ -28,49 +26,45 @@ class ChatSingleScreen extends StatelessWidget {
           .messageRoomConfig
           .backgroundColor,
       leadingWidth: 0,
-      title: Container(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            GestureDetector(
-                onTap: () {
-                  Navigator.of(context).pop();
-                },
-                child: Icon(Icons.chevron_left,
-                    color:
-                        Provider.of<AmityUIConfiguration>(context).primaryColor,
-                    size: 30)),
-            Container(
-              height: 45,
-              margin: const EdgeInsets.symmetric(vertical: 4),
-              decoration: BoxDecoration(shape: BoxShape.circle),
-              child: FadedScaleAnimation(
-                child: getCommuAvatarImage(null, fileId: channel.avatarFileId),
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          GestureDetector(
+              onTap: () {
+                Navigator.of(context).pop();
+              },
+              child: Icon(Icons.chevron_left,
+                  color:
+                      Provider.of<AmityUIConfiguration>(context).primaryColor,
+                  size: 30)),
+          Container(
+            height: 45,
+            margin: const EdgeInsets.symmetric(vertical: 4),
+            decoration: const BoxDecoration(shape: BoxShape.circle),
+            child: FadedScaleAnimation(
+              child: getCommuAvatarImage(null, fileId: channel.avatarFileId),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              channel.displayName ?? "N/A",
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.headline6!.copyWith(
+                fontSize: 16.7,
+                fontWeight: FontWeight.w500,
               ),
             ),
-            SizedBox(width: 10),
-            Expanded(
-              child: Container(
-                child: Text(
-                  channel.displayName ?? "N/A",
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.headline6!.copyWith(
-                    fontSize: 16.7,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
     final bHeight = mediaQuery.size.height -
         mediaQuery.padding.top -
         myAppBar.preferredSize.height;
 
-    final textfielHeight = 60.0;
+    const textfielHeight = 60.0;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: myAppBar,
@@ -130,7 +124,7 @@ class ChatTextFieldComponent extends StatelessWidget {
           border: Border(top: BorderSide(color: theme.highlightColor))),
       height: textfielHeight,
       width: mediaQuery.size.width,
-      padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+      padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
       child: Row(
         children: [
           // SizedBox(
@@ -141,8 +135,8 @@ class ChatTextFieldComponent extends StatelessWidget {
           //   color: theme.primaryIconTheme.color,
           //   size: 22,
           // ),
-          SizedBox(width: 10),
-          Container(
+          const SizedBox(width: 10),
+          SizedBox(
             width: mediaQuery.size.width * 0.7,
             child: TextField(
               controller: Provider.of<MessageVM>(context, listen: false)
@@ -154,7 +148,7 @@ class ChatTextFieldComponent extends StatelessWidget {
               ),
             ),
           ),
-          Spacer(),
+          const Spacer(),
           GestureDetector(
             onTap: () {
               HapticFeedback.heavyImpact();
@@ -166,7 +160,7 @@ class ChatTextFieldComponent extends StatelessWidget {
               size: 22,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 5,
           ),
         ],
@@ -211,14 +205,14 @@ class _MessageComponentState extends State<MessageComponent> {
   }
 
   String getTimeStamp(Messages msg) {
-    String hour = "${DateTime.parse(msg.editedAt!).hour.toString()}";
+    String hour = DateTime.parse(msg.editedAt!).hour.toString();
     String minute = "";
     if (DateTime.parse(msg.editedAt!).minute > 9) {
       minute = DateTime.parse(msg.editedAt!).minute.toString();
     } else {
-      minute = "0" + DateTime.parse(msg.editedAt!).minute.toString();
+      minute = "0${DateTime.parse(msg.editedAt!).minute}";
     }
-    return hour + ":" + minute;
+    return "$hour:$minute";
   }
 
   @override
@@ -244,9 +238,9 @@ class _MessageComponentState extends State<MessageComponent> {
               ],
             )
           : Container(
-              padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
+              padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
               child: ListView.builder(
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 itemCount: vm.amityMessageList?.length,
                 itemBuilder: (context, index) {
@@ -266,12 +260,10 @@ class _MessageComponentState extends State<MessageComponent> {
                             : MainAxisAlignment.end,
                         children: [
                           if (!isSendbyCurrentUser)
-                            Container(
-                              child: Text(
-                                getTimeStamp(vm.amityMessageList![index]),
-                                style: const TextStyle(
-                                    color: Colors.grey, fontSize: 8),
-                              ),
+                            Text(
+                              getTimeStamp(vm.amityMessageList![index]),
+                              style: const TextStyle(
+                                  color: Colors.grey, fontSize: 8),
                             ),
                           vm.amityMessageList![index].data!.text == null
                               ? Container(
@@ -290,8 +282,8 @@ class _MessageComponentState extends State<MessageComponent> {
                                     constraints: BoxConstraints(
                                         maxWidth:
                                             widget.mediaQuery.size.width * 0.7),
-                                    margin: EdgeInsets.fromLTRB(10, 4, 10, 4),
-                                    padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
+                                    margin: const EdgeInsets.fromLTRB(10, 4, 10, 4),
+                                    padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10),
                                       color: isSendbyCurrentUser
@@ -313,17 +305,15 @@ class _MessageComponentState extends State<MessageComponent> {
                                   ),
                                 ),
                           if (isSendbyCurrentUser)
-                            Container(
-                              child: Text(
-                                getTimeStamp(vm.amityMessageList![index]),
-                                style: TextStyle(
-                                    color: Colors.grey[500], fontSize: 8),
-                              ),
+                            Text(
+                              getTimeStamp(vm.amityMessageList![index]),
+                              style: TextStyle(
+                                  color: Colors.grey[500], fontSize: 8),
                             ),
                         ],
                       ),
                       if (index + 1 == vm.amityMessageList?.length)
-                        SizedBox(
+                        const SizedBox(
                           height: 90,
                         )
                     ],
