@@ -10,7 +10,7 @@ class UserVM extends ChangeNotifier {
   ///testtt
   final List<AmityUser> _userList = [];
   List<String> selectedUserList = [];
-  String accessToken = "";
+  String? accessToken;
   List<AmityUser> getUserList() {
     return _userList;
   }
@@ -20,7 +20,7 @@ class UserVM extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<String> initAccessToken() async {
+  Future<void> initAccessToken() async {
     var dio = Dio();
     final response = await dio.post(
       "https://api.${env!.region}.amity.co/api/v3/sessions",
@@ -36,9 +36,9 @@ class UserVM extends ChangeNotifier {
     );
     if (response.statusCode == 200) {
       accessToken = response.data["accessToken"];
-      return accessToken;
     } else {
-      return "error :initAccessToken";
+      await AmityDialog()
+          .showAlertErrorDialog(title: "Error!", message: response.data);
     }
   }
 

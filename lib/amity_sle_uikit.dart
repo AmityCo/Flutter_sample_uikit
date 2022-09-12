@@ -3,6 +3,7 @@
 import 'dart:developer';
 
 import 'package:amity_sdk/amity_sdk.dart';
+import 'package:amity_uikit_beta_service/utils/navigation_key.dart';
 import 'package:amity_uikit_beta_service/view/chat/chat_screen.dart';
 import 'package:amity_uikit_beta_service/viewmodel/channel_viewmodel.dart';
 import 'package:flutter/material.dart';
@@ -60,11 +61,26 @@ class AmitySLEUIKit {
         sycInitialization: true);
   }
 
-  Future<void> registerDevice(BuildContext context, String userId) async {
+  Future<void> registerDevice(
+      {required BuildContext context,
+      required String userId,
+      Function(bool isSuccess, String? error)? callback}) async {
     await Provider.of<AmityVM>(context, listen: false)
         .login(userId)
-        .then((value) {
-      Provider.of<UserVM>(context, listen: false).initAccessToken();
+        .then((value) async {
+      await Provider.of<UserVM>(context, listen: false)
+          .initAccessToken()
+          .then((value) {
+        if (Provider.of<UserVM>(context, listen: false).accessToken != null) {
+          if (callback != null) {
+            callback(true, null);
+          }
+        } else {
+          if (callback != null) {
+            callback(false, "Initialize accesstoken fail...");
+          }
+        }
+      });
     });
   }
 
@@ -99,7 +115,10 @@ class AmitySLEProvider extends StatelessWidget {
             create: ((context) => AmityUIConfiguration())),
       ],
       child: Builder(
-        builder: (context) => child,
+        builder: (context) => MaterialApp(
+          navigatorKey: NavigationService.navigatorKey,
+          home: child,
+        ),
       ),
     );
   }

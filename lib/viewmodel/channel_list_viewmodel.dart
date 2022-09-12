@@ -29,36 +29,39 @@ class ChannelVM extends ChangeNotifier {
             NavigationService.navigatorKey.currentContext!,
             listen: false)
         .accessToken;
+    if (accessToken != null) {
+      await channelRepoImp.initRepo(accessToken);
+      await channelRepoImp.listenToChannel((messages) {
+        ///get channel where channel id == new message channelId
+        var channel = _amityChannelList.firstWhere((amityMessage) =>
+            amityMessage.channelId == messages.messages?[0].channelId);
+        log("${channel.channelId} got new message from ${messages.messages![0].userId}");
+        channel.lastActivity = messages.messages![0].createdAt;
 
-    await channelRepoImp.initRepo(accessToken);
-    await channelRepoImp.listenToChannel((messages) {
-      ///get channel where channel id == new message channelId
-      var channel = _amityChannelList.firstWhere((amityMessage) =>
-          amityMessage.channelId == messages.messages?[0].channelId);
-      log("${channel.channelId} got new message from ${messages.messages![0].userId}");
-      channel.lastActivity = messages.messages![0].createdAt;
+        channel.setLatestMessage(
+            messages.messages![0].data!.text ?? "Not Text message: 📷");
 
-      channel.setLatestMessage(
-          messages.messages![0].data!.text ?? "Not Text message: 📷");
+        if (messages.messages![0].userId !=
+            AmityCoreClient.getCurrentUser().userId) {
+          ///add unread count by 1
+          channel.setUnreadCount(channel.unreadCount + 1);
+        }
 
-      if (messages.messages![0].userId !=
-          AmityCoreClient.getCurrentUser().userId) {
-        ///add unread count by 1
-        channel.setUnreadCount(channel.unreadCount + 1);
-      }
+        //move channel to the top
+        _amityChannelList.remove(channel);
+        _amityChannelList.insert(0, channel);
+        notifyListeners();
+      });
 
-      //move channel to the top
-      _amityChannelList.remove(channel);
-      _amityChannelList.insert(0, channel);
-      notifyListeners();
-    });
+      await channelRepoImp.listenToChannelList((channel) {
+        _amityChannelList.insert(0, channel);
+        notifyListeners();
+      });
 
-    await channelRepoImp.listenToChannelList((channel) {
-      _amityChannelList.insert(0, channel);
-      notifyListeners();
-    });
-
-    await refreshChannels();
+      await refreshChannels();
+    } else {
+      log("accessToken is null");
+    }
   }
 
   Future<void> refreshChannels() async {
@@ -99,21 +102,24 @@ class ChannelVM extends ChangeNotifier {
             NavigationService.navigatorKey.currentContext!,
             listen: false)
         .accessToken;
-
-    await channelRepoImp.initRepo(accessToken);
-    await channelRepoImp.getChannelById(
-      channelId: channelId,
-      callback: (data, error) async {
-        if (data != null) {
-          log(">>>>>>>>>>>>>${data.channels![0].channelId}");
-          amitySingleChannel = data.channels!.first;
-          notifyListeners();
-        } else {
-          await AmityDialog()
-              .showAlertErrorDialog(title: "Error!", message: error!);
-        }
-      },
-    );
+    if (accessToken != null) {
+      await channelRepoImp.initRepo(accessToken);
+      await channelRepoImp.getChannelById(
+        channelId: channelId,
+        callback: (data, error) async {
+          if (data != null) {
+            log(">>>>>>>>>>>>>${data.channels![0].channelId}");
+            amitySingleChannel = data.channels!.first;
+            notifyListeners();
+          } else {
+            await AmityDialog()
+                .showAlertErrorDialog(title: "Error!", message: error!);
+          }
+        },
+      );
+    } else {
+      log("accessToken is null");
+    }
   }
 
   Future<void> _addLatestMessage(Channels channel) async {

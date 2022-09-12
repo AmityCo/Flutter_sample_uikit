@@ -6,12 +6,18 @@ Amity UIkit opensource developed by SLE team to enable social feature in Flutter
 Example main.dart
 
 ```dart
+import 'package:amity_uikit_beta_service/amity_sle_uikit.dart';
+import 'package:amity_uikit_beta_service/utils/navigation_key.dart';
+import 'package:amity_uikit_beta_service/view/chat/chat_friend_tab.dart';
+import 'package:amity_uikit_beta_service/view/chat/single_chat_room.dart';
+import 'package:amity_uikit_beta_service/view/social/home_following_screen.dart';
+import 'package:flutter/material.dart';
 
 void main() async {
   ///Step 1: Initialize amity SDK with the following function
   WidgetsFlutterBinding.ensureInitialized();
   AmitySLEUIKit()
-      .initUIKit("<API_KEY>", "REGION<sg,eu,us>");
+      .initUIKit("b3babb0b3a89f4341d31dc1a01091edcd70f8de7b23d697f", "sg");
 
   runApp(const MyApp());
 }
@@ -26,8 +32,7 @@ class MyApp extends StatelessWidget {
       child: Builder(builder: (context2) {
         ///If you want to change color of uikit use the following metgod here
         AmitySLEUIKit().configAmityThemeColor(context2, (config) {
-          config.primaryColor = Colors.green;
-          config.messageRoomConfig.backgroundColor = Colors.green;
+          config.primaryColor = Colors.blue;
         });
         return MaterialApp(
           navigatorKey: NavigationService.navigatorKey,
@@ -35,7 +40,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),
-          home: InitialWidget(),
+          home: const InitialWidget(),
         );
       }),
     );
@@ -60,7 +65,7 @@ class InitialWidget extends StatelessWidget {
               ElevatedButton(
                 onPressed: () {
                   ///Step 3: login with Amity
-                  AmitySLEUIKit().registerDevice(context, "<UserId>");
+                  AmitySLEUIKit().registerDevice(context, "johnwick2");
                 },
                 child: const Text("Login to Amity"),
               ),
@@ -71,7 +76,7 @@ class InitialWidget extends StatelessWidget {
             children: [
               ElevatedButton(
                 onPressed: () {
-                  ///Step 4: Navigate To chat Room page
+                  ///Step 4: Navigate To channel List page
                   Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => const AmitySLEChannelScreen(),
                   ));
@@ -84,11 +89,31 @@ class InitialWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
-                onPressed: () {
-                  ///Step 4.1: Navigate To channel List page
-                  AmitySLEUIKit.openChatRoomPage(context, "<Channel_ID>");
+                onPressed: () async {
+                  ///4.1: Navigate To channel chat screen page with ChannelId
+
+                  await Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const SingleChatRoom(
+                      channelId: "Flutter_Flutter",
+                    ),
+                  ));
                 },
                 child: const Text("Navigate to UIKIT: Chat room page"),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  ///4.e: Navigate To Global Feed Screen
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) =>
+                        const Scaffold(body: GlobalFeedScreen()),
+                  ));
+                },
+                child: const Text("Navigate to UIKIT: Global Feed"),
               ),
             ],
           )
@@ -110,6 +135,23 @@ Please enable multiDexEnabled in android/app/build.gradle
         multiDexEnabled true
 
     }
+
+```
+
+## Changelog
+
+In version 0.2.0
+
+```dart
+/// replicated
+  AmitySLEUIKit.openChatRoomPage(context, "<Channel_ID>");
+
+/// new
+    await Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const SingleChatRoom(
+                      channelId: "Flutter_Flutter",
+                    ),
+                  ));
 
 ```
 

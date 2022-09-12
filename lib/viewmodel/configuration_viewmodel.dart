@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class AmityUIConfiguration extends ChangeNotifier {
-  var primaryColor = Colors.grey;
-  var placeHolderIcon = Icons.chat;
-  var displaynameColor = Colors.black;
+  Color primaryColor = Colors.grey;
+  IconData placeHolderIcon = Icons.chat;
+  Color displaynameColor = Colors.black;
 
   ChannelListConfig channelListConfig = ChannelListConfig();
   MessageRoomConfig messageRoomConfig = MessageRoomConfig();
@@ -14,16 +14,16 @@ class AmityUIConfiguration extends ChangeNotifier {
 }
 
 class ChannelListConfig {
-  var cardColor = Colors.white;
-  var backgroundColor = Colors.grey[200];
-  var latestMessageColor = Colors.grey[500];
-  var latestTimeColor = Colors.grey[500];
-  var channelDisplayname = Colors.black;
+  Color cardColor = Colors.white;
+  Color backgroundColor = Colors.grey[200]!;
+  Color latestMessageColor = Colors.grey[500]!;
+  Color latestTimeColor = Colors.grey[500]!;
+  Color channelDisplayname = Colors.black;
 }
 
 class MessageRoomConfig {
-  var backgroundColor = Colors.white;
-  var appbarColor = Colors.white;
-  var textFieldBackGroundColor = Colors.white;
-  var textFieldHintColor = Colors.grey[500];
+  Color backgroundColor = Colors.white;
+  Color appbarColor = Colors.white;
+  Color textFieldBackGroundColor = Colors.white;
+  Color textFieldHintColor = Colors.grey[500]!;
 }

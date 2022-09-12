@@ -463,7 +463,7 @@ class _PostWidgetState extends State<PostWidget>
                                           Text(
                                             ' Like',
                                             style: TextStyle(
-                                                color: Colors.grey[200],
+                                                color: Colors.grey,
                                                 fontSize: feedReactionCountSize,
                                                 letterSpacing: 1),
                                           ),
