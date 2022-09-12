@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 
 import '../../viewmodel/channel_list_viewmodel.dart';
 import '../../viewmodel/channel_viewmodel.dart';
+import '../../viewmodel/configuration_viewmodel.dart';
 import '../../viewmodel/custom_image_picker.dart';
 import '../../viewmodel/user_viewmodel.dart';
 import '../../components/custom_user_avatar.dart';
@@ -68,16 +69,17 @@ class CreateChatGroupState extends State<CreateChatGroup> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Consumer<UserVM>(builder: (context, vm, _) {
       return Scaffold(
           appBar: AppBar(
-            title: const Text("Setup group", style: TextStyle(color: Colors.black)),
+            title: const Text("Setup group",
+                style: TextStyle(color: Colors.black)),
             leading: GestureDetector(
               onTap: () {
                 Navigator.of(context).pop();
               },
-              child: const Icon(Icons.chevron_left, color: Colors.black, size: 35),
+              child:
+                  const Icon(Icons.chevron_left, color: Colors.black, size: 35),
             ),
             actions: [
               displayName != ""
@@ -127,7 +129,8 @@ class CreateChatGroupState extends State<CreateChatGroup> {
                         padding: const EdgeInsets.all(5),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: theme.primaryColor,
+                          color: Provider.of<AmityUIConfiguration>(context)
+                              .primaryColor,
                         ),
                         child: const Icon(
                           Icons.camera_alt,
