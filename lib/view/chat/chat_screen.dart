@@ -21,6 +21,7 @@ class ChatSingleScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final mediaQuery = MediaQuery.of(context);
     final myAppBar = AppBar(
+      automaticallyImplyLeading: false,
       elevation: 0,
       backgroundColor: Provider.of<AmityUIConfiguration>(context)
           .messageRoomConfig
@@ -282,8 +283,10 @@ class _MessageComponentState extends State<MessageComponent> {
                                     constraints: BoxConstraints(
                                         maxWidth:
                                             widget.mediaQuery.size.width * 0.7),
-                                    margin: const EdgeInsets.fromLTRB(10, 4, 10, 4),
-                                    padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                                    margin:
+                                        const EdgeInsets.fromLTRB(10, 4, 10, 4),
+                                    padding:
+                                        const EdgeInsets.fromLTRB(10, 5, 10, 5),
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10),
                                       color: isSendbyCurrentUser

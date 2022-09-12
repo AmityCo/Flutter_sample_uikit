@@ -1,5 +1,8 @@
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../viewmodel/configuration_viewmodel.dart';
 
 // ignore: must_be_immutable
 class CustomButton extends StatelessWidget {
@@ -43,7 +46,8 @@ class CustomButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(radius ?? 8),
             border: Border.all(
                 color: borderColor ?? Colors.transparent, width: 1.5),
-            color: color ?? theme.primaryColor,
+            color: color ??
+                Provider.of<AmityUIConfiguration>(context).primaryColor,
           ),
           padding: EdgeInsets.all(padding ?? (icon != null ? 16.0 : 18.0)),
           child: Row(

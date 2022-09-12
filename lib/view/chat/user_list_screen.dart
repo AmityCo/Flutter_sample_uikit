@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 
 import '../../viewmodel/channel_list_viewmodel.dart';
 import '../../viewmodel/channel_viewmodel.dart';
+import '../../viewmodel/configuration_viewmodel.dart';
 import '../../viewmodel/user_viewmodel.dart';
 import '../../components/custom_user_avatar.dart';
 import 'chat_screen.dart';
@@ -136,7 +137,9 @@ class UserListState extends State<UserList> {
                             ? Expanded(
                                 child: Center(
                                   child: CircularProgressIndicator(
-                                      color: theme.primaryColor),
+                                      color: Provider.of<AmityUIConfiguration>(
+                                              context)
+                                          .primaryColor),
                                 ),
                               )
                             : Expanded(
@@ -207,7 +210,8 @@ class UserWidget extends StatelessWidget {
                               .userId!)
                   ? Icon(
                       Icons.check_rounded,
-                      color: theme.primaryColor,
+                      color: Provider.of<AmityUIConfiguration>(context)
+                          .primaryColor,
                     )
                   : null,
             ),

@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../../components/custom_user_avatar.dart';
 import '../../viewmodel/category_viewmodel.dart';
 import '../../viewmodel/community_viewmodel.dart';
+import '../../viewmodel/configuration_viewmodel.dart';
 import '../../viewmodel/custom_image_picker.dart';
 import 'category_list.dart';
 
@@ -78,7 +79,8 @@ class EditCommunityScreenState extends State<EditCommunityScreen> {
           child: Text(
             "Save",
             style: theme.textTheme.button!.copyWith(
-                color: theme.primaryColor, fontWeight: FontWeight.bold),
+                color: Provider.of<AmityUIConfiguration>(context).primaryColor,
+                fontWeight: FontWeight.bold),
           ),
         ),
       ],
@@ -123,7 +125,8 @@ class EditCommunityScreenState extends State<EditCommunityScreen> {
                             padding: const EdgeInsets.all(5),
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: theme.primaryColor,
+                              color: Provider.of<AmityUIConfiguration>(context)
+                                  .primaryColor,
                             ),
                             child: const Icon(
                               Icons.camera_alt,
@@ -234,7 +237,9 @@ class EditCommunityScreenState extends State<EditCommunityScreen> {
                                 'Anyone can join, view and search this community'),
                             trailing: Radio(
                               value: CommunityType.public,
-                              activeColor: theme.primaryColor,
+                              activeColor:
+                                  Provider.of<AmityUIConfiguration>(context)
+                                      .primaryColor,
                               groupValue: communityType,
                               onChanged: (CommunityType? value) {
                                 setState(() {
@@ -260,7 +265,9 @@ class EditCommunityScreenState extends State<EditCommunityScreen> {
                                 'Only members invited by the moderators can join, view and search this community'),
                             trailing: Radio(
                               value: CommunityType.private,
-                              activeColor: theme.primaryColor,
+                              activeColor:
+                                  Provider.of<AmityUIConfiguration>(context)
+                                      .primaryColor,
                               groupValue: communityType,
                               onChanged: (CommunityType? value) {
                                 setState(() {

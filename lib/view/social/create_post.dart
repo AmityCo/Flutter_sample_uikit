@@ -1,8 +1,10 @@
 import 'package:amity_sdk/amity_sdk.dart';
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../components/custom_user_avatar.dart';
+import '../../viewmodel/configuration_viewmodel.dart';
 
 class CreatePostScreen extends StatefulWidget {
   final AmityPost? post;
@@ -80,7 +82,8 @@ class CreatePostScreenState extends State<CreatePostScreen> {
                   alignment: Alignment.center,
                   padding: const EdgeInsets.fromLTRB(0, 16, 0, 16),
                   decoration: BoxDecoration(
-                    color: theme.primaryColor,
+                    color:
+                        Provider.of<AmityUIConfiguration>(context).primaryColor,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(

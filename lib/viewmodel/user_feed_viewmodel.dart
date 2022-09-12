@@ -1,18 +1,25 @@
 import 'dart:developer';
 
 import 'package:amity_sdk/amity_sdk.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../components/alert_dialog.dart';
 
 class UserFeedVM extends ChangeNotifier {
-  late AmityUser amityUser;
+  late AmityUser? amityUser;
   late AmityUserFollowInfo amityMyFollowInfo = AmityUserFollowInfo();
   late PagingController<AmityPost> _controller;
+  final scrollController = ScrollController();
   final amityPosts = <AmityPost>[];
 
   final scrollcontroller = ScrollController();
   bool loading = false;
+
+  void initUserFeed(AmityUser user) async {
+    getUser(user);
+    listenForUserFeed(user.userId!);
+  }
 
   void getUser(AmityUser user) {
     if (user.id == AmityCoreClient.getUserId()) {
@@ -21,7 +28,7 @@ class UserFeedVM extends ChangeNotifier {
       amityUser = user;
     }
 
-    amityUser.relationship().getFollowInfo().then((value) {
+    amityUser!.relationship().getFollowInfo().then((value) {
       amityMyFollowInfo = value;
     });
   }
@@ -42,7 +49,7 @@ class UserFeedVM extends ChangeNotifier {
           } else {
             //Error on pagination controller
 
-            log("error");
+            log(_controller.error.toString());
           }
         },
       );

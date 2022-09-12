@@ -1,4 +1,3 @@
-
 import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
@@ -16,8 +15,7 @@ class AmityChatRepoImp implements AmityChatRepo {
   @override
   Future<void> initRepo(String accessToken) async {
     log("initRepo...");
-    socket =  io.io(
-        'wss://api.${env!.region}.amity.co/?token=$accessToken',
+    socket = io.io('wss://api.${env!.region}.amity.co/?token=$accessToken',
         io.OptionBuilder().setTransports(["websocket"]).build());
     socket.onConnectError((data) => log("onConnectError:$data"));
     socket.onConnecting((data) => log("connecting..."));

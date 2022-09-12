@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../viewmodel/community_viewmodel.dart';
+import '../../viewmodel/configuration_viewmodel.dart';
 import 'community_list.dart';
 
 class CommunityTabbar extends StatelessWidget {
@@ -8,15 +10,15 @@ class CommunityTabbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var theme = Theme.of(context);
     return DefaultTabController(
       length: 3,
       child: Scaffold(
         appBar: TabBar(
           physics: const BouncingScrollPhysics(),
           isScrollable: true,
-          indicatorColor: theme.primaryColor,
-          labelColor: theme.primaryColor,
+          indicatorColor:
+              Provider.of<AmityUIConfiguration>(context).primaryColor,
+          labelColor: Provider.of<AmityUIConfiguration>(context).primaryColor,
           unselectedLabelColor: Colors.black,
           indicatorSize: TabBarIndicatorSize.label,
           tabs: const [

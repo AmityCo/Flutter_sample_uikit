@@ -3,14 +3,21 @@
 import 'dart:developer';
 
 import 'package:amity_sdk/amity_sdk.dart';
+import 'package:amity_uikit_beta_service/view/chat/chat_screen.dart';
+import 'package:amity_uikit_beta_service/viewmodel/channel_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 import 'viewmodel/amity_viewmodel.dart';
 import 'viewmodel/channel_list_viewmodel.dart';
+import 'viewmodel/community_viewmodel.dart';
 import 'viewmodel/configuration_viewmodel.dart';
+import 'viewmodel/create_post_viewmodel.dart';
 import 'viewmodel/custom_image_picker.dart';
+import 'viewmodel/feed_viewmodel.dart';
+import 'viewmodel/post_viewmodel.dart';
+import 'viewmodel/user_feed_viewmodel.dart';
 import 'viewmodel/user_viewmodel.dart';
 import 'utils/env_manager.dart';
 
@@ -66,19 +73,6 @@ class AmitySLEUIKit {
     var provider = Provider.of<AmityUIConfiguration>(context, listen: false);
     config(provider);
   }
-
-  static Future<void> openChatRoomPage(
-      BuildContext context, String channelId) async {
-    await Future.delayed(Duration.zero, () async {
-      if (Provider.of<UserVM>(context, listen: false).accessToken == "") {
-      } else {}
-
-      Provider.of<ChannelVM>(context, listen: false).initVM();
-    });
-
-    await Provider.of<ChannelVM>(context, listen: false)
-        .openChatRoomPageByID(context, channelId);
-  }
 }
 
 class AmitySLEProvider extends StatelessWidget {
@@ -91,8 +85,15 @@ class AmitySLEProvider extends StatelessWidget {
       providers: [
         ChangeNotifierProvider<UserVM>(create: ((context) => UserVM())),
         ChangeNotifierProvider<AmityVM>(create: ((context) => AmityVM())),
+        ChangeNotifierProvider<FeedVM>(create: ((context) => FeedVM())),
+        ChangeNotifierProvider<CommunityVM>(
+            create: ((context) => CommunityVM())),
+        ChangeNotifierProvider<PostVM>(create: ((context) => PostVM())),
+        ChangeNotifierProvider<UserFeedVM>(create: ((context) => UserFeedVM())),
         ChangeNotifierProvider<ImagePickerVM>(
             create: ((context) => ImagePickerVM())),
+        ChangeNotifierProvider<CreatePostVM>(
+            create: ((context) => CreatePostVM())),
         ChangeNotifierProvider<ChannelVM>(create: ((context) => ChannelVM())),
         ChangeNotifierProvider<AmityUIConfiguration>(
             create: ((context) => AmityUIConfiguration())),

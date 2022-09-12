@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import '../../components/custom_user_avatar.dart';
 import '../../components/video_player.dart';
 import '../../viewmodel/community_Feed_viewmodel.dart';
+import '../../viewmodel/configuration_viewmodel.dart';
 import '../../viewmodel/edit_post_viewmodel.dart';
 import '../user/user_profile.dart';
 import 'community_feed.dart';
@@ -215,7 +216,8 @@ class EditPostScreenState extends State<EditPostScreen> {
                           child: FaIcon(
                             FontAwesomeIcons.video,
                             color: vm.isNotSelectedImageYet()
-                                ? theme.primaryColor
+                                ? Provider.of<AmityUIConfiguration>(context)
+                                    .primaryColor
                                 : theme.disabledColor,
                             size: 20,
                           ),
@@ -235,7 +237,8 @@ class EditPostScreenState extends State<EditPostScreen> {
                           child: Icon(
                             Icons.photo,
                             color: vm.isNotSelectVideoYet()
-                                ? theme.primaryColor
+                                ? Provider.of<AmityUIConfiguration>(context)
+                                    .primaryColor
                                 : theme.disabledColor,
                           ),
                         ),
@@ -254,7 +257,8 @@ class EditPostScreenState extends State<EditPostScreen> {
                           child: Icon(
                             Icons.camera_alt,
                             color: vm.isNotSelectVideoYet()
-                                ? theme.primaryColor
+                                ? Provider.of<AmityUIConfiguration>(context)
+                                    .primaryColor
                                 : theme.disabledColor,
                           ),
                         ),
@@ -273,7 +277,8 @@ class EditPostScreenState extends State<EditPostScreen> {
                       alignment: Alignment.center,
                       padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                       decoration: BoxDecoration(
-                        color: theme.primaryColor,
+                        color: Provider.of<AmityUIConfiguration>(context)
+                            .primaryColor,
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(

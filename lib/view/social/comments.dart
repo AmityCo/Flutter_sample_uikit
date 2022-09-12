@@ -8,6 +8,7 @@ import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:provider/provider.dart';
 
 import '../../components/custom_user_avatar.dart';
+import '../../viewmodel/configuration_viewmodel.dart';
 import '../../viewmodel/post_viewmodel.dart';
 
 class CommentScreen extends StatefulWidget {
@@ -258,7 +259,9 @@ class CommentScreenState extends State<CommentScreen> {
                                                                 Icons
                                                                     .thumb_up_alt,
                                                                 size: 17,
-                                                                color: theme
+                                                                color: Provider.of<
+                                                                            AmityUIConfiguration>(
+                                                                        context)
                                                                     .primaryColor,
                                                               ),
                                                             )
@@ -369,8 +372,10 @@ class CommentScreenState extends State<CommentScreen> {
 
                                 _commentTextEditController.clear();
                               },
-                              child:
-                                  Icon(Icons.send, color: theme.primaryColor)),
+                              child: Icon(Icons.send,
+                                  color:
+                                      Provider.of<AmityUIConfiguration>(context)
+                                          .primaryColor)),
                         ),
                       ),
                     ],

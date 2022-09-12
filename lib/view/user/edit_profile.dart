@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../../components/custom_user_avatar.dart';
 import '../../viewmodel/amity_viewmodel.dart';
+import '../../viewmodel/configuration_viewmodel.dart';
 import '../../viewmodel/custom_image_picker.dart';
 import '../../viewmodel/user_feed_viewmodel.dart';
 
@@ -43,7 +44,7 @@ class ProfileScreenState extends State<ProfileScreen> {
       ),
       backgroundColor: Colors.white,
       leading: IconButton(
-        color: theme.primaryColor,
+        color: Provider.of<AmityUIConfiguration>(context).primaryColor,
         onPressed: () {
           Navigator.of(context).pop();
         },
@@ -79,7 +80,8 @@ class ProfileScreenState extends State<ProfileScreen> {
           child: Text(
             "Edit",
             style: theme.textTheme.button!.copyWith(
-                color: theme.primaryColor, fontWeight: FontWeight.bold),
+                color: Provider.of<AmityUIConfiguration>(context).primaryColor,
+                fontWeight: FontWeight.bold),
           ),
         ),
       ],
@@ -139,7 +141,8 @@ class ProfileScreenState extends State<ProfileScreen> {
                             padding: const EdgeInsets.all(5),
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: theme.primaryColor,
+                              color: Provider.of<AmityUIConfiguration>(context)
+                                  .primaryColor,
                             ),
                             child: const Icon(
                               Icons.camera_alt,
@@ -172,7 +175,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                         child: TextField(
                           enabled: false,
                           controller:
-                              TextEditingController(text: vm.amityUser.userId),
+                              TextEditingController(text: vm.amityUser!.userId),
                           decoration: const InputDecoration(
                             labelText: "User Id",
                             labelStyle: TextStyle(height: 1),

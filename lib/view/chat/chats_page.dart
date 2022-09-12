@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../../viewmodel/configuration_viewmodel.dart';
 import 'chat_friend_tab.dart';
 
 class ChatsPage extends StatelessWidget {
@@ -7,15 +9,15 @@ class ChatsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var theme = Theme.of(context);
     return DefaultTabController(
       length: 1,
       child: Scaffold(
         appBar: TabBar(
           physics: const BouncingScrollPhysics(),
           isScrollable: true,
-          indicatorColor: theme.primaryColor,
-          labelColor: theme.primaryColor,
+          indicatorColor:
+              Provider.of<AmityUIConfiguration>(context).primaryColor,
+          labelColor: Provider.of<AmityUIConfiguration>(context).primaryColor,
           unselectedLabelColor: Colors.black,
           indicatorSize: TabBarIndicatorSize.label,
           tabs: const [

@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../../viewmodel/community_Feed_viewmodel.dart';
 import '../../viewmodel/community_viewmodel.dart';
+import '../../viewmodel/configuration_viewmodel.dart';
 import 'create_post_screen.dart';
 import 'edit_community.dart';
 import 'home_following_screen.dart';
@@ -74,7 +75,6 @@ class CommunityScreenState extends State<CommunityScreen> {
   }
 
   Widget communityInfo(CommuFeedVM vm) {
-    final theme = Theme.of(context);
     return Column(
       children: [
         Row(
@@ -145,8 +145,9 @@ class CommunityScreenState extends State<CommunityScreen> {
             const Spacer(),
             ElevatedButton(
               style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all<Color>(theme.primaryColor)),
+                  backgroundColor: MaterialStateProperty.all<Color>(
+                Provider.of<AmityUIConfiguration>(context).primaryColor,
+              )),
               onPressed: () {
                 if (widget.community.isJoined != null) {
                   if (widget.community.isJoined!) {
@@ -238,7 +239,8 @@ class CommunityScreenState extends State<CommunityScreen> {
                             context: context,
                           )));
                 },
-                backgroundColor: theme.primaryColor,
+                backgroundColor:
+                    Provider.of<AmityUIConfiguration>(context).primaryColor,
                 child: const Icon(Icons.add),
               )
             : null,

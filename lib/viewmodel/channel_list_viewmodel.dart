@@ -17,6 +17,7 @@ class ChannelVM extends ChangeNotifier {
   ScrollController? scrollController = ScrollController();
   AmityChatRepoImp channelRepoImp = AmityChatRepoImp();
   final List<Channels> _amityChannelList = [];
+  Channels? amitySingleChannel;
   Map<String, ChannelUsers> channelUserMap = {};
   List<Channels> getChannelList() {
     return _amityChannelList;
@@ -91,23 +92,25 @@ class ChannelVM extends ChangeNotifier {
     });
   }
 
-  Future<void> openChatRoomPageByID(
-      BuildContext context, String channelId) async {
+  Future<void> initSingleChannel(
+    String channelId,
+  ) async {
+    var accessToken = Provider.of<UserVM>(
+            NavigationService.navigatorKey.currentContext!,
+            listen: false)
+        .accessToken;
+
+    await channelRepoImp.initRepo(accessToken);
     await channelRepoImp.getChannelById(
       channelId: channelId,
       callback: (data, error) async {
         if (data != null) {
           log(">>>>>>>>>>>>>${data.channels![0].channelId}");
-          Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => ChangeNotifierProvider(
-                    create: (context) => MessageVM(),
-                    child: ChatSingleScreen(
-                      key: UniqueKey(),
-                      channel: data.channels![0],
-                    ),
-                  )));
+          amitySingleChannel = data.channels!.first;
+          notifyListeners();
         } else {
-          AmityDialog().showAlertErrorDialog(title: "Error!", message: error!);
+          await AmityDialog()
+              .showAlertErrorDialog(title: "Error!", message: error!);
         }
       },
     );

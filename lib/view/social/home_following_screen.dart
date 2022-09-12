@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import '../../components/custom_user_avatar.dart';
 
 import '../../viewmodel/community_Feed_viewmodel.dart';
+import '../../viewmodel/configuration_viewmodel.dart';
 import '../../viewmodel/edit_post_viewmodel.dart';
 import '../../viewmodel/feed_viewmodel.dart';
 import '../../viewmodel/post_viewmodel.dart';
@@ -19,14 +20,14 @@ import 'community_feed.dart';
 import 'edit_post_screen.dart';
 import 'post_content_widget.dart';
 
-class GlobalFeedTabScreen extends StatefulWidget {
-  const GlobalFeedTabScreen({super.key});
+class GlobalFeedScreen extends StatefulWidget {
+  const GlobalFeedScreen({super.key});
 
   @override
-  GlobalFeedTabScreenState createState() => GlobalFeedTabScreenState();
+  GlobalFeedScreenState createState() => GlobalFeedScreenState();
 }
 
-class GlobalFeedTabScreenState extends State<GlobalFeedTabScreen> {
+class GlobalFeedScreenState extends State<GlobalFeedScreen> {
   @override
   void dispose() {
     super.dispose();
@@ -48,7 +49,7 @@ class GlobalFeedTabScreenState extends State<GlobalFeedTabScreen> {
     final theme = Theme.of(context);
     return Consumer<FeedVM>(builder: (context, vm, _) {
       return RefreshIndicator(
-        color: theme.primaryColor,
+        color: Provider.of<AmityUIConfiguration>(context).primaryColor,
         onRefresh: () async {
           await vm.initAmityGlobalfeed();
         },
@@ -315,11 +316,17 @@ class _PostWidgetState extends State<PostWidget>
                             return widget.post.reactionCount! > 0
                                 ? Row(
                                     children: [
-                                      const Image(
-                                        image:
-                                            AssetImage('assets/Icons/like.png'),
-                                        height: 21,
-                                        width: 21,
+                                      CircleAvatar(
+                                        radius: 15,
+                                        backgroundColor:
+                                            Provider.of<AmityUIConfiguration>(
+                                                    context)
+                                                .primaryColor,
+                                        child: const Icon(
+                                          Icons.thumb_up,
+                                          color: Colors.white,
+                                          size: 15,
+                                        ),
                                       ),
                                       const SizedBox(
                                         width: 5,
@@ -421,14 +428,18 @@ class _PostWidgetState extends State<PostWidget>
                                         children: [
                                           Icon(
                                             Icons.thumb_up,
-                                            color:
-                                                Theme.of(context).primaryColor,
+                                            color: Provider.of<
+                                                        AmityUIConfiguration>(
+                                                    context)
+                                                .primaryColor,
                                             size: iconSize,
                                           ),
                                           Text(
                                             ' Like',
                                             style: TextStyle(
-                                                color: Theme.of(context)
+                                                color: Provider.of<
+                                                            AmityUIConfiguration>(
+                                                        context)
                                                     .primaryColor,
                                                 fontSize: feedReactionCountSize,
                                                 letterSpacing: 1),

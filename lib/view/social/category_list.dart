@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../viewmodel/category_viewmodel.dart';
+import '../../viewmodel/configuration_viewmodel.dart';
 
 // ignore: must_be_immutable
 class CategoryList extends StatefulWidget {
@@ -99,7 +100,10 @@ class CategoryListState extends State<CategoryList> {
                         getLength() < 1
                             ? Center(
                                 child: CircularProgressIndicator(
-                                    color: theme.primaryColor),
+                                  color:
+                                      Provider.of<AmityUIConfiguration>(context)
+                                          .primaryColor,
+                                ),
                               )
                             : Expanded(
                                 child: ListView.builder(
@@ -191,7 +195,8 @@ class CategoryWidget extends StatelessWidget {
                           .categoryId!)
               ? Icon(
                   Icons.check_rounded,
-                  color: theme.primaryColor,
+                  color:
+                      Provider.of<AmityUIConfiguration>(context).primaryColor,
                 )
               : null,
         ),

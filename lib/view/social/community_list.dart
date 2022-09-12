@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../../viewmodel/community_Feed_viewmodel.dart';
 import '../../viewmodel/community_viewmodel.dart';
+import '../../viewmodel/configuration_viewmodel.dart';
 import 'community_feed.dart';
 
 class CommunityList extends StatefulWidget {
@@ -108,7 +109,9 @@ class CommunityListState extends State<CommunityList> {
                 child: getLength() < 1
                     ? Center(
                         child: CircularProgressIndicator(
-                            color: theme.primaryColor),
+                          color: Provider.of<AmityUIConfiguration>(context)
+                              .primaryColor,
+                        ),
                       )
                     : ListView.builder(
                         physics: const BouncingScrollPhysics(),
@@ -215,7 +218,8 @@ class CommunityWidget extends StatelessWidget {
                   trailing: ElevatedButton(
                     style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.all<Color>(
-                            theme.primaryColor)),
+                      Provider.of<AmityUIConfiguration>(context).primaryColor,
+                    )),
                     onPressed: () {
                       if (community.isJoined != null) {
                         if (community.isJoined!) {
