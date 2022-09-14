@@ -71,7 +71,8 @@ class AmitySLEUIKit {
       await Provider.of<UserVM>(context, listen: false)
           .initAccessToken()
           .then((value) {
-        if (Provider.of<UserVM>(context, listen: false).accessToken != null) {
+        if (Provider.of<UserVM>(context, listen: false).accessToken != null ||
+            Provider.of<UserVM>(context, listen: false).accessToken != "") {
           if (callback != null) {
             callback(true, null);
           }
