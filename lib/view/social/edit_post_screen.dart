@@ -268,7 +268,7 @@ class EditPostScreenState extends State<EditPostScreen> {
                   GestureDetector(
                     onTap: () async {
                       //edit post
-                      //waiting for update
+                      //TODO: waiting for update
 
                       Navigator.of(context).pop();
                     },

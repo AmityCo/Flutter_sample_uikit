@@ -143,7 +143,12 @@ class _PostWidgetState extends State<PostWidget>
   Widget postOptions(BuildContext context) {
     bool isPostOwner =
         widget.post.postedUserId == AmityCoreClient.getCurrentUser().userId;
-    List<String> postOwnerMenu = ['Edit Post', 'Delete Post'];
+    List<String> postOwnerMenu = [
+      //TODO: waiting for SDK edit post then uncomment this
+      // 'Edit Post',
+
+      'Delete Post'
+    ];
 
     final isFlaggedByMe = widget.post.isFlaggedByMe;
     return PopupMenuButton(
@@ -179,7 +184,12 @@ class _PostWidgetState extends State<PostWidget>
         color: Colors.grey,
       ),
       itemBuilder: (context) {
-        return List.generate(isPostOwner ? 2 : 1, (index) {
+        return List.generate(
+            //TODO: waiting for SDK edit post then uncomment this
+            //   isPostOwner ? 2
+
+            // :
+            1, (index) {
           return PopupMenuItem(
               value: isPostOwner
                   ? postOwnerMenu[index]

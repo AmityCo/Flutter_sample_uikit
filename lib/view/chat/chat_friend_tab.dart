@@ -34,7 +34,6 @@ class AmitySLEChannelScreenState extends State<AmitySLEChannelScreen> {
       } else {
         Provider.of<UserVM>(context, listen: false).accessToken;
       }
-
       // ignore: use_build_context_synchronously
       Provider.of<ChannelVM>(context, listen: false).initVM();
     });
@@ -137,8 +136,8 @@ class AmitySLEChannelScreenState extends State<AmitySLEChannelScreen> {
                                                 .primaryColor,
                                             shape: BoxShape.circle,
                                           ),
-                                          padding:
-                                              const EdgeInsets.fromLTRB(4, 0, 4, 2),
+                                          padding: const EdgeInsets.fromLTRB(
+                                              4, 0, 4, 2),
                                           child: Center(
                                             child: Text(
                                               vm

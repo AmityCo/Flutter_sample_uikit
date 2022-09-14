@@ -29,6 +29,7 @@ class ChannelVM extends ChangeNotifier {
             NavigationService.navigatorKey.currentContext!,
             listen: false)
         .accessToken;
+
     if (accessToken != null) {
       await channelRepoImp.initRepo(accessToken);
       await channelRepoImp.listenToChannel((messages) {
