@@ -171,7 +171,7 @@ class CreatePostScreen2State extends State<CreatePostScreen2> {
                         },
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Colors.green[200],
+                            color: Colors.grey[200],
                             borderRadius: BorderRadius.circular(10),
                           ),
                           padding: const EdgeInsets.all(10),

@@ -94,6 +94,11 @@ class AmitySLEUIKit {
   AmityUser getCurrentUser() {
     return AmityCoreClient.getCurrentUser();
   }
+
+  void unRegisterDevice() {
+    AmityCoreClient.logout();
+    AmityCoreClient.unregisterDeviceNotification();
+  }
 }
 
 class AmitySLEProvider extends StatelessWidget {
