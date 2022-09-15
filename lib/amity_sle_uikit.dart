@@ -90,6 +90,10 @@ class AmitySLEUIKit {
     var provider = Provider.of<AmityUIConfiguration>(context, listen: false);
     config(provider);
   }
+
+  AmityUser getCurrentUser() {
+    return AmityCoreClient.getCurrentUser();
+  }
 }
 
 class AmitySLEProvider extends StatelessWidget {
