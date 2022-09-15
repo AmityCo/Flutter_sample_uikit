@@ -36,6 +36,8 @@ class UserProfileScreenState extends State<UserProfileScreen>
 
   @override
   Widget build(BuildContext context) {
+    var isCurrentUser =
+        AmityCoreClient.getCurrentUser().userId == widget.amityUser.userId;
     final theme = Theme.of(context);
     final mediaQuery = MediaQuery.of(context);
     final myAppBar = AppBar(
@@ -91,9 +93,11 @@ class UserProfileScreenState extends State<UserProfileScreen>
                             ),
                             FadedScaleAnimation(
                                 child: getAvatarImage(
-                                    Provider.of<AmityVM>(
-                                      context,
-                                    ).currentamityUser?.avatarUrl,
+                                    isCurrentUser
+                                        ? Provider.of<AmityVM>(
+                                            context,
+                                          ).currentamityUser?.avatarUrl
+                                        : widget.amityUser.avatarUrl,
                                     radius: 50)),
                             Column(
                               mainAxisAlignment: MainAxisAlignment.center,

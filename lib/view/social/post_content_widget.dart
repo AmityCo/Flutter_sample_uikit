@@ -157,7 +157,7 @@ class TextPost extends StatelessWidget {
                                 )));
                       },
                       child: post.type == AmityDataType.TEXT
-                          ? textdata.text!.isEmpty || textdata.text == null
+                          ? textdata.text == null
                               ? const SizedBox()
                               : Padding(
                                   padding: const EdgeInsets.all(10),
@@ -218,7 +218,8 @@ class ImagePost extends StatelessWidget {
                     placeholder: (context, url) => Container(
                       color: Colors.grey,
                     ),
-                    errorWidget: (context, url, error) => const Icon(Icons.error),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
                   ),
                 ),
               ),
