@@ -13,11 +13,11 @@ getAvatarImage(String? url, {double? radius, String? fileId}) {
           radius: radius,
           backgroundColor: Colors.transparent,
           backgroundImage: (imageProvider)),
-      imageUrl: url,
+      imageUrl: "$url?size=full",
       fit: BoxFit.fill,
       placeholder: (context, url) => CircleAvatar(
         radius: radius,
-        backgroundColor: Colors.grey,
+        backgroundColor: AmityUIConfiguration().primaryColor,
         child: const Icon(
           Icons.person,
           color: Colors.white,
@@ -36,7 +36,7 @@ getAvatarImage(String? url, {double? radius, String? fileId}) {
       fit: BoxFit.fill,
       placeholder: (context, url) => CircleAvatar(
         radius: radius,
-        backgroundColor: Colors.grey,
+        backgroundColor: AmityUIConfiguration().primaryColor,
         child: const Icon(
           Icons.person,
           color: Colors.white,
@@ -48,7 +48,7 @@ getAvatarImage(String? url, {double? radius, String? fileId}) {
   } else {
     return CircleAvatar(
       radius: radius,
-      backgroundColor: Colors.grey,
+      backgroundColor: AmityUIConfiguration().primaryColor,
       child: const Icon(
         Icons.person,
         color: Colors.white,

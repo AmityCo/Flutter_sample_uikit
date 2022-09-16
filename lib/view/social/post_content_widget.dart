@@ -159,13 +159,15 @@ class TextPost extends StatelessWidget {
                       child: post.type == AmityDataType.TEXT
                           ? textdata.text == null
                               ? const SizedBox()
-                              : Padding(
-                                  padding: const EdgeInsets.all(10),
-                                  child: Text(
-                                    textdata.text.toString(),
-                                    style: const TextStyle(fontSize: 18),
-                                  ),
-                                )
+                              : textdata.text!.isEmpty
+                                  ? const SizedBox()
+                                  : Padding(
+                                      padding: const EdgeInsets.all(10),
+                                      child: Text(
+                                        textdata.text.toString(),
+                                        style: const TextStyle(fontSize: 18),
+                                      ),
+                                    )
                           : Container()),
                 ],
               ),
