@@ -218,7 +218,6 @@ class CommentScreenState extends State<CommentScreen> {
                                                       // ),
                                                       // SizedBox(width: 10),
                                                       Row(
-                                                        // comment icon
                                                         children: [
                                                           const Icon(
                                                             Icons
@@ -355,19 +354,12 @@ class CommentScreenState extends State<CommentScreen> {
                         child: ListTile(
                           leading: getAvatarImage(
                               widget.amityPost.postedUser!.avatarUrl),
-                          title: Container(
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                    color: const Color.fromARGB(
-                                        255, 219, 219, 219))),
-                            child: TextField(
-                              controller: _commentTextEditController,
-                              decoration: const InputDecoration(
-                                border: InputBorder.none,
-                                hintText: "Write your message",
-                                hintStyle: TextStyle(fontSize: 14),
-                              ),
+                          title: TextField(
+                            controller: _commentTextEditController,
+                            decoration: const InputDecoration(
+                              border: InputBorder.none,
+                              hintText: "Write your message",
+                              hintStyle: TextStyle(fontSize: 14),
                             ),
                           ),
                           trailing: GestureDetector(
