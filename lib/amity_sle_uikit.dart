@@ -85,6 +85,18 @@ class AmitySLEUIKit {
     });
   }
 
+  Future<void> registerNotification(
+      String fcmToken, Function(bool isSuccess, String? error) callback) async {
+    // example of getting token from firebase
+    // FirebaseMessaging messaging = FirebaseMessaging.instance;
+    // final fcmToken = await messaging.getToken();
+    
+    await AmityCoreClient.registerDeviceNotification(fcmToken)
+        .then((value) => {callback(true, null)})
+        .onError((error, stackTrace) =>
+            {callback(false, "Initialize push notification fail...")});
+  }
+
   void configAmityThemeColor(
       BuildContext context, Function(AmityUIConfiguration config) config) {
     var provider = Provider.of<AmityUIConfiguration>(context, listen: false);
