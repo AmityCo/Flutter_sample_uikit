@@ -22,9 +22,12 @@ class UserFeedVM extends ChangeNotifier {
   }
 
   void getUser(AmityUser user) {
+    log("getUser=> ${user.userId}");
     if (user.id == AmityCoreClient.getUserId()) {
+      log("isCurrentUser:${user.id}");
       amityUser = AmityCoreClient.getCurrentUser();
     } else {
+      log("isNotCurrentUser:${user.id}");
       amityUser = user;
     }
 
@@ -48,7 +51,7 @@ class UserFeedVM extends ChangeNotifier {
             notifyListeners();
           } else {
             //Error on pagination controller
-
+            log("Error: listenForUserFeed... with userId = $userId");
             log(_controller.error.toString());
           }
         },

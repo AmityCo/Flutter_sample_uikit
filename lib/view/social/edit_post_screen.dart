@@ -10,6 +10,7 @@ import '../../components/video_player.dart';
 import '../../viewmodel/community_Feed_viewmodel.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
 import '../../viewmodel/edit_post_viewmodel.dart';
+import '../../viewmodel/user_feed_viewmodel.dart';
 import '../user/user_profile.dart';
 import 'community_feed.dart';
 
@@ -75,9 +76,11 @@ class EditPostScreenState extends State<EditPostScreen> {
                         child: GestureDetector(
                             onTap: () {
                               Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (_) => UserProfileScreen(
+                                  builder: (context) => ChangeNotifierProvider(
+                                      create: (context) => UserFeedVM(),
+                                      child: UserProfileScreen(
                                         amityUser: widget.post!.postedUser!,
-                                      )));
+                                      ))));
                             },
                             child: getAvatarImage(
                                 widget.post!.postedUser?.avatarUrl))),
@@ -86,9 +89,11 @@ class EditPostScreenState extends State<EditPostScreen> {
                         GestureDetector(
                           onTap: () {
                             Navigator.of(context).push(MaterialPageRoute(
-                                builder: (_) => UserProfileScreen(
+                                builder: (context) => ChangeNotifierProvider(
+                                    create: (context) => UserFeedVM(),
+                                    child: UserProfileScreen(
                                       amityUser: widget.post!.postedUser!,
-                                    )));
+                                    ))));
                           },
                           child: Text(
                             widget.post!.postedUser?.displayName ??
