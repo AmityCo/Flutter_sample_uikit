@@ -137,8 +137,8 @@ class CreatePostVM extends ChangeNotifier {
           });
         } else {
           log("error: video is null");
-          await AmityDialog().showAlertErrorDialog(
-              title: "Error!", message: "error: video is null");
+          // await AmityDialog().showAlertErrorDialog(
+          //     title: "Error!", message: "error: video is null");
         }
       } catch (error) {
         log("error: $error");
