@@ -123,7 +123,7 @@ class _NotificationAllTabScreenState extends State<NotificationAllTabScreen> {
                           trailing: notificationItem.targetImageUrl == null
                               ? null
                               : Container(
-                                  margin: const EdgeInsets.all(5),
+                                  margin: const EdgeInsets.all(0),
                                   child: AspectRatio(
                                     aspectRatio: 1 / 1,
                                     child: ClipRRect(

@@ -54,48 +54,40 @@ class GlobalFeedScreenState extends State<GlobalFeedScreen> {
         onRefresh: () async {
           await vm.initAmityGlobalfeed();
         },
-        child: vm.getAmityPosts().isEmpty
-            ? SingleChildScrollView(
-                controller: vm.scrollcontroller,
-                child: Container(
-                  color: Colors.grey[200],
-                  height: bHeight,
-                ),
-              )
-            : Column(
-                children: [
-                  Expanded(
-                    child: Container(
-                      color: Colors.grey[200],
-                      child: FadedSlideAnimation(
-                        beginOffset: const Offset(0, 0.3),
-                        endOffset: const Offset(0, 0),
-                        slideCurve: Curves.linearToEaseOut,
-                        child: ListView.builder(
-                          // shrinkWrap: true,
-                          controller: vm.scrollcontroller,
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          itemCount: vm.getAmityPosts().length,
-                          itemBuilder: (context, index) {
-                            return StreamBuilder<AmityPost>(
-                                key: Key(vm.getAmityPosts()[index].postId!),
-                                stream: vm.getAmityPosts()[index].listen,
-                                initialData: vm.getAmityPosts()[index],
-                                builder: (context, snapshot) {
-                                  return PostWidget(
-                                    post: snapshot.data!,
-                                    theme: theme,
-                                    postIndex: index,
-                                    isFromFeed: true,
-                                  );
-                                });
-                          },
-                        ),
-                      ),
-                    ),
+        child: Column(
+          children: [
+            Expanded(
+              child: Container(
+                color: Colors.grey[200],
+                child: FadedSlideAnimation(
+                  beginOffset: const Offset(0, 0.3),
+                  endOffset: const Offset(0, 0),
+                  slideCurve: Curves.linearToEaseOut,
+                  child: ListView.builder(
+                    // shrinkWrap: true,
+                    controller: vm.scrollcontroller,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    itemCount: vm.getAmityPosts().length,
+                    itemBuilder: (context, index) {
+                      return StreamBuilder<AmityPost>(
+                          key: Key(vm.getAmityPosts()[index].postId!),
+                          stream: vm.getAmityPosts()[index].listen,
+                          initialData: vm.getAmityPosts()[index],
+                          builder: (context, snapshot) {
+                            return PostWidget(
+                              post: snapshot.data!,
+                              theme: theme,
+                              postIndex: index,
+                              isFromFeed: true,
+                            );
+                          });
+                    },
                   ),
-                ],
+                ),
               ),
+            ),
+          ],
+        ),
       );
     });
   }

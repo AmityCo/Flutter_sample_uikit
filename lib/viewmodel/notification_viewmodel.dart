@@ -56,10 +56,12 @@ class NotificationVM extends ChangeNotifier {
 
       if (notification != null) {
         ///Add first actor image
+        ///TODO: Willuse Map to make sure that each user was loaded only 1 time
         await AmityCoreClient.newUserRepository()
             .getUser(notification.actors![0].id!)
             .then((value) {
           notification.actors![0].imageUrl = value.avatarUrl;
+          notification.actors![0].name = value.displayName;
         }).onError((error, stackTrace) {
           AmityDialog()
               .showAlertErrorDialog(title: "Error!", message: error.toString());
