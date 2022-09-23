@@ -1,15 +1,15 @@
 class AmityNotifications {
   bool? lastRead;
-  List<Data>? data;
+  List<AmityNotificaion>? data;
 
   AmityNotifications({lastRead, data});
 
   AmityNotifications.fromJson(Map<String, dynamic> json) {
     lastRead = json['lastRead'];
     if (json['data'] != null) {
-      data = <Data>[];
+      data = <AmityNotificaion>[];
       json['data'].forEach((v) {
-        data!.add(Data.fromJson(v));
+        data!.add(AmityNotificaion.fromJson(v));
       });
     }
   }
@@ -24,7 +24,7 @@ class AmityNotifications {
   }
 }
 
-class Data {
+class AmityNotificaion {
   String? description;
   String? networkId;
   String? userId;
@@ -37,8 +37,11 @@ class Data {
   int? lastUpdate;
   List<Actors>? actors;
   int? actorsCount;
+  String? firstUserAvatarImage;
+  String? targetDisplayName;
+  String? targetImageUrl;
 
-  Data(
+  AmityNotificaion(
       {description,
       networkId,
       userId,
@@ -52,7 +55,7 @@ class Data {
       actors,
       actorsCount});
 
-  Data.fromJson(Map<String, dynamic> json) {
+  AmityNotificaion.fromJson(Map<String, dynamic> json) {
     description = json['description'];
     networkId = json['networkId'];
     userId = json['userId'];
@@ -95,6 +98,7 @@ class Data {
 class Actors {
   String? name;
   String? id;
+  String? imageUrl;
 
   Actors({name, id});
 

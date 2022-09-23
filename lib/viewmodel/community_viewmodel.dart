@@ -165,4 +165,10 @@ class CommunityVM extends ChangeNotifier {
       notifyListeners();
     });
   }
+
+  Future<AmityCommunity> getAmityCommunity(String communityId) async {
+    var commuObj = await AmitySocialClient.newCommunityRepository()
+        .getCommunity(communityId);
+    return commuObj;
+  }
 }

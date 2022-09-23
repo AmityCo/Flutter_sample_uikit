@@ -13,7 +13,7 @@ getAvatarImage(String? url, {double? radius, String? fileId}) {
           radius: radius,
           backgroundColor: Colors.transparent,
           backgroundImage: (imageProvider)),
-      imageUrl: "$url?size=full",
+      imageUrl: "$url?size=medium",
       fit: BoxFit.fill,
       placeholder: (context, url) => CircleAvatar(
         radius: radius,
@@ -32,7 +32,58 @@ getAvatarImage(String? url, {double? radius, String? fileId}) {
           backgroundColor: Colors.transparent,
           backgroundImage: (imageProvider)),
       imageUrl:
-          "https://api.${env!.region}.amity.co/api/v3/files/$fileId/download?size=full",
+          "https://api.${env!.region}.amity.co/api/v3/files/$fileId/download?size=medium",
+      fit: BoxFit.fill,
+      placeholder: (context, url) => CircleAvatar(
+        radius: radius,
+        backgroundColor: AmityUIConfiguration().primaryColor,
+        child: const Icon(
+          Icons.person,
+          color: Colors.white,
+        ),
+      ),
+      errorWidget: (context, url, error) => const Icon(Icons.error),
+    );
+    return imageOPS;
+  } else {
+    return CircleAvatar(
+      radius: radius,
+      backgroundColor: AmityUIConfiguration().primaryColor,
+      child: const Icon(
+        Icons.person,
+        color: Colors.white,
+      ),
+    );
+  }
+}
+
+getNotificationAvatarImage(String? url, {double? radius, String? fileId}) {
+  if (url != null) {
+    var imageOPS = OptimizedCacheImage(
+      imageBuilder: (context, imageProvider) => CircleAvatar(
+          radius: radius,
+          backgroundColor: Colors.transparent,
+          backgroundImage: (imageProvider)),
+      imageUrl: "$url?size=small",
+      fit: BoxFit.fill,
+      placeholder: (context, url) => CircleAvatar(
+        radius: radius,
+        backgroundColor: AmityUIConfiguration().primaryColor,
+        child: const Icon(
+          Icons.person,
+          color: Colors.white,
+        ),
+      ),
+      errorWidget: (context, url, error) => const Icon(Icons.error),
+    );
+    return imageOPS;
+  } else if (fileId != null) {
+    var imageOPS = OptimizedCacheImage(
+      imageBuilder: (context, imageProvider) => CircleAvatar(
+          backgroundColor: Colors.transparent,
+          backgroundImage: (imageProvider)),
+      imageUrl:
+          "https://api.${env!.region}.amity.co/api/v3/files/$fileId/download?size=small",
       fit: BoxFit.fill,
       placeholder: (context, url) => CircleAvatar(
         radius: radius,
@@ -103,6 +154,57 @@ class CommuPlaceHolderWidget extends StatelessWidget {
       backgroundColor: Provider.of<AmityUIConfiguration>(context).primaryColor,
       child: Icon(
         Provider.of<AmityUIConfiguration>(context).placeHolderIcon,
+        color: Colors.white,
+      ),
+    );
+  }
+}
+
+getNotificationImage(String? url, {double? radius, String? fileId}) {
+  if (url != null) {
+    var imageOPS = OptimizedCacheImage(
+      imageBuilder: (context, imageProvider) => CircleAvatar(
+          radius: radius,
+          backgroundColor: Colors.transparent,
+          backgroundImage: (imageProvider)),
+      imageUrl: "$url?size=full",
+      fit: BoxFit.fill,
+      placeholder: (context, url) => CircleAvatar(
+        radius: radius,
+        backgroundColor: AmityUIConfiguration().primaryColor,
+        child: const Icon(
+          Icons.person,
+          color: Colors.white,
+        ),
+      ),
+      errorWidget: (context, url, error) => const Icon(Icons.error),
+    );
+    return imageOPS;
+  } else if (fileId != null) {
+    var imageOPS = OptimizedCacheImage(
+      imageBuilder: (context, imageProvider) => CircleAvatar(
+          backgroundColor: Colors.transparent,
+          backgroundImage: (imageProvider)),
+      imageUrl:
+          "https://api.${env!.region}.amity.co/api/v3/files/$fileId/download?size=full",
+      fit: BoxFit.fill,
+      placeholder: (context, url) => CircleAvatar(
+        radius: radius,
+        backgroundColor: AmityUIConfiguration().primaryColor,
+        child: const Icon(
+          Icons.person,
+          color: Colors.white,
+        ),
+      ),
+      errorWidget: (context, url, error) => const Icon(Icons.error),
+    );
+    return imageOPS;
+  } else {
+    return CircleAvatar(
+      radius: radius,
+      backgroundColor: AmityUIConfiguration().primaryColor,
+      child: const Icon(
+        Icons.person,
         color: Colors.white,
       ),
     );
