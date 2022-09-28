@@ -1,0 +1,189 @@
+import 'package:amity_sdk/amity_sdk.dart';
+import 'package:amity_uikit_beta_service/components/alert_dialog.dart';
+import 'package:flutter/material.dart';
+
+class FollowerVM extends ChangeNotifier {
+  var _followerList = <AmityFollowRelationship>[];
+  List<AmityFollowRelationship> get getFollowerList => _followerList;
+
+  var _followingList = <AmityFollowRelationship>[];
+  List<AmityFollowRelationship> get getFollowingList => _followingList;
+
+  ScrollController? scrollController;
+
+  late PagingController<AmityFollowRelationship> _followerController;
+
+  late PagingController<AmityFollowRelationship> _followingController;
+
+  Future<void> getFollowingListof({required String userId}) async {
+    print("getFollowingListOf....");
+    if (AmityCoreClient.getUserId() == userId) {
+      _followingController = PagingController(
+        pageFuture: (token) => AmityCoreClient.newUserRepository()
+            .relationship()
+            .me()
+            .getFollowings()
+            .status(AmityFollowStatusFilter.ACCEPTED)
+            .getPagingData(token: token, limit: 20),
+        pageSize: 20,
+      )..addListener(listener);
+    } else {
+      _followingController = PagingController(
+        pageFuture: (token) => AmityCoreClient.newUserRepository()
+            .relationship()
+            .user(userId)
+            .getFollowings()
+            .status(AmityFollowStatusFilter.ACCEPTED)
+            .getPagingData(token: token, limit: 20),
+        pageSize: 20,
+      )..addListener(listener);
+    }
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _followingController.fetchNextPage();
+    });
+
+    if (scrollController != null) {
+      _followingController.addListener((() {
+        if ((scrollController!.position.pixels ==
+                scrollController!.position.maxScrollExtent) &&
+            _followingController.hasMoreItems) {
+          _followingController.fetchNextPage();
+        }
+      }));
+    }
+
+    //inititate the PagingController
+    if (AmityCoreClient.getUserId() == userId) {
+      await AmityCoreClient.newUserRepository()
+          .relationship()
+          .me()
+          .getFollowings()
+          .status(AmityFollowStatusFilter.ACCEPTED)
+          .getPagingData()
+          .then((value) {
+        print("getFollowerListOf....Successs");
+        _followingList = value.data;
+      }).onError((error, stackTrace) {
+        AmityDialog()
+            .showAlertErrorDialog(title: "Error!", message: error.toString());
+      });
+    } else {
+      await AmityCoreClient.newUserRepository()
+          .relationship()
+          .user(userId)
+          .getFollowings()
+          .status(AmityFollowStatusFilter.ACCEPTED)
+          .getPagingData()
+          .then((value) {
+        print("getFollowerListOf....Successs");
+        scrollController = ScrollController();
+        _followingList = value.data;
+      }).onError((error, stackTrace) {
+        AmityDialog()
+            .showAlertErrorDialog(title: "Error!", message: error.toString());
+      });
+    }
+    notifyListeners();
+  }
+
+  Future<void> getFollowerListOf({
+    required String userId,
+  }) async {
+    print("getFollowerListOf....");
+    if (AmityCoreClient.getUserId() == userId) {
+      _followerController = PagingController(
+        pageFuture: (token) => AmityCoreClient.newUserRepository()
+            .relationship()
+            .me()
+            .getFollowers()
+            .status(AmityFollowStatusFilter.ACCEPTED)
+            .getPagingData(token: token, limit: 20),
+        pageSize: 20,
+      )..addListener(listener);
+    } else {
+      _followerController = PagingController(
+        pageFuture: (token) => AmityCoreClient.newUserRepository()
+            .relationship()
+            .user(userId)
+            .getFollowers()
+            .status(AmityFollowStatusFilter.ACCEPTED)
+            .getPagingData(token: token, limit: 20),
+        pageSize: 20,
+      )..addListener(listener);
+    }
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _followerController.fetchNextPage();
+    });
+
+    if (scrollController != null) {
+      _followerController.addListener((() {
+        if ((scrollController!.position.pixels ==
+                scrollController!.position.maxScrollExtent) &&
+            _followerController.hasMoreItems) {
+          _followerController.fetchNextPage();
+        }
+      }));
+    }
+
+    //inititate the PagingController
+    if (AmityCoreClient.getUserId() == userId) {
+      await AmityCoreClient.newUserRepository()
+          .relationship()
+          .me()
+          .getFollowers()
+          .status(AmityFollowStatusFilter.ACCEPTED)
+          .getPagingData()
+          .then((value) {
+        print("getFollowerListOf....Successs");
+        _followerList = value.data;
+      }).onError((error, stackTrace) {
+        AmityDialog()
+            .showAlertErrorDialog(title: "Error!", message: error.toString());
+      });
+    } else {
+      await AmityCoreClient.newUserRepository()
+          .relationship()
+          .user(userId)
+          .getFollowers()
+          .status(AmityFollowStatusFilter.ACCEPTED)
+          .getPagingData()
+          .then((value) {
+        print("getFollowerListOf....Successs");
+        scrollController = ScrollController();
+        _followerList = value.data;
+      }).onError((error, stackTrace) {
+        AmityDialog()
+            .showAlertErrorDialog(title: "Error!", message: error.toString());
+      });
+    }
+    notifyListeners();
+  }
+
+  Future<void> followUser({required String userId}) async {}
+
+  Future<void> unFollowUser({required String userId}) async {}
+
+  Future<void> getPendingRequest() async {}
+
+  Future<void> acceptFollowRequest(
+      {required AmityFollowRelationship amityFollowRelationship}) async {}
+
+  Future<void> rejectFollowRequest(
+      {required AmityFollowRelationship amityFollowRelationship}) async {}
+
+  Function listener() {
+    return () {
+      if (_followerController.error == null) {
+        //handle _followerController, we suggest to clear the previous items
+        //and add with the latest _controller.loadedItems
+        _followerList.clear();
+
+        _followerList.addAll(_followerController.loadedItems);
+        //update widgets
+      } else {
+        //error on pagination controller
+        //update widgets
+      }
+    };
+  }
+}
