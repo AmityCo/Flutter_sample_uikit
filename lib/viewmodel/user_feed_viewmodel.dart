@@ -33,6 +33,10 @@ class UserFeedVM extends ChangeNotifier {
 
     amityUser!.relationship().getFollowInfo().then((value) {
       amityMyFollowInfo = value;
+      notifyListeners();
+    }).onError((error, stackTrace) {
+      AmityDialog()
+          .showAlertErrorDialog(title: "Error", message: error.toString());
     });
   }
 
@@ -52,7 +56,7 @@ class UserFeedVM extends ChangeNotifier {
           } else {
             //Error on pagination controller
             log("Error: listenForUserFeed... with userId = $userId");
-            log(_controller.error.toString());
+            log("ERROR::${_controller.error.toString()}");
           }
         },
       );

@@ -44,68 +44,50 @@ class _AmityFollowingScreenScreenState extends State<AmityFollowingScreen> {
           onRefresh: () async {
             await vm.getFollowingListof(userId: widget.userId);
           },
-          child: vm.getFollowingList.isEmpty
-              ? Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
+          child: ListView.builder(
+            controller: vm.scrollController,
+            physics: const AlwaysScrollableScrollPhysics(),
+            itemCount: vm.getFollowingList.length,
+            itemBuilder: (context, index) {
+              return StreamBuilder<AmityFollowRelationship>(
+                  // key: Key(vm.getFollowRelationships[index].targetUserId! +
+                  //     vm.getFollowRelationships[index].targetUserId!),
+                  stream: vm.getFollowingList[index].listen,
+                  initialData: vm.getFollowingList[index],
+                  builder: (context, snapshot) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
                         children: [
-                          CircularProgressIndicator(
-                            color: Provider.of<AmityUIConfiguration>(context)
-                                .primaryColor,
-                          )
-                        ],
-                      ),
-                    ),
-                  ],
-                )
-              : ListView.builder(
-                  controller: vm.scrollController,
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  itemCount: vm.getFollowingList.length,
-                  itemBuilder: (context, index) {
-                    return StreamBuilder<AmityFollowRelationship>(
-                        // key: Key(vm.getFollowRelationships[index].sourceUserId! +
-                        //     vm.getFollowRelationships[index].targetUserId!),
-                        stream: vm.getFollowingList[index].listen,
-                        initialData: vm.getFollowingList[index],
-                        builder: (context, snapshot) {
-                          return Padding(
+                          getAvatarImage(
+                              vm.getFollowingList[index].targetUser!.avatarUrl),
+                          Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Row(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                getAvatarImage(vm.getFollowingList[index]
-                                    .sourceUser!.avatarUrl),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        vm.getFollowingList[index].sourceUser!
-                                                .displayName ??
-                                            "displayname not found",
-                                        style: theme.textTheme.bodyMedium,
-                                      ),
-                                      Text(
-                                        vm.getFollowingList[index].sourceUser!
-                                                .userId ??
-                                            "displayname not found",
-                                        style: theme.textTheme.bodySmall,
-                                      ),
-                                    ],
-                                  ),
+                                Text(
+                                  vm.getFollowingList[index].targetUser!
+                                          .displayName ??
+                                      "displayname not found",
+                                  style: theme.textTheme.bodyMedium,
+                                ),
+                                Text(
+                                  vm.getFollowingList[index].targetUser!
+                                          .userId ??
+                                      "displayname not found",
+                                  style: theme.textTheme.bodySmall,
                                 ),
                               ],
                             ),
-                          );
-                          // return Text(snapshot.data!.status.toString());
-                        });
-                  },
-                ),
+                          ),
+                        ],
+                      ),
+                    );
+                    // return Text(snapshot.data!.status.toString());
+                  });
+            },
+          ),
         ),
       );
     });
