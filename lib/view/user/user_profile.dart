@@ -36,6 +36,42 @@ class UserProfileScreenState extends State<UserProfileScreen>
         .initUserFeed(widget.amityUser);
   }
 
+  String getFollowingStatusString(AmityFollowStatus amityFollowStatus) {
+    if (amityFollowStatus == AmityFollowStatus.NONE) {
+      return "Follow";
+    } else if (amityFollowStatus == AmityFollowStatus.PENDING) {
+      return "Pending";
+    } else if (amityFollowStatus == AmityFollowStatus.ACCEPTED) {
+      return "Following";
+    } else {
+      return "Miss Type";
+    }
+  }
+
+  Color getFollowingStatusColor(AmityFollowStatus amityFollowStatus) {
+    if (amityFollowStatus == AmityFollowStatus.NONE) {
+      return Provider.of<AmityUIConfiguration>(context).primaryColor;
+    } else if (amityFollowStatus == AmityFollowStatus.PENDING) {
+      return Colors.grey;
+    } else if (amityFollowStatus == AmityFollowStatus.ACCEPTED) {
+      return Colors.white;
+    } else {
+      return Colors.white;
+    }
+  }
+
+  Color getFollowingStatusTextColor(AmityFollowStatus amityFollowStatus) {
+    if (amityFollowStatus == AmityFollowStatus.NONE) {
+      return Colors.white;
+    } else if (amityFollowStatus == AmityFollowStatus.PENDING) {
+      return Colors.white;
+    } else if (amityFollowStatus == AmityFollowStatus.ACCEPTED) {
+      return Provider.of<AmityUIConfiguration>(context).primaryColor;
+    } else {
+      return Colors.red;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var isCurrentUser =
@@ -63,13 +99,13 @@ class UserProfileScreenState extends State<UserProfileScreen>
         body: Consumer<UserFeedVM>(
           builder: (context, vm, child) {
             return SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              controller: vm.scrollController,
+              // physics: const AlwaysScrollableScrollPhysics(),
+              controller: vm.scrollcontroller,
               child: Column(
                 children: [
                   Container(
                     color: Colors.white,
-                    height: bheight * 0.4,
+                    height: bheight * 0.3,
                     child: LayoutBuilder(
                       builder: (context, constraints) => Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -238,29 +274,27 @@ class UserProfileScreenState extends State<UserProfileScreen>
                                       child: Container(
                                         width: constraints.maxWidth * 0.35,
                                         decoration: BoxDecoration(
-                                          border: Border.all(
-                                              color: Provider.of<
-                                                          AmityUIConfiguration>(
-                                                      context)
-                                                  .primaryColor,
-                                              style: BorderStyle.solid,
-                                              width: 1),
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          color:
-                                              Provider.of<AmityUIConfiguration>(
-                                                      context)
-                                                  .primaryColor,
-                                        ),
+                                            border: Border.all(
+                                                color: Provider.of<
+                                                            AmityUIConfiguration>(
+                                                        context)
+                                                    .primaryColor,
+                                                style: BorderStyle.solid,
+                                                width: 1),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            color: getFollowingStatusColor(
+                                                vm.amityMyFollowInfo.status)),
                                         padding: const EdgeInsets.fromLTRB(
                                             10, 10, 10, 10),
                                         child: Text(
-                                          'Follow Now',
+                                          getFollowingStatusString(
+                                              vm.amityMyFollowInfo.status),
                                           textAlign: TextAlign.center,
                                           style: theme.textTheme.subtitle2!
                                               .copyWith(
-                                            color:
-                                                theme.scaffoldBackgroundColor,
+                                            color: getFollowingStatusTextColor(
+                                                vm.amityMyFollowInfo.status),
                                             fontSize: 12,
                                           ),
                                         ),
@@ -268,28 +302,28 @@ class UserProfileScreenState extends State<UserProfileScreen>
                                     ),
                                   ],
                                 ),
-                          const SizedBox(height: 20),
-                          TabBar(
-                            controller: _tabController,
-                            isScrollable: true,
-                            indicatorColor:
-                                Provider.of<AmityUIConfiguration>(context)
-                                    .primaryColor,
-                            indicatorSize: TabBarIndicatorSize.label,
-                            tabs: [
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  "Posts",
-                                  style: theme.textTheme.bodyText1,
-                                ),
-                              ),
-                              Text(
-                                "Story",
-                                style: theme.textTheme.bodyText1,
-                              ),
-                            ],
-                          ),
+                          // const SizedBox(height: 20),
+                          // TabBar(
+                          //   controller: _tabController,
+                          //   isScrollable: true,
+                          //   indicatorColor:
+                          //       Provider.of<AmityUIConfiguration>(context)
+                          //           .primaryColor,
+                          //   indicatorSize: TabBarIndicatorSize.label,
+                          //   tabs: [
+                          //     Padding(
+                          //       padding: const EdgeInsets.all(8.0),
+                          //       child: Text(
+                          //         "Posts",
+                          //         style: theme.textTheme.bodyText1,
+                          //       ),
+                          //     ),
+                          //     Text(
+                          //       "Story",
+                          //       style: theme.textTheme.bodyText1,
+                          //     ),
+                          //   ],
+                          // ),
                         ],
                       ),
                     ),
@@ -297,24 +331,41 @@ class UserProfileScreenState extends State<UserProfileScreen>
                   // TabBarView(
                   //   controller: _tabController,
                   //   children: [
-                  ListView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: vm.amityPosts.length,
-                    itemBuilder: (context, index) {
-                      // var post = vm.amityPosts[index];
-                      return StreamBuilder<AmityPost>(
-                          stream: vm.amityPosts[index].listen,
-                          initialData: vm.amityPosts[index],
-                          builder: (context, snapshot) {
-                            return PostWidget(
-                              post: snapshot.data!,
-                              theme: theme,
-                              postIndex: index,
-                            );
-                          });
-                    },
-                  )
+                  vm.amityMyFollowInfo.status != AmityFollowStatus.ACCEPTED &&
+                          vm.amityUser!.userId != AmityCoreClient.getUserId()
+                      ? Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  SizedBox(
+                                    height: bheight * 0.3,
+                                    child: const Center(
+                                        child: Text("This account is Private")),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ],
+                        )
+                      : ListView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: vm.amityPosts.length,
+                          itemBuilder: (context, index) {
+                            // var post = vm.amityPosts[index];
+                            return StreamBuilder<AmityPost>(
+                                stream: vm.amityPosts[index].listen,
+                                initialData: vm.amityPosts[index],
+                                builder: (context, snapshot) {
+                                  return PostWidget(
+                                    post: snapshot.data!,
+                                    theme: theme,
+                                    postIndex: index,
+                                  );
+                                });
+                          },
+                        )
 
                   //   Container(),
                   // ],

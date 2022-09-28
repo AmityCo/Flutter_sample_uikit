@@ -10,7 +10,6 @@ class UserFeedVM extends ChangeNotifier {
   late AmityUser? amityUser;
   late AmityUserFollowInfo amityMyFollowInfo = AmityUserFollowInfo();
   late PagingController<AmityPost> _controller;
-  final scrollController = ScrollController();
   final amityPosts = <AmityPost>[];
 
   final scrollcontroller = ScrollController();
