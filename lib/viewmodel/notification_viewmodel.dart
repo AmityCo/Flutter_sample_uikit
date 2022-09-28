@@ -62,6 +62,9 @@ class NotificationVM extends ChangeNotifier {
             .then((value) {
           notification.actors![0].imageUrl = value.avatarUrl;
           notification.actors![0].name = value.displayName;
+          if (notification.actors![0].id == "_admin_vodworks-admin") {
+            notification.actors![0].name = "Anonymous";
+          }
         }).onError((error, stackTrace) {
           AmityDialog()
               .showAlertErrorDialog(title: "Error!", message: error.toString());
