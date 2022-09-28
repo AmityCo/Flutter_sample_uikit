@@ -9,10 +9,22 @@ import '../utils/env_manager.dart';
 getAvatarImage(String? url, {double? radius, String? fileId}) {
   if (url != null) {
     var imageOPS = OptimizedCacheImage(
-      imageBuilder: (context, imageProvider) => CircleAvatar(
-          radius: radius,
-          backgroundColor: Colors.transparent,
-          backgroundImage: (imageProvider)),
+      imageBuilder: (context, imageProvider) => Container(
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.4),
+              spreadRadius: 1,
+              blurRadius: 40,
+              offset: Offset(0, 2), // changes position of shadow
+            ),
+          ],
+        ),
+        child: CircleAvatar(
+            radius: radius,
+            backgroundColor: Colors.transparent,
+            backgroundImage: (imageProvider)),
+      ),
       imageUrl: "$url?size=medium",
       fit: BoxFit.fill,
       placeholder: (context, url) => CircleAvatar(

@@ -4,11 +4,10 @@ import 'dart:developer';
 
 import 'package:amity_sdk/amity_sdk.dart';
 import 'package:amity_uikit_beta_service/utils/navigation_key.dart';
-import 'package:amity_uikit_beta_service/view/chat/chat_screen.dart';
-import 'package:amity_uikit_beta_service/viewmodel/channel_viewmodel.dart';
+import 'package:amity_uikit_beta_service/viewmodel/follower_viewmodel.dart';
 import 'package:amity_uikit_beta_service/viewmodel/notification_viewmodel.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+
 import 'package:provider/provider.dart';
 
 import 'viewmodel/amity_viewmodel.dart';

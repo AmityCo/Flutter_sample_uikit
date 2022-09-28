@@ -15,6 +15,7 @@ class AmityFileInfoWithUploadStatus {
   AmityFileInfo? fileInfo;
   bool isComplete = false;
   File? file;
+
   void addFile(AmityFileInfo amityFileInfo) {
     fileInfo = amityFileInfo;
     isComplete = true;
@@ -32,7 +33,7 @@ class CreatePostVM extends ChangeNotifier {
   List<AmityFileInfoWithUploadStatus> amityImages =
       <AmityFileInfoWithUploadStatus>[];
   AmityFileInfoWithUploadStatus? amityVideo;
-
+  bool isloading = false;
   void inits() {
     textEditingController.clear();
     amityVideo = null;
@@ -154,6 +155,8 @@ class CreatePostVM extends ChangeNotifier {
   }
 
   Future<void> createPost(BuildContext context, {String? communityId}) async {
+    isloading = true;
+    notifyListeners();
     HapticFeedback.heavyImpact();
     bool isCommunity = (communityId != null) ? true : false;
     if (isCommunity) {
@@ -191,6 +194,8 @@ class CreatePostVM extends ChangeNotifier {
         await creatImagePost(context);
       }
     }
+    isloading = false;
+    notifyListeners();
   }
 
   Future<void> createTextpost(BuildContext context,

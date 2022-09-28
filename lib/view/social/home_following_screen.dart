@@ -226,7 +226,7 @@ class _PostWidgetState extends State<PostWidget>
                                   builder: (context) => ChangeNotifierProvider(
                                       create: (context) => UserFeedVM(),
                                       child: UserProfileScreen(
-                                        amityUser: widget.post!.postedUser!,
+                                        amityUser: widget.post.postedUser!,
                                       ))));
                             },
                             child: getAvatarImage(
@@ -239,7 +239,7 @@ class _PostWidgetState extends State<PostWidget>
                                 builder: (context) => ChangeNotifierProvider(
                                     create: (context) => UserFeedVM(),
                                     child: UserProfileScreen(
-                                      amityUser: widget.post!.postedUser!,
+                                      amityUser: widget.post.postedUser!,
                                     ))));
                           },
                           child: Text(

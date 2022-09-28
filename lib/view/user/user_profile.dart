@@ -1,4 +1,6 @@
 import 'package:amity_sdk/amity_sdk.dart';
+import 'package:amity_uikit_beta_service/view/social/user_follow_screen.dart';
+import 'package:amity_uikit_beta_service/viewmodel/follower_viewmodel.dart';
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -77,22 +79,36 @@ class UserProfileScreenState extends State<UserProfileScreen>
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                        vm.amityMyFollowInfo.followerCount
-                                            .toString(),
-                                        style: theme.textTheme.headline6),
-                                    Text(
-                                      'Followers',
-                                      style:
-                                          theme.textTheme.subtitle2!.copyWith(
-                                        color: theme.hintColor,
-                                        fontSize: 12,
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                ChangeNotifierProvider(
+                                                    create: (context) =>
+                                                        FollowerVM(),
+                                                    child: FollowScreen(
+                                                        key: UniqueKey(),
+                                                        userId: widget.amityUser
+                                                            .userId!))));
+                                  },
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                          vm.amityMyFollowInfo.followerCount
+                                              .toString(),
+                                          style: theme.textTheme.headline6),
+                                      Text(
+                                        'Followers',
+                                        style:
+                                            theme.textTheme.subtitle2!.copyWith(
+                                          color: theme.hintColor,
+                                          fontSize: 12,
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                                 FadedScaleAnimation(
                                     child: getAvatarImage(
@@ -133,15 +149,58 @@ class UserProfileScreenState extends State<UserProfileScreen>
                               fontSize: 12,
                             ),
                           ),
-                          const SizedBox(
-                            height: 12,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              AmityCoreClient.getCurrentUser().userId !=
-                                      widget.amityUser.userId
-                                  ? GestureDetector(
+                          // const SizedBox(
+                          //   height: 12,
+                          // ),
+                          AmityCoreClient.getCurrentUser().userId ==
+                                  widget.amityUser.userId
+                              ? Row(
+                                  children: [
+                                    Expanded(
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      const ProfileScreen()));
+                                        },
+                                        child: Container(
+                                          margin: const EdgeInsets.all(20),
+                                          decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: Provider.of<
+                                                              AmityUIConfiguration>(
+                                                          context)
+                                                      .primaryColor,
+                                                  style: BorderStyle.solid,
+                                                  width: 1),
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              color: Colors.white),
+                                          padding: const EdgeInsets.fromLTRB(
+                                              10, 10, 10, 10),
+                                          child: Text(
+                                            "Edit Profile",
+                                            style: theme.textTheme.subtitle2!
+                                                .copyWith(
+                                              color: Provider.of<
+                                                          AmityUIConfiguration>(
+                                                      context)
+                                                  .primaryColor,
+                                              fontSize: 12,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    GestureDetector(
                                       onTap: () {},
                                       child: Container(
                                         width: constraints.maxWidth * 0.35,
@@ -171,74 +230,44 @@ class UserProfileScreenState extends State<UserProfileScreen>
                                           textAlign: TextAlign.center,
                                         ),
                                       ),
-                                    )
-                                  : GestureDetector(
+                                    ),
+                                    GestureDetector(
                                       onTap: () {
-                                        Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    const ProfileScreen()));
+                                        //FollowScreen
                                       },
                                       child: Container(
                                         width: constraints.maxWidth * 0.35,
                                         decoration: BoxDecoration(
-                                            border: Border.all(
-                                                color: Provider.of<
-                                                            AmityUIConfiguration>(
-                                                        context)
-                                                    .primaryColor,
-                                                style: BorderStyle.solid,
-                                                width: 1),
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            color: Colors.white),
+                                          border: Border.all(
+                                              color: Provider.of<
+                                                          AmityUIConfiguration>(
+                                                      context)
+                                                  .primaryColor,
+                                              style: BorderStyle.solid,
+                                              width: 1),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          color:
+                                              Provider.of<AmityUIConfiguration>(
+                                                      context)
+                                                  .primaryColor,
+                                        ),
                                         padding: const EdgeInsets.fromLTRB(
                                             10, 10, 10, 10),
                                         child: Text(
-                                          "Edit",
+                                          'Follow Now',
+                                          textAlign: TextAlign.center,
                                           style: theme.textTheme.subtitle2!
                                               .copyWith(
-                                            color: Provider.of<
-                                                        AmityUIConfiguration>(
-                                                    context)
-                                                .primaryColor,
+                                            color:
+                                                theme.scaffoldBackgroundColor,
                                             fontSize: 12,
                                           ),
-                                          textAlign: TextAlign.center,
                                         ),
                                       ),
                                     ),
-                              GestureDetector(
-                                onTap: () {},
-                                child: Container(
-                                  width: constraints.maxWidth * 0.35,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                        color:
-                                            Provider.of<AmityUIConfiguration>(
-                                                    context)
-                                                .primaryColor,
-                                        style: BorderStyle.solid,
-                                        width: 1),
-                                    borderRadius: BorderRadius.circular(10),
-                                    color: Provider.of<AmityUIConfiguration>(
-                                            context)
-                                        .primaryColor,
-                                  ),
-                                  padding:
-                                      const EdgeInsets.fromLTRB(10, 10, 10, 10),
-                                  child: Text(
-                                    'Follow Now',
-                                    textAlign: TextAlign.center,
-                                    style: theme.textTheme.subtitle2!.copyWith(
-                                      color: theme.scaffoldBackgroundColor,
-                                      fontSize: 12,
-                                    ),
-                                  ),
+                                  ],
                                 ),
-                              ),
-                            ],
-                          ),
                           const SizedBox(height: 20),
                           TabBar(
                             controller: _tabController,

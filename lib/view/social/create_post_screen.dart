@@ -207,35 +207,45 @@ class CreatePostScreen2State extends State<CreatePostScreen2> {
                       ),
                     ],
                   ),
-                  GestureDetector(
-                    onTap: () async {
-                      if (widget.communityID == null) {
-                        //creat post in user Timeline
-                        await vm.createPost(context);
-                      } else {
-                        //create post in Community
-                        await vm.createPost(widget.context!,
-                            communityId: widget.communityID);
-                      }
+                  vm.isloading
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CircularProgressIndicator(
+                              color: Provider.of<AmityUIConfiguration>(context)
+                                  .primaryColor,
+                            ),
+                          ],
+                        )
+                      : GestureDetector(
+                          onTap: () async {
+                            if (widget.communityID == null) {
+                              //creat post in user Timeline
+                              await vm.createPost(context);
+                            } else {
+                              //create post in Community
+                              await vm.createPost(widget.context!,
+                                  communityId: widget.communityID);
+                            }
 
-                      // ignore: use_build_context_synchronously
-                      Navigator.of(context).pop();
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.only(top: 15),
-                      alignment: Alignment.center,
-                      padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                      decoration: BoxDecoration(
-                        color: Provider.of<AmityUIConfiguration>(context)
-                            .primaryColor,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        "Submit Post",
-                        style: theme.textTheme.button,
-                      ),
-                    ),
-                  ),
+                            // ignore: use_build_context_synchronously
+                            Navigator.of(context).pop();
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.only(top: 15),
+                            alignment: Alignment.center,
+                            padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                            decoration: BoxDecoration(
+                              color: Provider.of<AmityUIConfiguration>(context)
+                                  .primaryColor,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Text(
+                              "Submit Post",
+                              style: theme.textTheme.button,
+                            ),
+                          ),
+                        ),
                 ],
               ),
             ),
