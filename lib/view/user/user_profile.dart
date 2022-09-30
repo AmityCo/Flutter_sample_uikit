@@ -105,7 +105,8 @@ class UserProfileScreenState extends State<UserProfileScreen>
                 children: [
                   Container(
                     color: Colors.white,
-                    height: bheight * 0.3,
+                    padding: const EdgeInsets.only(bottom: 10),
+                    // height: bheight * 0.4,
                     child: LayoutBuilder(
                       builder: (context, constraints) => Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -124,9 +125,9 @@ class UserProfileScreenState extends State<UserProfileScreen>
                                                     create: (context) =>
                                                         FollowerVM(),
                                                     child: FollowScreen(
-                                                        key: UniqueKey(),
-                                                        userId: widget.amityUser
-                                                            .userId!))));
+                                                      key: UniqueKey(),
+                                                      user: widget.amityUser,
+                                                    ))));
                                   },
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
@@ -233,71 +234,130 @@ class UserProfileScreenState extends State<UserProfileScreen>
                                   ],
                                 )
                               : Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    GestureDetector(
-                                      onTap: () {},
-                                      child: Container(
-                                        width: constraints.maxWidth * 0.35,
-                                        decoration: BoxDecoration(
-                                            border: Border.all(
-                                                color: Provider.of<
-                                                            AmityUIConfiguration>(
-                                                        context)
-                                                    .primaryColor,
-                                                style: BorderStyle.solid,
-                                                width: 1),
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            color: Colors.white),
-                                        padding: const EdgeInsets.fromLTRB(
-                                            10, 10, 10, 10),
-                                        child: Text(
-                                          "Messages",
-                                          style: theme.textTheme.subtitle2!
-                                              .copyWith(
-                                            color: Provider.of<
-                                                        AmityUIConfiguration>(
-                                                    context)
-                                                .primaryColor,
-                                            fontSize: 12,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ),
-                                    ),
-                                    GestureDetector(
-                                      onTap: () {
-                                        //FollowScreen
-                                      },
-                                      child: Container(
-                                        width: constraints.maxWidth * 0.35,
-                                        decoration: BoxDecoration(
-                                            border: Border.all(
-                                                color: Provider.of<
-                                                            AmityUIConfiguration>(
-                                                        context)
-                                                    .primaryColor,
-                                                style: BorderStyle.solid,
-                                                width: 1),
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            color: getFollowingStatusColor(
-                                                vm.amityMyFollowInfo.status)),
-                                        padding: const EdgeInsets.fromLTRB(
-                                            10, 10, 10, 10),
-                                        child: Text(
-                                          getFollowingStatusString(
-                                              vm.amityMyFollowInfo.status),
-                                          textAlign: TextAlign.center,
-                                          style: theme.textTheme.subtitle2!
-                                              .copyWith(
-                                            color: getFollowingStatusTextColor(
-                                                vm.amityMyFollowInfo.status),
-                                            fontSize: 12,
-                                          ),
-                                        ),
+                                    // GestureDetector(
+                                    //   onTap: () {},
+                                    //   child: Container(
+                                    //     width: constraints.maxWidth * 0.35,
+                                    //     decoration: BoxDecoration(
+                                    //         border: Border.all(
+                                    //             color: Provider.of<
+                                    //                         AmityUIConfiguration>(
+                                    //                     context)
+                                    //                 .primaryColor,
+                                    //             style: BorderStyle.solid,
+                                    //             width: 1),
+                                    //         borderRadius:
+                                    //             BorderRadius.circular(10),
+                                    //         color: Colors.white),
+                                    //     padding: const EdgeInsets.fromLTRB(
+                                    //         10, 10, 10, 10),
+                                    //     child: Text(
+                                    //       "Messages",
+                                    //       style: theme.textTheme.subtitle2!
+                                    //           .copyWith(
+                                    //         color: Provider.of<
+                                    //                     AmityUIConfiguration>(
+                                    //                 context)
+                                    //             .primaryColor,
+                                    //         fontSize: 12,
+                                    //       ),
+                                    //       textAlign: TextAlign.center,
+                                    //     ),
+                                    //   ),
+                                    // ),
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 10, right: 10),
+                                        child: vm.amityMyFollowInfo.id == null
+                                            ? Container(
+                                                decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                      color: Provider.of<
+                                                                  AmityUIConfiguration>(
+                                                              context)
+                                                          .primaryColor,
+                                                      style: BorderStyle.solid,
+                                                      width: 1),
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                ),
+                                                padding:
+                                                    const EdgeInsets.fromLTRB(
+                                                        10, 10, 10, 10),
+                                                child: Text(
+                                                  "",
+                                                  textAlign: TextAlign.center,
+                                                  style: theme
+                                                      .textTheme.subtitle2!
+                                                      .copyWith(
+                                                    fontSize: 12,
+                                                  ),
+                                                ),
+                                              )
+                                            : FadeAnimation(
+                                                child: StreamBuilder<
+                                                        AmityUserFollowInfo>(
+                                                    stream: vm.amityMyFollowInfo
+                                                        .listen,
+                                                    initialData:
+                                                        vm.amityMyFollowInfo,
+                                                    builder:
+                                                        (context, snapshot) {
+                                                      return GestureDetector(
+                                                        onTap: () {
+                                                          vm.followButtonAction(
+                                                              widget.amityUser,
+                                                              snapshot.data!
+                                                                  .status);
+                                                        },
+                                                        child: Container(
+                                                          decoration: BoxDecoration(
+                                                              border: Border.all(
+                                                                  color: getFollowingStatusTextColor(
+                                                                      snapshot
+                                                                          .data!
+                                                                          .status),
+                                                                  style:
+                                                                      BorderStyle
+                                                                          .solid,
+                                                                  width: 1),
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          10),
+                                                              color: getFollowingStatusColor(
+                                                                  snapshot.data!
+                                                                      .status)),
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .fromLTRB(
+                                                                  10,
+                                                                  10,
+                                                                  10,
+                                                                  10),
+                                                          child: Text(
+                                                            getFollowingStatusString(
+                                                                snapshot.data!
+                                                                    .status),
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                            style: theme
+                                                                .textTheme
+                                                                .subtitle2!
+                                                                .copyWith(
+                                                              color: getFollowingStatusTextColor(
+                                                                  snapshot.data!
+                                                                      .status),
+                                                              fontSize: 12,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      );
+                                                    }),
+                                              ),
                                       ),
                                     ),
                                   ],

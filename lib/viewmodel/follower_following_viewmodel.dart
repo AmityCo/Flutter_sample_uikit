@@ -159,9 +159,49 @@ class FollowerVM extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> followUser({required String userId}) async {}
+  void followButtonAction(AmityUser user, AmityFollowStatus amityFollowStatus) {
+    if (amityFollowStatus == AmityFollowStatus.NONE) {
+      sendFollowRequest(user: user);
+    } else if (amityFollowStatus == AmityFollowStatus.PENDING) {
+      withdrawFollowRequest(user);
+    } else if (amityFollowStatus == AmityFollowStatus.ACCEPTED) {
+      withdrawFollowRequest(user);
+    } else {
+      AmityDialog().showAlertErrorDialog(
+          title: "Error!",
+          message: "followButtonAction: cant handle amityFollowStatus");
+    }
+  }
 
-  Future<void> unFollowUser({required String userId}) async {}
+  Future<void> sendFollowRequest({required AmityUser user}) async {
+    AmityCoreClient.newUserRepository()
+        .relationship()
+        .user(user.userId!)
+        .follow()
+        .then((AmityFollowStatus followStatus) {
+      //success
+      print("Follow Success");
+      notifyListeners();
+    }).onError((error, stackTrace) {
+      //handle error
+      AmityDialog()
+          .showAlertErrorDialog(title: "Error!", message: error.toString());
+    });
+  }
+
+  void withdrawFollowRequest(AmityUser user) {
+    AmityCoreClient.newUserRepository()
+        .relationship()
+        .me()
+        .unfollow(user.userId!)
+        .then((value) {
+      print("with Draw Success");
+      notifyListeners();
+    }).onError((error, stackTrace) {
+      AmityDialog()
+          .showAlertErrorDialog(title: "Error!", message: error.toString());
+    });
+  }
 
   Future<void> getPendingRequest() async {}
 

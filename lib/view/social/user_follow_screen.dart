@@ -12,8 +12,8 @@ import 'package:provider/provider.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
 
 class FollowScreen extends StatefulWidget {
-  final String userId;
-  const FollowScreen({super.key, required this.userId});
+  final AmityUser user;
+  const FollowScreen({super.key, required this.user});
 
   @override
   State<FollowScreen> createState() => _FollowScreenState();
@@ -25,6 +25,12 @@ class _FollowScreenState extends State<FollowScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          widget.user.displayName ?? "displayname is null",
+          style: Theme.of(context).textTheme.headline6!.copyWith(fontSize: 24),
+        ),
+      ),
       backgroundColor: Provider.of<AmityUIConfiguration>(context)
           .messageRoomConfig
           .backgroundColor,
@@ -60,10 +66,10 @@ class _FollowScreenState extends State<FollowScreen> {
                       physics: const AlwaysScrollableScrollPhysics(),
                       children: [
                         AmityFollowerScreen(
-                          userId: widget.userId,
+                          userId: widget.user.userId!,
                         ),
                         AmityFollowingScreen(
-                          userId: widget.userId,
+                          userId: widget.user.userId!,
                         ),
                       ],
                     );

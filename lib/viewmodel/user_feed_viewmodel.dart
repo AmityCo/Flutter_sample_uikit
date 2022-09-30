@@ -1,10 +1,10 @@
 import 'dart:developer';
 
 import 'package:amity_sdk/amity_sdk.dart';
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../components/alert_dialog.dart';
+import 'follower_following_viewmodel.dart';
 
 class UserFeedVM extends ChangeNotifier {
   late AmityUser? amityUser;
@@ -113,5 +113,49 @@ class UserFeedVM extends ChangeNotifier {
                     title: "Error!", message: error.toString())
               });
     }
+  }
+
+  void followButtonAction(AmityUser user, AmityFollowStatus amityFollowStatus) {
+    if (amityFollowStatus == AmityFollowStatus.NONE) {
+      sendFollowRequest(user: user);
+    } else if (amityFollowStatus == AmityFollowStatus.PENDING) {
+      withdrawFollowRequest(user);
+    } else if (amityFollowStatus == AmityFollowStatus.ACCEPTED) {
+      withdrawFollowRequest(user);
+    } else {
+      AmityDialog().showAlertErrorDialog(
+          title: "Error!",
+          message: "followButtonAction: cant handle amityFollowStatus");
+    }
+  }
+
+  Future<void> sendFollowRequest({required AmityUser user}) async {
+    AmityCoreClient.newUserRepository()
+        .relationship()
+        .user(user.userId!)
+        .follow()
+        .then((AmityFollowStatus followStatus) {
+      //success
+      print("sendFollowRequest: Success");
+      notifyListeners();
+    }).onError((error, stackTrace) {
+      //handle error
+      AmityDialog()
+          .showAlertErrorDialog(title: "Error!", message: error.toString());
+    });
+  }
+
+  void withdrawFollowRequest(AmityUser user) {
+    AmityCoreClient.newUserRepository()
+        .relationship()
+        .me()
+        .unfollow(user.userId!)
+        .then((value) {
+      print("withdrawFollowRequest: Success");
+      notifyListeners();
+    }).onError((error, stackTrace) {
+      AmityDialog()
+          .showAlertErrorDialog(title: "Error!", message: error.toString());
+    });
   }
 }
