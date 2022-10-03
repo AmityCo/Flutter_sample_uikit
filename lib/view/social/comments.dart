@@ -96,243 +96,224 @@ class CommentScreenState extends State<CommentScreen> {
                               ),
                               Stack(
                                 children: [
-                                  isMediaPosts()
-                                      ? SizedBox(
-                                          width: double.infinity,
-                                          height: (bHeight - 120) * 0.4,
-                                          child: mediaPostWidgets()
-                                          // Image.asset(
-                                          //   'assets/images/Layer709.png',
-                                          //   fit: BoxFit.fitWidth,
-                                          // ),
-                                          )
-                                      : Container(),
-                                  Container(
-                                    // color: isMediaPosts()
-                                    //     ? Colors.black
-                                    //     : Colors.transparent,
-                                    padding: isMediaPosts()
-                                        ? const EdgeInsets.only(top: 285)
-                                        : null,
-                                    // height: (bHeight - 60) * 0.6,
-
-                                    // decoration: BoxDecoration(),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.stretch,
-                                      children: [
-                                        Container(
-                                          decoration: const BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius: BorderRadius.only(
-                                              topLeft: Radius.circular(30),
-                                              topRight: Radius.circular(30),
-                                            ),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: [
+                                      Container(
+                                        decoration: const BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(30),
+                                            topRight: Radius.circular(30),
                                           ),
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              color: Colors.grey[200],
-                                              borderRadius:
-                                                  const BorderRadius.only(
-                                                topLeft: Radius.circular(30),
-                                                topRight: Radius.circular(30),
-                                              ),
-                                            ),
-                                            padding: const EdgeInsets.fromLTRB(
-                                                10, 0, 10, 0),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.stretch,
-                                              children: [
-                                                Container(
-                                                  margin: const EdgeInsets.only(
-                                                      top: 10),
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceEvenly,
-                                                    children: [
-                                                      getAvatarImage(
-                                                          widget
-                                                              .amityPost
-                                                              .postedUser!
-                                                              .avatarUrl,
-                                                          radius: 25),
-                                                      const SizedBox(width: 10),
-                                                      Expanded(
-                                                        flex: 12,
-                                                        child: Column(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .start,
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Text(
-                                                              widget
-                                                                  .amityPost
-                                                                  .postedUser!
-                                                                  .displayName!,
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                            ),
-                                                            Text(
-                                                              DateFormat
-                                                                      .yMMMMEEEEd()
-                                                                  .format(vm
-                                                                      .amityPost
-                                                                      .createdAt!),
-                                                              style: theme
-                                                                  .textTheme
-                                                                  .bodyText1!
-                                                                  .copyWith(
-                                                                      color: Colors
-                                                                          .grey,
-                                                                      fontSize:
-                                                                          11),
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                      const Spacer(),
-                                                      // Image.asset(
-                                                      //   'assets/Icons/ic_share.png',
-                                                      //   scale: 3,
-                                                      // ),
-                                                      // SizedBox(width: 10),
-                                                      // Icon(
-                                                      //   Icons.bookmark_outline,
-                                                      //   size: 17,
-                                                      //   color: Colors.grey,
-                                                      // ),
-                                                      // SizedBox(width: 10),
-                                                      // FaIcon(
-                                                      //   Icons.repeat_rounded,
-                                                      //   size: 17,
-                                                      //   color: Colors.grey,
-                                                      // ),
-                                                      // SizedBox(width: 10),
-                                                      Row(
+                                        ),
+                                        child: Container(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              10, 0, 10, 0),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.stretch,
+                                            children: [
+                                              Container(
+                                                margin: const EdgeInsets.only(
+                                                    top: 10),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceEvenly,
+                                                  children: [
+                                                    getAvatarImage(
+                                                        widget
+                                                            .amityPost
+                                                            .postedUser!
+                                                            .avatarUrl,
+                                                        radius: 25),
+                                                    const SizedBox(width: 10),
+                                                    Expanded(
+                                                      flex: 12,
+                                                      child: Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .start,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
                                                         children: [
-                                                          const Icon(
-                                                            Icons
-                                                                .chat_bubble_outline,
-                                                            color: Colors.grey,
-                                                            size: 18,
-                                                          ),
-                                                          const SizedBox(
-                                                              width: 8.5),
                                                           Text(
-                                                            snapshot.data!
-                                                                .commentCount
-                                                                .toString(),
-                                                            style: const TextStyle(
-                                                                color:
-                                                                    Colors.grey,
-                                                                fontSize: 12,
-                                                                letterSpacing:
-                                                                    0.5),
+                                                            widget
+                                                                .amityPost
+                                                                .postedUser!
+                                                                .displayName!,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                          ),
+                                                          Text(
+                                                            DateFormat
+                                                                    .yMMMMEEEEd()
+                                                                .format(vm
+                                                                    .amityPost
+                                                                    .createdAt!),
+                                                            style: theme
+                                                                .textTheme
+                                                                .bodyText1!
+                                                                .copyWith(
+                                                                    color: Colors
+                                                                        .grey,
+                                                                    fontSize:
+                                                                        11),
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
                                                           ),
                                                         ],
                                                       ),
-                                                      const SizedBox(width: 10),
-                                                      snapshot
-                                                              .data!
-                                                              .myReactions!
-                                                              .isNotEmpty
-                                                          ? GestureDetector(
-                                                              onTap: () {
-                                                                Provider.of<PostVM>(
-                                                                        context,
-                                                                        listen:
-                                                                            false)
-                                                                    .removePostReaction(
-                                                                        widget
-                                                                            .amityPost);
-                                                              },
-                                                              child: Icon(
-                                                                Icons
-                                                                    .thumb_up_alt,
-                                                                size: 17,
-                                                                color: Provider.of<
-                                                                            AmityUIConfiguration>(
-                                                                        context)
-                                                                    .primaryColor,
-                                                              ),
-                                                            )
-                                                          : GestureDetector(
-                                                              onTap: () {
-                                                                log(widget
-                                                                    .amityPost
-                                                                    .myReactions!
-                                                                    .toString());
-                                                                Provider.of<PostVM>(
-                                                                        context,
-                                                                        listen:
-                                                                            false)
-                                                                    .addPostReaction(
-                                                                        widget
-                                                                            .amityPost);
-                                                              },
-                                                              child: const Icon(
-                                                                Icons
-                                                                    .thumb_up_off_alt,
-                                                                size: 17,
-                                                                color:
-                                                                    Colors.grey,
-                                                              ),
-                                                            ),
-                                                      const SizedBox(width: 10),
-                                                      Text(
-                                                        snapshot
-                                                            .data!.reactionCount
-                                                            .toString(),
-                                                        style: theme.textTheme
-                                                            .bodyText1!
-                                                            .copyWith(
-                                                                color:
-                                                                    Colors.grey,
-                                                                letterSpacing:
-                                                                    1),
-                                                      ),
-                                                      const SizedBox(width: 10),
-                                                    ],
-                                                  ),
-                                                ),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.fromLTRB(
-                                                          10, 10, 0, 9),
-                                                  child: postData.text == "" ||
-                                                          postData.text == null
-                                                      ? const SizedBox()
-                                                      : Text(
-                                                          postData.text ?? "",
-                                                          textAlign:
-                                                              TextAlign.left,
-                                                          style: theme.textTheme
-                                                              .headline6!
-                                                              .copyWith(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w500,
-                                                                  fontSize: 18),
+                                                    ),
+                                                    const Spacer(),
+                                                    // Image.asset(
+                                                    //   'assets/Icons/ic_share.png',
+                                                    //   scale: 3,
+                                                    // ),
+                                                    // SizedBox(width: 10),
+                                                    // Icon(
+                                                    //   Icons.bookmark_outline,
+                                                    //   size: 17,
+                                                    //   color: Colors.grey,
+                                                    // ),
+                                                    // SizedBox(width: 10),
+                                                    // FaIcon(
+                                                    //   Icons.repeat_rounded,
+                                                    //   size: 17,
+                                                    //   color: Colors.grey,
+                                                    // ),
+                                                    // SizedBox(width: 10),
+                                                    Row(
+                                                      children: [
+                                                        const Icon(
+                                                          Icons
+                                                              .chat_bubble_outline,
+                                                          color: Colors.grey,
+                                                          size: 18,
                                                         ),
+                                                        const SizedBox(
+                                                            width: 8.5),
+                                                        Text(
+                                                          snapshot.data!
+                                                              .commentCount
+                                                              .toString(),
+                                                          style:
+                                                              const TextStyle(
+                                                                  color: Colors
+                                                                      .grey,
+                                                                  fontSize: 12,
+                                                                  letterSpacing:
+                                                                      0.5),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    const SizedBox(width: 10),
+                                                    snapshot.data!.myReactions!
+                                                            .isNotEmpty
+                                                        ? GestureDetector(
+                                                            onTap: () {
+                                                              Provider.of<PostVM>(
+                                                                      context,
+                                                                      listen:
+                                                                          false)
+                                                                  .removePostReaction(
+                                                                      widget
+                                                                          .amityPost);
+                                                            },
+                                                            child: Icon(
+                                                              Icons
+                                                                  .thumb_up_alt,
+                                                              size: 17,
+                                                              color: Provider.of<
+                                                                          AmityUIConfiguration>(
+                                                                      context)
+                                                                  .primaryColor,
+                                                            ),
+                                                          )
+                                                        : GestureDetector(
+                                                            onTap: () {
+                                                              log(widget
+                                                                  .amityPost
+                                                                  .myReactions!
+                                                                  .toString());
+                                                              Provider.of<PostVM>(
+                                                                      context,
+                                                                      listen:
+                                                                          false)
+                                                                  .addPostReaction(
+                                                                      widget
+                                                                          .amityPost);
+                                                            },
+                                                            child: const Icon(
+                                                              Icons
+                                                                  .thumb_up_off_alt,
+                                                              size: 17,
+                                                              color:
+                                                                  Colors.grey,
+                                                            ),
+                                                          ),
+                                                    const SizedBox(width: 10),
+                                                    Text(
+                                                      snapshot
+                                                          .data!.reactionCount
+                                                          .toString(),
+                                                      style: theme
+                                                          .textTheme.bodyText1!
+                                                          .copyWith(
+                                                              color:
+                                                                  Colors.grey,
+                                                              letterSpacing: 1),
+                                                    ),
+                                                    const SizedBox(width: 10),
+                                                  ],
                                                 ),
-                                              ],
-                                            ),
+                                              ),
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.fromLTRB(
+                                                        10, 10, 0, 9),
+                                                child: postData.text == "" ||
+                                                        postData.text == null
+                                                    ? const SizedBox()
+                                                    : Text(
+                                                        postData.text ?? "",
+                                                        textAlign:
+                                                            TextAlign.left,
+                                                        style: theme.textTheme
+                                                            .headline6!
+                                                            .copyWith(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                                fontSize: 18),
+                                                      ),
+                                              ),
+                                              isMediaPosts()
+                                                  ? SizedBox(
+                                                      width: double.infinity,
+                                                      // height:
+                                                      //     (bHeight - 120) *
+                                                      //         0.4,
+                                                      child: mediaPostWidgets()
+                                                      // Image.asset(
+                                                      //   'assets/images/Layer709.png',
+                                                      //   fit: BoxFit.fitWidth,
+                                                      // ),
+                                                      )
+                                                  : Container(),
+                                            ],
                                           ),
                                         ),
-                                        CommentComponent(
-                                            postId: widget.amityPost.postId!,
-                                            theme: theme),
-                                      ],
-                                    ),
+                                      ),
+                                      CommentComponent(
+                                          postId: widget.amityPost.postId!,
+                                          theme: theme),
+                                    ],
                                   ),
                                 ],
                               )
@@ -350,16 +331,26 @@ class CommentScreenState extends State<CommentScreen> {
                                 spreadRadius: 0.5,
                               ),
                             ]),
-                        height: 60,
+                        height: 70,
                         child: ListTile(
                           leading: getAvatarImage(
                               widget.amityPost.postedUser!.avatarUrl),
-                          title: TextField(
-                            controller: _commentTextEditController,
-                            decoration: const InputDecoration(
-                              border: InputBorder.none,
-                              hintText: "Write your message",
-                              hintStyle: TextStyle(fontSize: 14),
+                          title: Container(
+                            margin:
+                                const EdgeInsets.only(top: 5.0, bottom: 5.0),
+                            padding:
+                                const EdgeInsets.only(left: 20.0, right: 20.0),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: const Color.fromRGBO(241, 242, 246, 1),
+                            ),
+                            child: TextField(
+                              controller: _commentTextEditController,
+                              decoration: const InputDecoration(
+                                border: InputBorder.none,
+                                hintText: "Write your message",
+                                hintStyle: TextStyle(fontSize: 14),
+                              ),
                             ),
                           ),
                           trailing: GestureDetector(
