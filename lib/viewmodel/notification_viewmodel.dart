@@ -5,11 +5,9 @@ import 'package:amity_uikit_beta_service/repository/noti_repo_imp.dart';
 import 'package:amity_uikit_beta_service/utils/env_manager.dart';
 import 'package:amity_uikit_beta_service/viewmodel/user_viewmodel.dart';
 import 'package:flutter/material.dart';
-import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:provider/provider.dart';
 
 import '../utils/navigation_key.dart';
-import 'community_viewmodel.dart';
 
 class NotificationVM extends ChangeNotifier {
   AmityNotificationRepoImp channelRepoImp = AmityNotificationRepoImp();
@@ -55,21 +53,21 @@ class NotificationVM extends ChangeNotifier {
       var notification = notificationsObject?.data![i];
 
       if (notification != null) {
-        ///Add first actor image
-        ///TODO: Willuse Map to make sure that each user was loaded only 1 time
-        await AmityCoreClient.newUserRepository()
-            .getUser(notification.actors![0].id!)
-            .then((value) {
-          notification.actors![0].imageUrl = value.avatarUrl;
-          notification.actors![0].name = value.displayName;
-          if (notification.actors![0].id == "_admin_vodworks-admin") {
-            notification.actors![0].name = "Anonymous";
-          }
-        }).onError((error, stackTrace) {
-          AmityDialog()
-              .showAlertErrorDialog(title: "Error!", message: error.toString());
-        });
+        if (notification.actors![0].id == "_admin_vodworks-admin") {
+          notification.actors![0].name = "Anonymous";
 
+          ///Add first actor image
+          ///TODO: Willuse Map to make sure that each user was loaded only 1 time
+          await AmityCoreClient.newUserRepository()
+              .getUser(notification.actors![0].id!)
+              .then((value) {
+            notification.actors![0].imageUrl = value.avatarUrl;
+            notification.actors![0].name = value.displayName;
+          }).onError((error, stackTrace) {
+            AmityDialog().showAlertErrorDialog(
+                title: "Error!: getUser", message: error.toString());
+          });
+        }
         if (notification.targetId != null) {
           if (notification.targetType == "community") {
             print(">>>>>>>>>>is community targetType");
@@ -88,7 +86,7 @@ class NotificationVM extends ChangeNotifier {
             }).onError((error, stackTrace) {
               print(error);
               AmityDialog().showAlertErrorDialog(
-                  title: "Error!", message: error.toString());
+                  title: "Error!:getCommunity ", message: error.toString());
             });
           } else if (notification.targetType == "post") {
             print(">>>>>>>>>>is post targetType");
@@ -120,7 +118,8 @@ class NotificationVM extends ChangeNotifier {
             }).onError((error, stackTrace) {
               print(error);
               AmityDialog().showAlertErrorDialog(
-                  title: "Error!", message: error.toString());
+                  title: "Error! notification.targetType == post",
+                  message: error.toString());
             });
           } else {
             print(">>>>>Unhandle tagetType");
