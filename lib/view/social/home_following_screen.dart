@@ -378,60 +378,64 @@ class _PostWidgetState extends State<PostWidget>
                   const Divider(
                     color: Colors.grey,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        top: 7, bottom: 7, left: 10, right: 10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        // Row(
-                        //   children: [
-                        //     Icon(
-                        //       Icons.remove_red_eye,
-                        //       size: iconSize.feedIconSize,
-                        //       color: ApplicationColors.grey,
-                        //     ),
-                        //     SizedBox(width: 8.5),
-                        //     Text(
-                        //       S.of(context).onepointtwok,
-                        //       style: TextStyle(
-                        //           color: ApplicationColors.grey,
-                        //           fontSize: 12,
-                        //           letterSpacing: 1),
-                        //     ),
-                        //   ],
-                        // ),
-                        // Row(
-                        //   children: [
-                        //     FaIcon(
-                        //       Icons.repeat_rounded,
-                        //       color: ApplicationColors.grey,
-                        //       size: iconSize.feedIconSize,
-                        //     ),
-                        //     SizedBox(width: 8.5),
-                        //     Text(
-                        //       '287',
-                        //       style: TextStyle(
-                        //           color: ApplicationColors.grey,
-                        //           fontSize: 12,
-                        //           letterSpacing: 0.5),
-                        //     ),
-                        //   ],
-                        // ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      // Row(
+                      //   children: [
+                      //     Icon(
+                      //       Icons.remove_red_eye,
+                      //       size: iconSize.feedIconSize,
+                      //       color: ApplicationColors.grey,
+                      //     ),
+                      //     SizedBox(width: 8.5),
+                      //     Text(
+                      //       S.of(context).onepointtwok,
+                      //       style: TextStyle(
+                      //           color: ApplicationColors.grey,
+                      //           fontSize: 12,
+                      //           letterSpacing: 1),
+                      //     ),
+                      //   ],
+                      // ),
+                      // Row(
+                      //   children: [
+                      //     FaIcon(
+                      //       Icons.repeat_rounded,
+                      //       color: ApplicationColors.grey,
+                      //       size: iconSize.feedIconSize,
+                      //     ),
+                      //     SizedBox(width: 8.5),
+                      //     Text(
+                      //       '287',
+                      //       style: TextStyle(
+                      //           color: ApplicationColors.grey,
+                      //           fontSize: 12,
+                      //           letterSpacing: 0.5),
+                      //     ),
+                      //   ],
+                      // ),
 
-                        Expanded(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              widget.post.myReactions!.isNotEmpty
-                                  ? GestureDetector(
-                                      onTap: () {
-                                        HapticFeedback.heavyImpact();
-                                        Provider.of<PostVM>(context,
-                                                listen: false)
-                                            .removePostReaction(widget.post);
-                                      },
+                      Expanded(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            widget.post.myReactions!.isNotEmpty
+                                ? GestureDetector(
+                                    onTap: () {
+                                      HapticFeedback.heavyImpact();
+                                      Provider.of<PostVM>(context,
+                                              listen: false)
+                                          .removePostReaction(widget.post);
+                                    },
+                                    child: Container(
+                                      color: Colors.white,
+                                      height: 40,
+                                      width: MediaQuery.of(context).size.width *
+                                          0.45,
                                       child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
                                           Icon(
                                             Icons.thumb_up,
@@ -452,15 +456,23 @@ class _PostWidgetState extends State<PostWidget>
                                                 letterSpacing: 1),
                                           ),
                                         ],
-                                      ))
-                                  : GestureDetector(
-                                      onTap: () {
-                                        HapticFeedback.heavyImpact();
-                                        Provider.of<PostVM>(context,
-                                                listen: false)
-                                            .addPostReaction(widget.post);
-                                      },
+                                      ),
+                                    ))
+                                : GestureDetector(
+                                    onTap: () {
+                                      HapticFeedback.heavyImpact();
+                                      Provider.of<PostVM>(context,
+                                              listen: false)
+                                          .addPostReaction(widget.post);
+                                    },
+                                    child: Container(
+                                      color: Colors.white,
+                                      width: MediaQuery.of(context).size.width *
+                                          0.45,
+                                      height: 40,
                                       child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
                                           Icon(
                                             Icons.thumb_up_alt_outlined,
@@ -475,42 +487,41 @@ class _PostWidgetState extends State<PostWidget>
                                                 letterSpacing: 1),
                                           ),
                                         ],
-                                      )),
-                              const SizedBox(width: 8.5),
+                                      ),
+                                    )),
+                          ],
+                        ),
+                      ),
+
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => CommentScreen(
+                                      amityPost: widget.post,
+                                    )));
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.chat_bubble_outline,
+                                color: Colors.grey,
+                                size: iconSize,
+                              ),
+                              const SizedBox(width: 5.5),
+                              Text(
+                                'Comment',
+                                style: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: feedReactionCountSize,
+                                    letterSpacing: 0.5),
+                              ),
                             ],
                           ),
                         ),
-
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => CommentScreen(
-                                        amityPost: widget.post,
-                                      )));
-                            },
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.chat_bubble_outline,
-                                  color: Colors.grey,
-                                  size: iconSize,
-                                ),
-                                const SizedBox(width: 5.5),
-                                Text(
-                                  'Comment',
-                                  style: TextStyle(
-                                      color: Colors.grey,
-                                      fontSize: feedReactionCountSize,
-                                      letterSpacing: 0.5),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                   // Divider(),
                   // CommentComponent(
