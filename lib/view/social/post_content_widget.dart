@@ -70,7 +70,7 @@ class AmityPostWidgetState extends State<AmityPostWidget> {
 
     for (var post in widget.posts) {
       final imageData = post.data as ImageData;
-      final largeImageUrl = imageData.getUrl(AmityImageSize.MEDIUM);
+      final largeImageUrl = imageData.getUrl(AmityImageSize.LARGE);
 
       imageUrlList.add(largeImageUrl);
     }

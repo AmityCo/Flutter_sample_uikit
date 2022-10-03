@@ -40,6 +40,7 @@ class CommuFeedVM extends ChangeNotifier {
             //and add with the latest _controller.loadedItems
             _amityCommunityFeedPosts.clear();
             _amityCommunityFeedPosts.addAll(_controllerCommu.loadedItems);
+
             //update widgets
             notifyListeners();
           } else {
@@ -75,4 +76,6 @@ class CommuFeedVM extends ChangeNotifier {
       _controllerCommu.fetchNextPage();
     }
   }
+
+  void loadCoomunityMember() {}
 }

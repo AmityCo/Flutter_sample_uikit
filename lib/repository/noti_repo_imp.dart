@@ -1,3 +1,4 @@
+import 'package:amity_uikit_beta_service/model/amity_notification_model.dart';
 import 'package:dio/dio.dart';
 import 'package:optimized_cached_image/optimized_cached_image.dart';
 
@@ -14,9 +15,10 @@ class AmityNotificationRepoImp implements AmityNotificationRepo {
 
   @override
   Future<void> fetchNotification(
-      Function(String? data, String? error) callback) async {
+      Function(AmityNotifications? notifications, String? error)
+          callback) async {
     var dio = Dio();
-    final response = await dio.post(
+    final response = await dio.get(
       "https://beta.amity.services/notifications/history",
       options: Options(
         headers: {
@@ -24,12 +26,14 @@ class AmityNotificationRepoImp implements AmityNotificationRepo {
         },
       ),
     );
+
     if (response.statusCode == 200) {
-      callback(response.data, null);
+      var amityPushNotification = AmityNotifications.fromJson(response.data);
+      callback(amityPushNotification, null);
     } else {
       callback(
         null,
-        response.data,
+        response.data["message"],
       );
     }
   }

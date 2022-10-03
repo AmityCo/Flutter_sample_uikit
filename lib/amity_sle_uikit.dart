@@ -4,10 +4,11 @@ import 'dart:developer';
 
 import 'package:amity_sdk/amity_sdk.dart';
 import 'package:amity_uikit_beta_service/utils/navigation_key.dart';
-import 'package:amity_uikit_beta_service/view/chat/chat_screen.dart';
-import 'package:amity_uikit_beta_service/viewmodel/channel_viewmodel.dart';
+import 'package:amity_uikit_beta_service/viewmodel/follower_following_viewmodel.dart';
+import 'package:amity_uikit_beta_service/viewmodel/notification_viewmodel.dart';
+import 'package:amity_uikit_beta_service/viewmodel/pending_request_viewmodel.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+
 import 'package:provider/provider.dart';
 
 import 'viewmodel/amity_viewmodel.dart';
@@ -90,7 +91,7 @@ class AmitySLEUIKit {
     // example of getting token from firebase
     // FirebaseMessaging messaging = FirebaseMessaging.instance;
     // final fcmToken = await messaging.getToken();
-    
+
     await AmityCoreClient.registerDeviceNotification(fcmToken)
         .then((value) => {callback(true, null)})
         .onError((error, stackTrace) =>
@@ -135,6 +136,9 @@ class AmitySLEProvider extends StatelessWidget {
         ChangeNotifierProvider<ChannelVM>(create: ((context) => ChannelVM())),
         ChangeNotifierProvider<AmityUIConfiguration>(
             create: ((context) => AmityUIConfiguration())),
+        ChangeNotifierProvider<NotificationVM>(
+            create: ((context) => NotificationVM())),
+        ChangeNotifierProvider<PendingVM>(create: ((context) => PendingVM())),
       ],
       child: Builder(
         builder: (context) => MaterialApp(

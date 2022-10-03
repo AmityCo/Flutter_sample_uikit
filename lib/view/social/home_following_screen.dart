@@ -14,6 +14,7 @@ import '../../viewmodel/configuration_viewmodel.dart';
 import '../../viewmodel/edit_post_viewmodel.dart';
 import '../../viewmodel/feed_viewmodel.dart';
 import '../../viewmodel/post_viewmodel.dart';
+import '../../viewmodel/user_feed_viewmodel.dart';
 import '../user/user_profile.dart';
 import 'comments.dart';
 import 'community_feed.dart';
@@ -53,48 +54,40 @@ class GlobalFeedScreenState extends State<GlobalFeedScreen> {
         onRefresh: () async {
           await vm.initAmityGlobalfeed();
         },
-        child: vm.getAmityPosts().isEmpty
-            ? SingleChildScrollView(
-                controller: vm.scrollcontroller,
-                child: Container(
-                  color: Colors.grey[200],
-                  height: bHeight,
-                ),
-              )
-            : Column(
-                children: [
-                  Expanded(
-                    child: Container(
-                      color: Colors.grey[200],
-                      child: FadedSlideAnimation(
-                        beginOffset: const Offset(0, 0.3),
-                        endOffset: const Offset(0, 0),
-                        slideCurve: Curves.linearToEaseOut,
-                        child: ListView.builder(
-                          // shrinkWrap: true,
-                          controller: vm.scrollcontroller,
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          itemCount: vm.getAmityPosts().length,
-                          itemBuilder: (context, index) {
-                            return StreamBuilder<AmityPost>(
-                                key: Key(vm.getAmityPosts()[index].postId!),
-                                stream: vm.getAmityPosts()[index].listen,
-                                initialData: vm.getAmityPosts()[index],
-                                builder: (context, snapshot) {
-                                  return PostWidget(
-                                    post: snapshot.data!,
-                                    theme: theme,
-                                    postIndex: index,
-                                    isFromFeed: true,
-                                  );
-                                });
-                          },
-                        ),
-                      ),
-                    ),
+        child: Column(
+          children: [
+            Expanded(
+              child: Container(
+                color: Colors.grey[200],
+                child: FadedSlideAnimation(
+                  beginOffset: const Offset(0, 0.3),
+                  endOffset: const Offset(0, 0),
+                  slideCurve: Curves.linearToEaseOut,
+                  child: ListView.builder(
+                    // shrinkWrap: true,
+                    controller: vm.scrollcontroller,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    itemCount: vm.getAmityPosts().length,
+                    itemBuilder: (context, index) {
+                      return StreamBuilder<AmityPost>(
+                          key: Key(vm.getAmityPosts()[index].postId!),
+                          stream: vm.getAmityPosts()[index].listen,
+                          initialData: vm.getAmityPosts()[index],
+                          builder: (context, snapshot) {
+                            return PostWidget(
+                              post: snapshot.data!,
+                              theme: theme,
+                              postIndex: index,
+                              isFromFeed: true,
+                            );
+                          });
+                    },
                   ),
-                ],
+                ),
               ),
+            ),
+          ],
+        ),
       );
     });
   }
@@ -230,9 +223,11 @@ class _PostWidgetState extends State<PostWidget>
                         child: GestureDetector(
                             onTap: () {
                               Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (_) => UserProfileScreen(
+                                  builder: (context) => ChangeNotifierProvider(
+                                      create: (context) => UserFeedVM(),
+                                      child: UserProfileScreen(
                                         amityUser: widget.post.postedUser!,
-                                      )));
+                                      ))));
                             },
                             child: getAvatarImage(
                                 widget.post.postedUser?.avatarUrl))),
@@ -241,9 +236,11 @@ class _PostWidgetState extends State<PostWidget>
                         GestureDetector(
                           onTap: () {
                             Navigator.of(context).push(MaterialPageRoute(
-                                builder: (_) => UserProfileScreen(
+                                builder: (context) => ChangeNotifierProvider(
+                                    create: (context) => UserFeedVM(),
+                                    child: UserProfileScreen(
                                       amityUser: widget.post.postedUser!,
-                                    )));
+                                    ))));
                           },
                           child: Text(
                             widget.post.postedUser?.displayName ??

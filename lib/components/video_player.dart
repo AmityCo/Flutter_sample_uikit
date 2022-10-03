@@ -124,7 +124,9 @@ class _MyVideoPlayer2State extends State<MyVideoPlayer2> {
       videoPlayerController.dispose();
     }
     if (!widget.isInFeed) {
-      chewieController!.dispose();
+      if (chewieController != null) {
+        chewieController!.dispose();
+      }
     }
 
     super.dispose();

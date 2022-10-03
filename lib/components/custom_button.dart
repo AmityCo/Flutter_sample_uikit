@@ -18,7 +18,7 @@ class CustomButton extends StatelessWidget {
   final Widget? trailing;
   final double? textSize;
   final Color? borderColor;
-
+  final double? width;
   CustomButton({
     super.key,
     this.label,
@@ -33,6 +33,7 @@ class CustomButton extends StatelessWidget {
     this.trailing,
     this.textSize,
     this.borderColor,
+    this.width,
   });
 
   @override
@@ -42,6 +43,7 @@ class CustomButton extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap as void Function()?,
         child: Container(
+          width: width,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(radius ?? 8),
             border: Border.all(

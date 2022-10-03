@@ -1,16 +1,15 @@
 import 'dart:developer';
 
 import 'package:amity_sdk/amity_sdk.dart';
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../components/alert_dialog.dart';
+import 'follower_following_viewmodel.dart';
 
 class UserFeedVM extends ChangeNotifier {
   late AmityUser? amityUser;
   late AmityUserFollowInfo amityMyFollowInfo = AmityUserFollowInfo();
   late PagingController<AmityPost> _controller;
-  final scrollController = ScrollController();
   final amityPosts = <AmityPost>[];
 
   final scrollcontroller = ScrollController();
@@ -22,14 +21,21 @@ class UserFeedVM extends ChangeNotifier {
   }
 
   void getUser(AmityUser user) {
+    log("getUser=> ${user.userId}");
     if (user.id == AmityCoreClient.getUserId()) {
+      log("isCurrentUser:${user.id}");
       amityUser = AmityCoreClient.getCurrentUser();
     } else {
+      log("isNotCurrentUser:${user.id}");
       amityUser = user;
     }
 
     amityUser!.relationship().getFollowInfo().then((value) {
       amityMyFollowInfo = value;
+      notifyListeners();
+    }).onError((error, stackTrace) {
+      AmityDialog()
+          .showAlertErrorDialog(title: "Error", message: error.toString());
     });
   }
 
@@ -48,8 +54,8 @@ class UserFeedVM extends ChangeNotifier {
             notifyListeners();
           } else {
             //Error on pagination controller
-
-            log(_controller.error.toString());
+            log("Error: listenForUserFeed... with userId = $userId");
+            log("ERROR::${_controller.error.toString()}");
           }
         },
       );
@@ -107,5 +113,49 @@ class UserFeedVM extends ChangeNotifier {
                     title: "Error!", message: error.toString())
               });
     }
+  }
+
+  void followButtonAction(AmityUser user, AmityFollowStatus amityFollowStatus) {
+    if (amityFollowStatus == AmityFollowStatus.NONE) {
+      sendFollowRequest(user: user);
+    } else if (amityFollowStatus == AmityFollowStatus.PENDING) {
+      withdrawFollowRequest(user);
+    } else if (amityFollowStatus == AmityFollowStatus.ACCEPTED) {
+      withdrawFollowRequest(user);
+    } else {
+      AmityDialog().showAlertErrorDialog(
+          title: "Error!",
+          message: "followButtonAction: cant handle amityFollowStatus");
+    }
+  }
+
+  Future<void> sendFollowRequest({required AmityUser user}) async {
+    AmityCoreClient.newUserRepository()
+        .relationship()
+        .user(user.userId!)
+        .follow()
+        .then((AmityFollowStatus followStatus) {
+      //success
+      print("sendFollowRequest: Success");
+      notifyListeners();
+    }).onError((error, stackTrace) {
+      //handle error
+      AmityDialog()
+          .showAlertErrorDialog(title: "Error!", message: error.toString());
+    });
+  }
+
+  void withdrawFollowRequest(AmityUser user) {
+    AmityCoreClient.newUserRepository()
+        .relationship()
+        .me()
+        .unfollow(user.userId!)
+        .then((value) {
+      print("withdrawFollowRequest: Success");
+      notifyListeners();
+    }).onError((error, stackTrace) {
+      AmityDialog()
+          .showAlertErrorDialog(title: "Error!", message: error.toString());
+    });
   }
 }

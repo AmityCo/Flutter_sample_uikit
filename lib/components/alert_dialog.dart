@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import '../utils/navigation_key.dart';
 
 class AmityDialog {
-  var isshowDialog = kDebugMode;
+  var isshowDialog = true;
 
   Future<void> showAlertErrorDialog(
       {required String title, required String message}) async {
