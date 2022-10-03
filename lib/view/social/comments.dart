@@ -355,13 +355,16 @@ class CommentScreenState extends State<CommentScreen> {
                           ),
                           trailing: GestureDetector(
                               onTap: () async {
-                                HapticFeedback.heavyImpact();
-                                await Provider.of<PostVM>(context,
-                                        listen: false)
-                                    .createComment(snapshot.data!.postId!,
-                                        _commentTextEditController.text);
+                                if (_commentTextEditController
+                                    .text.isNotEmpty) {
+                                  HapticFeedback.heavyImpact();
+                                  await Provider.of<PostVM>(context,
+                                          listen: false)
+                                      .createComment(snapshot.data!.postId!,
+                                          _commentTextEditController.text);
 
-                                _commentTextEditController.clear();
+                                  _commentTextEditController.clear();
+                                }
                               },
                               child: Icon(Icons.send,
                                   color:
