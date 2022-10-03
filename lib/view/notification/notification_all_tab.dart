@@ -81,24 +81,30 @@ class _NotificationAllTabScreenState extends State<NotificationAllTabScreen> {
         body: Column(
           children: [
             Expanded(
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: RefreshIndicator(
-                  onRefresh: () async {
-                    await vm.updateNotification();
-                  },
-                  child: vm.notificationsObject == null
-                      ? Row(
-                          children: [
-                            Expanded(
-                                child: Column(
-                              children: const [
-                                Expanded(child: CircularProgressIndicator())
-                              ],
-                            ))
-                          ],
-                        )
-                      : Column(
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  await vm.updateNotification();
+                },
+                child: vm.notificationsObject == null
+                    ? Row(
+                        children: [
+                          Expanded(
+                              child: Column(
+                            children: [
+                              Expanded(
+                                  child: Center(
+                                child: CircularProgressIndicator(
+                                  color:
+                                      Provider.of<AmityUIConfiguration>(context)
+                                          .primaryColor,
+                                ),
+                              ))
+                            ],
+                          ))
+                        ],
+                      )
+                    : SingleChildScrollView(
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Provider.of<PendingVM>(context, listen: true)
@@ -270,7 +276,7 @@ class _NotificationAllTabScreenState extends State<NotificationAllTabScreen> {
                             ),
                           ],
                         ),
-                ),
+                      ),
               ),
             ),
           ],
