@@ -65,9 +65,11 @@ class AmitySLEUIKit {
   Future<void> registerDevice(
       {required BuildContext context,
       required String userId,
+      String? displayName,
+      String? authToken,
       Function(bool isSuccess, String? error)? callback}) async {
     await Provider.of<AmityVM>(context, listen: false)
-        .login(userId)
+        .login(userID: userId, displayName: displayName, authToken: authToken)
         .then((value) async {
       await Provider.of<UserVM>(context, listen: false)
           .initAccessToken()
@@ -83,6 +85,8 @@ class AmitySLEUIKit {
           }
         }
       });
+    }).onError((error, stackTrace) {
+      log("registerDevice...Error:$error");
     });
   }
 

@@ -53,20 +53,20 @@ class NotificationVM extends ChangeNotifier {
       var notification = notificationsObject?.data![i];
 
       if (notification != null) {
-        if (notification.actors![0].id == "_admin_vodworks-admin") {
-          notification.actors![0].name = "Anonymous";
-
+        if (notification.actors![0].id != "_admin_vodworks-admin") {
           ///Add first actor image
           ///TODO: Willuse Map to make sure that each user was loaded only 1 time
           await AmityCoreClient.newUserRepository()
               .getUser(notification.actors![0].id!)
               .then((value) {
-            notification.actors![0].imageUrl = value.avatarUrl;
-            notification.actors![0].name = value.displayName;
+            notification.actors?[0].imageUrl = value.avatarUrl;
+            notification.actors?[0].name = value.displayName;
           }).onError((error, stackTrace) {
-            AmityDialog().showAlertErrorDialog(
-                title: "Error!: getUser", message: error.toString());
+            // AmityDialog().showAlertErrorDialog(
+            //     title: "Error!: getUserrrrrr", message: error.toString());
           });
+        } else {
+          notification.actors![0].name = "Anonymous";
         }
         if (notification.targetId != null) {
           if (notification.targetType == "community") {

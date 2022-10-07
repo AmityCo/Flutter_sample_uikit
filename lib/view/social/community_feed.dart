@@ -1,4 +1,5 @@
 import 'package:amity_sdk/amity_sdk.dart';
+import 'package:amity_uikit_beta_service/viewmodel/user_viewmodel.dart';
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:optimized_cached_image/optimized_cached_image.dart';
@@ -95,7 +96,8 @@ class CommunityScreenState extends State<CommunityScreen> {
                           children: [
                             ListTile(
                               leading: const Icon(Icons.edit),
-                              title: const Text('Edit Community'),
+                              title: Text(
+                                  "Edit Community:${AmityCoreClient.getCurrentUser().roles}"),
                               onTap: () {
                                 Navigator.of(context).pop();
                                 onCommunityOptionTap(
@@ -224,12 +226,24 @@ class CommunityScreenState extends State<CommunityScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final myAppBar = AppBar(
+      backgroundColor: Colors.white,
+      leading: IconButton(
+        color: Provider.of<AmityUIConfiguration>(context).primaryColor,
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+        icon: const Icon(Icons.chevron_left),
+      ),
+      elevation: 0,
+    );
     final theme = Theme.of(context);
     //final mediaQuery = MediaQuery.of(context);
     //final bHeight = mediaQuery.size.height - mediaQuery.padding.top;
 
     return Consumer<CommuFeedVM>(builder: (context, vm, _) {
       return Scaffold(
+        appBar: myAppBar,
         floatingActionButton: (widget.community.isJoined!)
             ? FloatingActionButton(
                 onPressed: () {
@@ -254,16 +268,16 @@ class CommunityScreenState extends State<CommunityScreen> {
               controller: vm.scrollcontroller,
               child: Column(
                 children: [
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: IconButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      icon: const Icon(Icons.chevron_left,
-                          color: Colors.black, size: 35),
-                    ),
-                  ),
+                  // Align(
+                  //   alignment: Alignment.topLeft,
+                  //   child: IconButton(
+                  //     onPressed: () {
+                  //       Navigator.of(context).pop();
+                  //     },
+                  //     icon: const Icon(Icons.chevron_left,
+                  //         color: Colors.black, size: 35),
+                  //   ),
+                  // ),
                   SizedBox(
                       width: double.infinity,
                       // height: (bHeight - 120) * 0.4,

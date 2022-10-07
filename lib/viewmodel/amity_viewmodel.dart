@@ -8,24 +8,45 @@ import '../components/alert_dialog.dart';
 class AmityVM extends ChangeNotifier {
   AmityUser? currentamityUser;
   bool isProcessing = false;
-  Future<void> login(String userID) async {
+  Future<void> login(
+      {required String userID, String? displayName, String? authToken}) async {
     if (!isProcessing) {
       isProcessing = true;
 
       log("login with $userID");
-
-      await AmityCoreClient.login(userID).submit().then((value) async {
-        log("success");
-        isProcessing = false;
-        getUserByID(userID);
-        currentamityUser = value;
-        notifyListeners();
-      }).catchError((error, stackTrace) async {
-        isProcessing = false;
-        log(error.toString());
-        await AmityDialog()
-            .showAlertErrorDialog(title: "Error!", message: error.toString());
-      });
+      if (authToken == null) {
+        await AmityCoreClient.login(userID)
+            .displayName(displayName ?? userID)
+            .submit()
+            .then((value) async {
+          log("success");
+          isProcessing = false;
+          getUserByID(userID);
+          currentamityUser = value;
+          notifyListeners();
+        }).catchError((error, stackTrace) async {
+          isProcessing = false;
+          log(error.toString());
+          await AmityDialog()
+              .showAlertErrorDialog(title: "Error!", message: error.toString());
+        });
+      } else {
+        await AmityCoreClient.login(userID)
+            .displayName(displayName ?? userID)
+            .submit()
+            .then((value) async {
+          log("success");
+          isProcessing = false;
+          getUserByID(userID);
+          currentamityUser = value;
+          notifyListeners();
+        }).catchError((error, stackTrace) async {
+          isProcessing = false;
+          log(error.toString());
+          await AmityDialog()
+              .showAlertErrorDialog(title: "Error!", message: error.toString());
+        });
+      }
     } else {
       /// processing
       log("processing login...");

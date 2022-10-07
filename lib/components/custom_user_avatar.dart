@@ -49,9 +49,10 @@ getAvatarImage(String? url, {double? radius, String? fileId}) {
     return CircleAvatar(
       radius: radius,
       backgroundColor: AmityUIConfiguration().primaryColor,
-      child: const Icon(
+      child: Icon(
         Icons.person,
         color: Colors.white,
+        size: radius,
       ),
     );
   }
