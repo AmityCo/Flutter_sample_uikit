@@ -89,46 +89,50 @@ class CommunityScreenState extends State<CommunityScreen> {
             const Spacer(),
             IconButton(
                 onPressed: () {
-                  showModalBottomSheet(
-                      context: context,
-                      builder: (context) {
-                        return Wrap(
-                          children: [
-                            ListTile(
-                              leading: const Icon(Icons.edit),
-                              title: Text(
-                                  "Edit Community:${AmityCoreClient.getCurrentUser().roles}"),
-                              onTap: () {
-                                Navigator.of(context).pop();
-                                onCommunityOptionTap(
-                                    CommunityFeedMenuOption.edit);
-                              },
-                            ),
-                            ListTile(
-                              leading: const Icon(Icons.people_alt_rounded),
-                              title: const Text('Members'),
-                              onTap: () {
-                                onCommunityOptionTap(
-                                    CommunityFeedMenuOption.members);
-                              },
-                            ),
-                            const ListTile(
-                              title: Text(''),
-                            ),
-                          ],
-                        );
-                        // return SizedBox(
-                        //   height: 200,
-                        //   child: Column(
-                        //     crossAxisAlignment: CrossAxisAlignment.start,
-                        //     mainAxisSize: MainAxisSize.min,
-                        //     children: const <Widget>[],
-                        //   ),
-                        // );
-                      });
+                  if (vm.isCurrentUserIsAdmin) {
+                    showModalBottomSheet(
+                        context: context,
+                        builder: (context) {
+                          return Wrap(
+                            children: [
+                              ListTile(
+                                leading: const Icon(Icons.edit),
+                                title: Text(
+                                    "Edit Community:${AmityCoreClient.getCurrentUser().roles}"),
+                                onTap: () {
+                                  Navigator.of(context).pop();
+                                  onCommunityOptionTap(
+                                      CommunityFeedMenuOption.edit);
+                                },
+                              ),
+                              ListTile(
+                                leading: const Icon(Icons.people_alt_rounded),
+                                title: const Text('Members'),
+                                onTap: () {
+                                  onCommunityOptionTap(
+                                      CommunityFeedMenuOption.members);
+                                },
+                              ),
+                              const ListTile(
+                                title: Text(''),
+                              ),
+                            ],
+                          );
+                          // return SizedBox(
+                          //   height: 200,
+                          //   child: Column(
+                          //     crossAxisAlignment: CrossAxisAlignment.start,
+                          //     mainAxisSize: MainAxisSize.min,
+                          //     children: const <Widget>[],
+                          //   ),
+                          // );
+                        });
+                  }
                 },
-                icon:
-                    const Icon(Icons.more_horiz_rounded, color: Colors.black)),
+                icon: Icon(Icons.more_horiz_rounded,
+                    color: vm.isCurrentUserIsAdmin
+                        ? Colors.black
+                        : Colors.grey[200]))
           ],
         ),
         Row(

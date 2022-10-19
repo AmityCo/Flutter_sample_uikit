@@ -6,8 +6,7 @@ import 'package:flutter/material.dart';
 import '../../components/alert_dialog.dart';
 
 class CommuFeedVM extends ChangeNotifier {
-  late String communityID;
-
+  bool isCurrentUserIsAdmin = false;
   var _amityCommunityFeedPosts = <AmityPost>[];
 
   late PagingController<AmityPost> _controllerCommu;
@@ -24,6 +23,8 @@ class CommuFeedVM extends ChangeNotifier {
   }
 
   Future<void> initAmityCommunityFeed(String communityId) async {
+    isCurrentUserIsAdmin = false;
+
     //inititate the PagingController
     _controllerCommu = PagingController(
       pageFuture: (token) => AmitySocialClient.newFeedRepository()
@@ -67,6 +68,7 @@ class CommuFeedVM extends ChangeNotifier {
       _amityCommunityFeedPosts = value.data;
     });
     notifyListeners();
+    await checkIsCurrentUserIsAdmin(communityId);
   }
 
   void loadnextpage() {
@@ -78,4 +80,21 @@ class CommuFeedVM extends ChangeNotifier {
   }
 
   void loadCoomunityMember() {}
+
+  Future<void> checkIsCurrentUserIsAdmin(String communityId) async {
+    print("LOG1 :checkIsCurrentUserIsAdmin");
+    await AmitySocialClient.newCommunityRepository()
+        .getCurentUserRoles(communityId)
+        .then((value) {
+      print("LOG1" + value.toString());
+      for (var role in value) {
+        if (role == "community-moderator") {
+          isCurrentUserIsAdmin = true;
+        }
+      }
+      notifyListeners();
+    }).onError((error, stackTrace) {
+      print("LOG1:$error");
+    });
+  }
 }
