@@ -34,6 +34,12 @@ dependencies:
   shimmer: ^2.0.0
   dio: ^4.0.6
   sign_in_with_apple: ^4.1.0
+  any_link_preview: ^2.0.9
+  linkwell: ^2.0.6
+  linkify: ^4.1.0
+  flutter_link_previewer: ^3.1.0
+  url_launcher: ^6.1.6
+  
 
 
 

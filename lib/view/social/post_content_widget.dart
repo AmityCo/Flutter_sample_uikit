@@ -1,8 +1,14 @@
 import 'package:amity_sdk/amity_sdk.dart';
+import 'package:any_link_preview/any_link_preview.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_link_previewer/flutter_link_previewer.dart';
+import 'package:linkify/linkify.dart';
+import 'package:linkwell/linkwell.dart';
 import 'package:optimized_cached_image/optimized_cached_image.dart';
-
+import 'package:flutter_chat_types/flutter_chat_types.dart' show PreviewData;
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import '../../components/video_player.dart';
 
 import 'comments.dart';
@@ -12,10 +18,12 @@ class AmityPostWidget extends StatefulWidget {
   final List<AmityPost> posts;
   final bool isChildrenPost;
   final bool isCornerRadiusEnabled;
+  final bool haveChildrenPost;
+  final bool shouldShowTextPost;
 
   const AmityPostWidget(
       this.posts, this.isChildrenPost, this.isCornerRadiusEnabled,
-      {super.key});
+      {super.key, this.haveChildrenPost = false,this.shouldShowTextPost = true});
   @override
   AmityPostWidgetState createState() => AmityPostWidgetState();
 }
@@ -24,6 +32,7 @@ class AmityPostWidgetState extends State<AmityPostWidget> {
   List<String> imageURLs = [];
   String? videoUrl;
   bool isLoading = true;
+  Map<String, PreviewData> datas = {};
   @override
   void initState() {
     super.initState();
@@ -82,35 +91,141 @@ class AmityPostWidgetState extends State<AmityPostWidget> {
     }
   }
 
-  // Widget postWidget() {
-  //   if (!widget.isChildrenPost) {
-  //     return TextPost(post: widget.posts[0]);
-  //   } else {
-  //     switch (widget.posts[0].type) {
-  //       case AmityDataType.IMAGE:
-  //         return ImagePost(
-  //             posts: widget.posts,
-  //             imageURLs: imageURLs,
-  //             isCornerRadiusEnabled:
-  //                 widget.isCornerRadiusEnabled || imageURLs.length > 1
-  //                     ? true
-  //                     : false);
-  //       case AmityDataType.VIDEO:
-  //         return MyVideoPlayer2(
-  //             post: widget.posts[0],
-  //             url: videoUrl ?? "",
-  //             isInFeed: widget.isCornerRadiusEnabled,
-  //             isEnableVideoTools: false);
-  //       default:
-  //         return Container();
-  //     }
-  //   }
-  // }
+  bool urlValidation(AmityPost post) {
+    final url = extractLink(post); //urlExtraction(post);
+    print("checking url validation ${url}");
+    return AnyLinkPreview.isValidLink(url);
+  }
+
+  Future<void> _launchUrl(String url) async {
+    if (!await canLaunchUrlString(url)) {
+      throw 'Could not launch $url';
+    } else {
+      await launchUrlString(url, mode: LaunchMode.inAppWebView);
+    }
+  }
+
+  String extractLink(AmityPost post) {
+    final textdata = post.data as TextData;
+    final text = textdata.text ?? "";
+    var elements = linkify(text,
+        options: const LinkifyOptions(
+          humanize: false,
+          defaultToHttps: true,
+        ));
+    for (var e in elements) {
+      if (e is LinkableElement) {
+        return e.url;
+      }
+    }
+    return "";
+  }
+
+  Widget generateURLWidget(String url) {
+    const style = TextStyle(
+      color: Colors.black,
+      fontSize: 16,
+      fontWeight: FontWeight.w500,
+      height: 1.375,
+    );
+
+    return LinkPreview(
+      enableAnimation: true,
+      onPreviewDataFetched: (data) {
+        setState(() {
+          datas = {
+            ...datas,
+            url: data,
+          };
+        });
+      },
+      previewData: datas[url],
+      padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+      imageBuilder: ((imageUrl) {
+        return
+            // OptimizedCacheImage(
+            //   imageUrl: url,
+            //   fit: BoxFit.fill,
+            //   placeholder: (context, url) => Container(
+            //     color: Colors.grey,
+            //   ),
+            //   errorWidget: (context, url, error) => const Icon(Icons.error),
+            // );
+            Container(
+          width: double.infinity,
+          margin: const EdgeInsets.fromLTRB(0, 5, 0, 0),
+          height: 150,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: NetworkImage(imageUrl),
+            ),
+          ),
+        );
+      }),
+      metadataTextStyle: style.copyWith(
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+      ),
+      animationDuration: const Duration(milliseconds: 300),
+      metadataTitleStyle: style.copyWith(
+        fontWeight: FontWeight.w800,
+      ),
+      textWidget: const SizedBox(
+        height: 0,
+      ),
+      text: url,
+      width: MediaQuery.of(context).size.width,
+      onLinkPressed: ((url) {
+        _launchUrl(url);
+      }),
+      openOnPreviewImageTap: true,
+      openOnPreviewTitleTap: true,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     if (!widget.isChildrenPost) {
-      return TextPost(post: widget.posts[0]);
+      if (widget.haveChildrenPost || !urlValidation(widget.posts[0])) {
+        return TextPost(post: widget.posts[0]);
+      } else {
+        String url =
+            extractLink(widget.posts[0]); //urlExtraction(widget.posts[0]);
+
+        return Column(
+          children: [
+            // Text(url),
+            widget.shouldShowTextPost ? TextPost(post: widget.posts[0]) : Container(),
+            generateURLWidget(url.toLowerCase())
+            // AnyLinkPreview(
+            //   link: url.toLowerCase(),
+            //   displayDirection: UIDirection.uiDirectionVertical,
+            //   // showMultimedia: false,
+            //   bodyMaxLines: 5,
+            //   bodyTextOverflow: TextOverflow.ellipsis,
+            //   titleStyle: TextStyle(
+            //     color: Colors.black,
+            //     fontWeight: FontWeight.bold,
+            //     fontSize: 15,
+            //   ),
+            //   bodyStyle: TextStyle(color: Colors.grey, fontSize: 12),
+            //   errorBody: 'Error getting body',
+            //   errorTitle: 'Error getting title',
+            //   errorWidget: Container(
+            //     color: Colors.grey[300],
+            //     child: Text('Oops!'),
+            //   ),
+            //   // errorImage: "https://google.com/",
+            //   cache: const Duration(days: 0),
+            //   backgroundColor: Colors.grey[100],
+            //   borderRadius: 0,
+            //   removeElevation: true,
+            //   boxShadow: null, //[BoxShadow(blurRadius: 3, color: Colors.grey)],
+            //   onTap: () {}, // This disables tap event
+            // )
+          ],
+        );
+      }
     } else {
       switch (widget.posts[0].type) {
         case AmityDataType.IMAGE:
@@ -138,6 +253,10 @@ class TextPost extends StatelessWidget {
   final AmityPost post;
   const TextPost({Key? key, required this.post}) : super(key: key);
 
+  Widget buildURLWidget(String text) {
+    return LinkWell(text);
+  }
+
   @override
   Widget build(BuildContext context) {
     final textdata = post.data as TextData;
@@ -163,11 +282,14 @@ class TextPost extends StatelessWidget {
                                   ? const SizedBox()
                                   : Padding(
                                       padding: const EdgeInsets.all(10),
-                                      child: Text(
-                                        textdata.text.toString(),
-                                        style: const TextStyle(fontSize: 18),
-                                      ),
-                                    )
+                                      child: buildURLWidget(
+                                          textdata.text.toString())
+                                      // Text(
+                                      //   textdata.text.toString(),
+                                      //   style:
+                                      //       const TextStyle(fontSize: 18),
+                                      // ),
+                                      )
                           : Container()),
                 ],
               ),

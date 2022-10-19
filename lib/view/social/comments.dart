@@ -4,6 +4,7 @@ import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:linkwell/linkwell.dart';
 import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:provider/provider.dart';
 
@@ -46,14 +47,35 @@ class CommentScreenState extends State<CommentScreen> {
       return true;
     }
     return false;
+    // return true;
   }
 
   Widget mediaPostWidgets() {
-    final childrenPosts =
-        Provider.of<PostVM>(context, listen: false).amityPost.children;
-    if (childrenPosts != null && childrenPosts.isNotEmpty) {
-      return AmityPostWidget(childrenPosts, true, false);
-    }
+    AmityPost parentPost = Provider.of<PostVM>(context, listen: false).amityPost;
+    List<AmityPost> childrenPosts =
+        parentPost.children ?? [];
+    if (childrenPosts.isNotEmpty) {
+      return AmityPostWidget(
+        childrenPosts,
+        true,
+        false,
+        haveChildrenPost: true,
+      );
+    } 
+    // else {
+    //   TextData textData = parentPost.data as TextData;
+    //   if (textData.text != null) {
+    //     return  AmityPostWidget(
+    //       [parentPost],
+    //       false,
+    //       false,
+    //       haveChildrenPost: false,
+    //       shouldShowTextPost: false,
+    //     );
+    //   } else {
+    //     return Container();
+    //   }
+    // }
     return Container();
   }
 
@@ -305,25 +327,40 @@ class CommentScreenState extends State<CommentScreen> {
                                                   ),
                                                 ),
                                                 Padding(
-                                                  padding:
-                                                      const EdgeInsets.fromLTRB(
-                                                          10, 10, 0, 9),
-                                                  child: postData.text == "" ||
-                                                          postData.text == null
-                                                      ? const SizedBox()
-                                                      : Text(
-                                                          postData.text ?? "",
-                                                          textAlign:
-                                                              TextAlign.left,
-                                                          style: theme.textTheme
-                                                              .headline6!
-                                                              .copyWith(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w500,
-                                                                  fontSize: 18),
-                                                        ),
-                                                ),
+                                                    padding: const EdgeInsets
+                                                        .fromLTRB(10, 10, 0, 9),
+                                                    child: postData.text ==
+                                                                "" ||
+                                                            postData.text ==
+                                                                null
+                                                        ? const SizedBox()
+                                                        : LinkWell(
+                                                            postData.text ?? "",
+                                                            textAlign:
+                                                                TextAlign.left,
+                                                            style: theme
+                                                                .textTheme
+                                                                .headline6!
+                                                                .copyWith(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w500,
+                                                                    fontSize:
+                                                                        18),
+                                                          )
+                                                    // Text(
+                                                    //     postData.text ?? "",
+                                                    //     textAlign:
+                                                    //         TextAlign.left,
+                                                    //     style: theme.textTheme
+                                                    //         .headline6!
+                                                    //         .copyWith(
+                                                    //             fontWeight:
+                                                    //                 FontWeight
+                                                    //                     .w500,
+                                                    //             fontSize: 18),
+                                                    //   ),
+                                                    ),
                                               ],
                                             ),
                                           ),
