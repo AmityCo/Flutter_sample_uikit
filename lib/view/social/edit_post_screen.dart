@@ -1,13 +1,13 @@
 import 'package:amity_sdk/amity_sdk.dart';
-import 'package:animation_wrappers/animation_wrappers.dart';
-
+import 'package:amity_uikit_beta_service/viewmodel/community_feed_viewmodel.dart';
+import 'package:animation_wrappers/animations/fade_animation.dart';
+import 'package:animation_wrappers/animations/faded_slide_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../../components/custom_user_avatar.dart';
 import '../../components/video_player.dart';
-import '../../viewmodel/community_Feed_viewmodel.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
 import '../../viewmodel/edit_post_viewmodel.dart';
 import '../../viewmodel/user_feed_viewmodel.dart';

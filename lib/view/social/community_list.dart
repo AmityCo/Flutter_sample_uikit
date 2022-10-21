@@ -3,7 +3,7 @@ import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../viewmodel/community_Feed_viewmodel.dart';
+import '../../viewmodel/community_feed_viewmodel.dart';
 import '../../viewmodel/community_viewmodel.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
 import 'community_feed.dart';
@@ -160,9 +160,11 @@ class CommunityWidget extends StatelessWidget {
         await Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => ChangeNotifierProvider(
                   create: (context) => CommuFeedVM(),
-                  child: CommunityScreen(
-                    community: community,
-                  ),
+                  child: Builder(builder: (context) {
+                    return CommunityScreen(
+                      community: community,
+                    );
+                  }),
                 )));
         switch (communityType) {
           case CommunityListType.my:

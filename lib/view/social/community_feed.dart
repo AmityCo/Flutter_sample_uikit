@@ -1,11 +1,10 @@
 import 'package:amity_sdk/amity_sdk.dart';
-import 'package:amity_uikit_beta_service/viewmodel/user_viewmodel.dart';
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:provider/provider.dart';
 
-import '../../viewmodel/community_Feed_viewmodel.dart';
+import '../../viewmodel/community_feed_viewmodel.dart';
 import '../../viewmodel/community_viewmodel.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
 import 'create_post_screen.dart';
@@ -245,7 +244,7 @@ class CommunityScreenState extends State<CommunityScreen> {
     //final mediaQuery = MediaQuery.of(context);
     //final bHeight = mediaQuery.size.height - mediaQuery.padding.top;
 
-    return Consumer<CommuFeedVM>(builder: (context, vm, _) {
+    return Consumer<CommuFeedVM>(builder: (__, vm, _) {
       return Scaffold(
         appBar: myAppBar,
         floatingActionButton: (widget.community.isJoined!)

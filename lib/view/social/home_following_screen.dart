@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 
 import '../../components/custom_user_avatar.dart';
 
-import '../../viewmodel/community_Feed_viewmodel.dart';
+import '../../viewmodel/community_feed_viewmodel.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
 import '../../viewmodel/edit_post_viewmodel.dart';
 import '../../viewmodel/feed_viewmodel.dart';
