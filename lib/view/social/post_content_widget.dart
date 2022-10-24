@@ -6,8 +6,7 @@ import 'package:flutter_link_previewer/flutter_link_previewer.dart';
 import 'package:linkify/linkify.dart';
 import 'package:linkwell/linkwell.dart';
 import 'package:optimized_cached_image/optimized_cached_image.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' show PreviewData;
-import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import '../../components/video_player.dart';
 
@@ -23,7 +22,9 @@ class AmityPostWidget extends StatefulWidget {
 
   const AmityPostWidget(
       this.posts, this.isChildrenPost, this.isCornerRadiusEnabled,
-      {super.key, this.haveChildrenPost = false,this.shouldShowTextPost = true});
+      {super.key,
+      this.haveChildrenPost = false,
+      this.shouldShowTextPost = true});
   @override
   AmityPostWidgetState createState() => AmityPostWidgetState();
 }
@@ -195,7 +196,9 @@ class AmityPostWidgetState extends State<AmityPostWidget> {
         return Column(
           children: [
             // Text(url),
-            widget.shouldShowTextPost ? TextPost(post: widget.posts[0]) : Container(),
+            widget.shouldShowTextPost
+                ? TextPost(post: widget.posts[0])
+                : Container(),
             generateURLWidget(url.toLowerCase())
             // AnyLinkPreview(
             //   link: url.toLowerCase(),

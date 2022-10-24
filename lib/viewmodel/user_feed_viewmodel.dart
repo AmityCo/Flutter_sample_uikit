@@ -49,6 +49,7 @@ class UserFeedVM extends ChangeNotifier {
     _controller = PagingController(
       pageFuture: (token) => AmitySocialClient.newFeedRepository()
           .getUserFeed(userId)
+          .includeDeleted(false)
           .getPagingData(token: token, limit: 20),
       pageSize: 20,
     )..addListener(

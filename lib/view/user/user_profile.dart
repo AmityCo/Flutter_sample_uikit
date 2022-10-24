@@ -72,6 +72,14 @@ class UserProfileScreenState extends State<UserProfileScreen>
     }
   }
 
+  AmityUser getAmityUser() {
+    if (widget.amityUser.userId == AmityCoreClient.getCurrentUser().userId) {
+      return Provider.of<AmityVM>(context).currentamityUser!;
+    } else {
+      return widget.amityUser;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var isCurrentUser =
@@ -93,13 +101,17 @@ class UserProfileScreenState extends State<UserProfileScreen>
         mediaQuery.padding.top -
         myAppBar.preferredSize.height;
 
-    return Scaffold(
-        backgroundColor: Colors.grey[200],
-        appBar: widget.isEnableAppbar ?? true ? myAppBar : null,
-        body: Consumer<UserFeedVM>(
-          builder: (context, vm, child) {
-            return SingleChildScrollView(
-              // physics: const AlwaysScrollableScrollPhysics(),
+    return Consumer<UserFeedVM>(builder: (context, vm, _) {
+      return RefreshIndicator(
+        color: Provider.of<AmityUIConfiguration>(context).primaryColor,
+        onRefresh: (() async {
+          vm.initUserFeed(AmityCoreClient.getCurrentUser());
+        }),
+        child: Scaffold(
+            backgroundColor: Colors.grey[200],
+            appBar: widget.isEnableAppbar ?? true ? myAppBar : null,
+            body: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
               controller: vm.scrollcontroller,
               child: Column(
                 children: [
@@ -176,17 +188,11 @@ class UserProfileScreenState extends State<UserProfileScreen>
                             ),
                           ),
                           Text(
-                            Provider.of<AmityVM>(context)
-                                    .currentamityUser
-                                    ?.displayName ??
-                                "",
+                            getAmityUser().displayName ?? "",
                             style: theme.textTheme.headline6,
                           ),
                           Text(
-                            Provider.of<AmityVM>(context)
-                                    .currentamityUser
-                                    ?.description ??
-                                "",
+                            getAmityUser().description ?? "",
                             style: theme.textTheme.subtitle2!.copyWith(
                               color: theme.hintColor,
                               fontSize: 12,
@@ -416,32 +422,38 @@ class UserProfileScreenState extends State<UserProfileScreen>
                             ),
                           ],
                         )
-                      : ListView.builder(
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: vm.amityPosts.length,
-                          itemBuilder: (context, index) {
-                            // var post = vm.amityPosts[index];
-                            return StreamBuilder<AmityPost>(
-                                stream: vm.amityPosts[index].listen,
-                                initialData: vm.amityPosts[index],
-                                builder: (context, snapshot) {
-                                  return PostWidget(
-                                    post: snapshot.data!,
-                                    theme: theme,
-                                    postIndex: index,
-                                  );
-                                });
-                          },
-                        )
+                      : vm.amityPosts.isEmpty
+                          ? Container(
+                              color: Colors.grey[200],
+                              width: 100,
+                              height: bheight - 400,
+                            )
+                          : ListView.builder(
+                              physics: const NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: vm.amityPosts.length,
+                              itemBuilder: (context, index) {
+                                // var post = vm.amityPosts[index];
+                                return StreamBuilder<AmityPost>(
+                                    stream: vm.amityPosts[index].listen,
+                                    initialData: vm.amityPosts[index],
+                                    builder: (context, snapshot) {
+                                      return PostWidget(
+                                        post: snapshot.data!,
+                                        theme: theme,
+                                        postIndex: index,
+                                      );
+                                    });
+                              },
+                            )
 
                   //   Container(),
                   // ],
                   // ),
                 ],
               ),
-            );
-          },
-        ));
+            )),
+      );
+    });
   }
 }

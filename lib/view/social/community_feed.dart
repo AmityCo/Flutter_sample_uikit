@@ -265,54 +265,61 @@ class CommunityScreenState extends State<CommunityScreen> {
               )
             : null,
         backgroundColor: Colors.grey[200],
-        body: FadedSlideAnimation(
-          beginOffset: const Offset(0, 0.3),
-          endOffset: const Offset(0, 0),
-          slideCurve: Curves.linearToEaseOut,
-          child: SafeArea(
-            child: SingleChildScrollView(
-              controller: vm.scrollcontroller,
-              child: Column(
-                children: [
-                  // Align(
-                  //   alignment: Alignment.topLeft,
-                  //   child: IconButton(
-                  //     onPressed: () {
-                  //       Navigator.of(context).pop();
-                  //     },
-                  //     icon: const Icon(Icons.chevron_left,
-                  //         color: Colors.black, size: 35),
-                  //   ),
-                  // ),
-                  SizedBox(
-                      width: double.infinity,
-                      // height: (bHeight - 120) * 0.4,
-                      child: communityDetailSection(vm)),
-                  FadedSlideAnimation(
-                    beginOffset: const Offset(0, 0.3),
-                    endOffset: const Offset(0, 0),
-                    slideCurve: Curves.linearToEaseOut,
-                    child: ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: vm.getCommunityPosts().length,
-                      itemBuilder: (context, index) {
-                        return StreamBuilder<AmityPost>(
-                            key: Key(vm.getCommunityPosts()[index].postId!),
-                            stream: vm.getCommunityPosts()[index].listen,
-                            initialData: vm.getCommunityPosts()[index],
-                            builder: (context, snapshot) {
-                              return PostWidget(
-                                post: snapshot.data!,
-                                theme: theme,
-                                postIndex: index,
-                                isCommunity: true,
-                              );
-                            });
-                      },
+        body: RefreshIndicator(
+          color: Provider.of<AmityUIConfiguration>(context).primaryColor,
+          onRefresh: () async {
+            Provider.of<CommuFeedVM>(context, listen: false)
+                .initAmityCommunityFeed(widget.community.communityId!);
+          },
+          child: FadedSlideAnimation(
+            beginOffset: const Offset(0, 0.3),
+            endOffset: const Offset(0, 0),
+            slideCurve: Curves.linearToEaseOut,
+            child: SafeArea(
+              child: SingleChildScrollView(
+                controller: vm.scrollcontroller,
+                child: Column(
+                  children: [
+                    // Align(
+                    //   alignment: Alignment.topLeft,
+                    //   child: IconButton(
+                    //     onPressed: () {
+                    //       Navigator.of(context).pop();
+                    //     },
+                    //     icon: const Icon(Icons.chevron_left,
+                    //         color: Colors.black, size: 35),
+                    //   ),
+                    // ),
+                    SizedBox(
+                        width: double.infinity,
+                        // height: (bHeight - 120) * 0.4,
+                        child: communityDetailSection(vm)),
+                    FadedSlideAnimation(
+                      beginOffset: const Offset(0, 0.3),
+                      endOffset: const Offset(0, 0),
+                      slideCurve: Curves.linearToEaseOut,
+                      child: ListView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: vm.getCommunityPosts().length,
+                        itemBuilder: (context, index) {
+                          return StreamBuilder<AmityPost>(
+                              key: Key(vm.getCommunityPosts()[index].postId!),
+                              stream: vm.getCommunityPosts()[index].listen,
+                              initialData: vm.getCommunityPosts()[index],
+                              builder: (context, snapshot) {
+                                return PostWidget(
+                                  post: snapshot.data!,
+                                  theme: theme,
+                                  postIndex: index,
+                                  isCommunity: true,
+                                );
+                              });
+                        },
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
