@@ -22,9 +22,9 @@ class CommunityTabbar extends StatelessWidget {
           unselectedLabelColor: Colors.black,
           indicatorSize: TabBarIndicatorSize.label,
           tabs: const [
-            Tab(text: "Recommend"),
+            Tab(text: "Recommended"),
             Tab(text: "Trending"),
-            Tab(text: "My"),
+            Tab(text: "joined"),
           ],
         ),
         body: const TabBarView(

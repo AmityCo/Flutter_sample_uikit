@@ -176,11 +176,17 @@ class UserProfileScreenState extends State<UserProfileScreen>
                             ),
                           ),
                           Text(
-                            vm.amityUser!.displayName!,
+                            Provider.of<AmityVM>(context)
+                                    .currentamityUser
+                                    ?.displayName ??
+                                "",
                             style: theme.textTheme.headline6,
                           ),
                           Text(
-                            "",
+                            Provider.of<AmityVM>(context)
+                                    .currentamityUser
+                                    ?.description ??
+                                "",
                             style: theme.textTheme.subtitle2!.copyWith(
                               color: theme.hintColor,
                               fontSize: 12,
@@ -199,7 +205,9 @@ class UserProfileScreenState extends State<UserProfileScreen>
                                           Navigator.of(context).push(
                                               MaterialPageRoute(
                                                   builder: (context) =>
-                                                      const ProfileScreen()));
+                                                      ProfileScreen(
+                                                          user:
+                                                              vm.amityUser!)));
                                         },
                                         child: Container(
                                           margin: const EdgeInsets.all(20),

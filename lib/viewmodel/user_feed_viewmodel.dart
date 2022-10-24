@@ -1,9 +1,12 @@
 import 'dart:developer';
 
 import 'package:amity_sdk/amity_sdk.dart';
+import 'package:amity_uikit_beta_service/utils/navigation_key.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../components/alert_dialog.dart';
+import 'amity_viewmodel.dart';
 import 'follower_following_viewmodel.dart';
 
 class UserFeedVM extends ChangeNotifier {
@@ -24,7 +27,10 @@ class UserFeedVM extends ChangeNotifier {
     log("getUser=> ${user.userId}");
     if (user.id == AmityCoreClient.getUserId()) {
       log("isCurrentUser:${user.id}");
-      amityUser = AmityCoreClient.getCurrentUser();
+      amityUser = Provider.of<AmityVM>(
+              NavigationService.navigatorKey.currentContext!,
+              listen: false)
+          .currentamityUser;
     } else {
       log("isNotCurrentUser:${user.id}");
       amityUser = user;
@@ -76,39 +82,32 @@ class UserFeedVM extends ChangeNotifier {
   }
 
   Future<void> editCurrentUserInfo(
-      {String? displayName, String? description, String? avatarFileID}) async {
-    if (displayName != null) {
+      {required String displayName,
+      required String description,
+      String? avatarFileId}) async {
+    if (avatarFileId != null) {
+      await AmityCoreClient.getCurrentUser()
+          .update()
+          .avatarFileId(avatarFileId)
+          .description(description)
+          .displayName(displayName)
+          .update()
+          .then((value) =>
+              {log("update displayname & description & avatarFileUrl success")})
+          .onError((error, stackTrace) async => {
+                log("update displayname & description & avatarFileUrl fail"),
+                await AmityDialog().showAlertErrorDialog(
+                    title: "Error!", message: error.toString())
+              });
+    } else {
       await AmityCoreClient.getCurrentUser()
           .update()
           .displayName(displayName)
-          .update()
-          .then((value) => {log("update displayname success")})
-          .onError((error, stackTrace) async => {
-                log("update displayname fail"),
-                await AmityDialog().showAlertErrorDialog(
-                    title: "Error!", message: error.toString())
-              });
-    }
-    if (description != null) {
-      await AmityCoreClient.getCurrentUser()
-          .update()
           .description(description)
           .update()
-          .then((value) => {log("update description success")})
+          .then((value) => {log("update displayname & description success")})
           .onError((error, stackTrace) async => {
-                log("update description fail"),
-                await AmityDialog().showAlertErrorDialog(
-                    title: "Error!", message: error.toString())
-              });
-    }
-    if (avatarFileID != null) {
-      await AmityCoreClient.getCurrentUser()
-          .update()
-          .avatarFileId(avatarFileID)
-          .update()
-          .then((value) => {log("update avatarFileID success")})
-          .onError((error, stackTrace) async => {
-                log("avatarFileID displayname fail"),
+                log("update displayname & description fail"),
                 await AmityDialog().showAlertErrorDialog(
                     title: "Error!", message: error.toString())
               });

@@ -197,18 +197,21 @@ class CommunityScreenState extends State<CommunityScreen> {
         Row(
           children: [
             Expanded(
-              child: OptimizedCacheImage(
-                height: 400,
-                imageUrl: widget.community.avatarImage?.fileUrl != null
-                    ? "${widget.community.avatarImage!.fileUrl}?size=full"
-                    : "https://f8n-ipfs-production.imgix.net/QmXydmx66BwUCLXsxa2q6Z9ATKht6fbXqdrxU8VFd6c4cD/nft.png?q=80&auto=format%2Ccompress&cs=srgb&max-w=1680&max-h=1680",
-                fit: BoxFit.cover,
-                placeholder: (context, url) => Container(
-                  height: 400,
-                  color: Colors.grey,
-                ),
-                errorWidget: (context, url, error) => const Icon(Icons.error),
-              ),
+              child: widget.community.avatarImage?.fileUrl == null ||
+                      widget.community.avatarImage?.fileUrl == ""
+                  ? const SizedBox()
+                  : OptimizedCacheImage(
+                      height: 400,
+                      imageUrl:
+                          "${widget.community.avatarImage!.fileUrl}?size=full",
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Container(
+                        height: 400,
+                        color: Colors.grey,
+                      ),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
+                    ),
             ),
           ],
         ),
@@ -303,6 +306,7 @@ class CommunityScreenState extends State<CommunityScreen> {
                                 post: snapshot.data!,
                                 theme: theme,
                                 postIndex: index,
+                                isCommunity: true,
                               );
                             });
                       },

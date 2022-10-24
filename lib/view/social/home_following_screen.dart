@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:amity_sdk/amity_sdk.dart';
+import 'package:amity_uikit_beta_service/viewmodel/amity_viewmodel.dart';
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -99,9 +100,10 @@ class PostWidget extends StatefulWidget {
       required this.post,
       required this.theme,
       required this.postIndex,
-      this.isFromFeed = false})
+      this.isFromFeed = false,
+      this.isCommunity})
       : super(key: key);
-
+  final bool? isCommunity;
   final AmityPost post;
   final ThemeData theme;
   final int postIndex;
@@ -165,8 +167,13 @@ class _PostWidgetState extends State<PostWidget>
                     child: EditPostScreen(post: widget.post))));
             break;
           case 'Delete Post':
-            Provider.of<FeedVM>(context, listen: false)
-                .deletePost(widget.post, widget.postIndex);
+            if (widget.isCommunity == null || widget.isCommunity == false) {
+              Provider.of<FeedVM>(context, listen: false)
+                  .deletePost(widget.post, widget.postIndex);
+            } else {
+              Provider.of<CommuFeedVM>(context, listen: false)
+                  .deletePost(widget.post, widget.postIndex);
+            }
             break;
           default:
         }
@@ -230,7 +237,12 @@ class _PostWidgetState extends State<PostWidget>
                                       ))));
                             },
                             child: getAvatarImage(
-                                widget.post.postedUser?.avatarUrl))),
+                                widget.post.postedUser!.userId !=
+                                        AmityCoreClient.getCurrentUser().userId
+                                    ? widget.post.postedUser?.avatarUrl
+                                    : Provider.of<AmityVM>(context)
+                                        .currentamityUser!
+                                        .avatarUrl))),
                     title: Wrap(
                       children: [
                         GestureDetector(
@@ -243,8 +255,14 @@ class _PostWidgetState extends State<PostWidget>
                                     ))));
                           },
                           child: Text(
-                            widget.post.postedUser?.displayName ??
-                                "Display name",
+                            widget.post.postedUser!.userId !=
+                                    AmityCoreClient.getCurrentUser().userId
+                                ? widget.post.postedUser?.displayName ??
+                                    "Display name"
+                                : Provider.of<AmityVM>(context)
+                                        .currentamityUser!
+                                        .displayName ??
+                                    "",
                             style: widget.theme.textTheme.bodyText1!.copyWith(
                                 fontWeight: FontWeight.bold, fontSize: 16),
                           ),

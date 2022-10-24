@@ -31,6 +31,7 @@ class CommuFeedVM extends ChangeNotifier {
           .getCommunityFeed(communityId)
           //feedType could be AmityFeedType.PUBLISHED, AmityFeedType.REVIEWING, AmityFeedType.DECLINED
           .feedType(AmityFeedType.PUBLISHED)
+          .includeDeleted(false)
           .getPagingData(token: token, limit: 20),
       pageSize: 20,
     )..addListener(
@@ -63,6 +64,7 @@ class CommuFeedVM extends ChangeNotifier {
     //inititate the PagingController
     await AmitySocialClient.newFeedRepository()
         .getCommunityFeed(communityId)
+        .includeDeleted(false)
         .getPagingData()
         .then((value) {
       _amityCommunityFeedPosts = value.data;
@@ -80,6 +82,19 @@ class CommuFeedVM extends ChangeNotifier {
   }
 
   void loadCoomunityMember() {}
+
+  void deletePost(AmityPost post, int postIndex) async {
+    print("deleting post....");
+    AmitySocialClient.newPostRepository()
+        .deletePost(postId: post.postId!)
+        .then((value) {
+      _amityCommunityFeedPosts.removeAt(postIndex);
+      notifyListeners();
+    }).onError((error, stackTrace) async {
+      await AmityDialog()
+          .showAlertErrorDialog(title: "Error!", message: error.toString());
+    });
+  }
 
   Future<void> checkIsCurrentUserIsAdmin(String communityId) async {
     print("LOG1 :checkIsCurrentUserIsAdmin");

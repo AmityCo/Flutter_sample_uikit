@@ -167,113 +167,136 @@ class _NotificationAllTabScreenState extends State<NotificationAllTabScreen> {
                             Container(
                                 padding: const EdgeInsets.all(10),
                                 child: Text(
-                                  "This month",
+                                  vm.notificationsObject?.data?.isEmpty ?? false
+                                      ? ""
+                                      : "This month",
                                   style: theme.textTheme.headline6,
                                 )),
-                            ListView.builder(
-                              physics: const NeverScrollableScrollPhysics(),
-                              shrinkWrap: true,
-                              itemCount:
-                                  vm.notificationsObject?.data?.length ?? 0,
-                              itemBuilder: (context, index) {
-                                var notificationItem =
-                                    vm.notificationsObject?.data?[index];
-                                return FadeAnimation(
-                                  child: Card(
-                                    child: ListTile(
-                                      contentPadding: const EdgeInsets.only(
-                                          left: 16, right: 10),
-                                      leading: GestureDetector(
-                                        onTap: () {
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (_) =>
-                                                      UserProfileScreen(
-                                                        amityUser: AmityCoreClient
-                                                            .getCurrentUser(),
-                                                      )));
-                                        },
-                                        child: FadedScaleAnimation(
-                                            child: getAvatarImage(
-                                                notificationItem!
-                                                    .actors![0].imageUrl)),
-                                      ),
-                                      title: RichText(
-                                        text: TextSpan(
-                                          style: theme.textTheme.subtitle1!
-                                              .copyWith(
-                                            letterSpacing: 0.5,
-                                          ),
-                                          children: [
-                                            TextSpan(
-                                                text: vm.prefixStringBuilder(
-                                                    notificationItem.actors ??
-                                                        []),
+                            vm.notificationsObject?.data?.isEmpty ?? false
+                                ? const Center(
+                                    child: Text("Notification box is empty!"))
+                                : ListView.builder(
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    shrinkWrap: true,
+                                    itemCount:
+                                        vm.notificationsObject?.data?.length ??
+                                            0,
+                                    itemBuilder: (context, index) {
+                                      var notificationItem =
+                                          vm.notificationsObject?.data?[index];
+                                      return FadeAnimation(
+                                        child: Card(
+                                          child: ListTile(
+                                            contentPadding:
+                                                const EdgeInsets.only(
+                                                    left: 16, right: 10),
+                                            leading: GestureDetector(
+                                              onTap: () {
+                                                Navigator.of(context).push(
+                                                    MaterialPageRoute(
+                                                        builder: (_) =>
+                                                            UserProfileScreen(
+                                                              amityUser:
+                                                                  AmityCoreClient
+                                                                      .getCurrentUser(),
+                                                            )));
+                                              },
+                                              child: FadedScaleAnimation(
+                                                  child: getAvatarImage(
+                                                      notificationItem!
+                                                          .actors![0]
+                                                          .imageUrl)),
+                                            ),
+                                            title: RichText(
+                                              text: TextSpan(
                                                 style: theme
-                                                    .textTheme.subtitle2!
-                                                    .copyWith(fontSize: 12)),
-                                            TextSpan(
-                                                text: " ${vm.verbStringBuilder(
-                                                  notificationItem.verb!,
-                                                )} ",
-                                                style: TextStyle(
-                                                    color: theme.primaryColor,
-                                                    fontSize: 12)),
-                                            TextSpan(
-                                                text: vm.suffixStringBuilder(
-                                                    notificationItem.verb!,
-                                                    notificationItem
-                                                        .targetDisplayName),
-                                                style: theme
-                                                    .textTheme.subtitle2!
+                                                    .textTheme.subtitle1!
                                                     .copyWith(
-                                                  fontSize: 12,
-                                                )),
-                                          ],
-                                        ),
-                                      ),
-                                      subtitle: Text(
-                                        getDateTime(vm.notificationsObject!
-                                            .data![index].lastUpdate!),
-                                        style:
-                                            theme.textTheme.subtitle2!.copyWith(
-                                          fontSize: 9,
-                                          color: theme.hintColor,
-                                        ),
-                                      ),
-                                      trailing: notificationItem
-                                                  .targetImageUrl ==
-                                              null
-                                          ? null
-                                          : Container(
-                                              margin: const EdgeInsets.all(0),
-                                              child: AspectRatio(
-                                                aspectRatio: 1 / 1,
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(7),
-                                                  child: OptimizedCacheImage(
-                                                    imageUrl: notificationItem
-                                                            .targetImageUrl ??
-                                                        "",
-                                                    fit: BoxFit.cover,
-                                                    placeholder:
-                                                        (context, url) =>
-                                                            Container(
-                                                      color: Colors.grey,
-                                                    ),
-                                                    errorWidget: (context, url,
-                                                            error) =>
-                                                        const Icon(Icons.error),
-                                                  ),
+                                                  letterSpacing: 0.5,
                                                 ),
+                                                children: [
+                                                  TextSpan(
+                                                      text: vm
+                                                          .prefixStringBuilder(
+                                                              notificationItem
+                                                                      .actors ??
+                                                                  []),
+                                                      style: theme
+                                                          .textTheme.subtitle2!
+                                                          .copyWith(
+                                                              fontSize: 12)),
+                                                  TextSpan(
+                                                      text:
+                                                          " ${vm.verbStringBuilder(
+                                                        notificationItem.verb!,
+                                                      )} ",
+                                                      style: TextStyle(
+                                                          color: theme
+                                                              .primaryColor,
+                                                          fontSize: 12)),
+                                                  TextSpan(
+                                                      text: vm.suffixStringBuilder(
+                                                          notificationItem
+                                                              .verb!,
+                                                          notificationItem
+                                                              .targetDisplayName),
+                                                      style: theme
+                                                          .textTheme.subtitle2!
+                                                          .copyWith(
+                                                        fontSize: 12,
+                                                      )),
+                                                ],
                                               ),
                                             ),
-                                    ),
+                                            subtitle: Text(
+                                              getDateTime(vm
+                                                  .notificationsObject!
+                                                  .data![index]
+                                                  .lastUpdate!),
+                                              style: theme.textTheme.subtitle2!
+                                                  .copyWith(
+                                                fontSize: 9,
+                                                color: theme.hintColor,
+                                              ),
+                                            ),
+                                            trailing: notificationItem
+                                                        .targetImageUrl ==
+                                                    null
+                                                ? null
+                                                : Container(
+                                                    margin:
+                                                        const EdgeInsets.all(0),
+                                                    child: AspectRatio(
+                                                      aspectRatio: 1 / 1,
+                                                      child: ClipRRect(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(7),
+                                                        child:
+                                                            OptimizedCacheImage(
+                                                          imageUrl: notificationItem
+                                                                  .targetImageUrl ??
+                                                              "",
+                                                          fit: BoxFit.cover,
+                                                          placeholder:
+                                                              (context, url) =>
+                                                                  Container(
+                                                            color: Colors.grey,
+                                                          ),
+                                                          errorWidget: (context,
+                                                                  url, error) =>
+                                                              const Icon(
+                                                                  Icons.error),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                          ),
+                                        ),
+                                      );
+                                    },
                                   ),
-                                );
-                              },
-                            ),
                           ],
                         ),
                       ),

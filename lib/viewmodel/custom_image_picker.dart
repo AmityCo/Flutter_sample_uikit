@@ -7,12 +7,26 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../components/alert_dialog.dart';
 
+enum ImageState { noImage, loading, hasImage }
+
 class ImagePickerVM extends ChangeNotifier {
   final ImagePicker _picker = ImagePicker();
   AmityFileInfo? amityImage;
+  ImageState imageState = ImageState.loading;
 
-  void init() {
+  void init(String? imageurl) {
     amityImage = null;
+    checkUserImage(imageurl);
+  }
+
+  checkUserImage(String? url) {
+    if (url != null && url != "" && url != "null") {
+      imageState = ImageState.hasImage;
+      print("has image:$url");
+    } else {
+      imageState = ImageState.noImage;
+      print("no image");
+    }
   }
 
   void showBottomSheet(BuildContext context) {
@@ -40,20 +54,28 @@ class ImagePickerVM extends ChangeNotifier {
                       Navigator.pop(context);
                       final XFile? image =
                           await _picker.pickImage(source: ImageSource.gallery);
-                      await AmityCoreClient.newFileRepository()
-                          .image(File(image!.path))
-                          .upload()
-                          .then((value) {
-                        var fileInfo = value as AmityUploadComplete;
-
-                        amityImage = fileInfo.getFile;
-                        log("check amity image ${amityImage!.fileId}");
+                      if (image != null) {
+                        print("Image was selected");
+                        imageState = ImageState.loading;
                         notifyListeners();
-                      }).onError((error, stackTrace) async {
-                        log("error: $error");
-                        await AmityDialog().showAlertErrorDialog(
-                            title: "Error!", message: error.toString());
-                      });
+                        await AmityCoreClient.newFileRepository()
+                            .image(File(image.path))
+                            .upload()
+                            .then((value) {
+                          var fileInfo = value as AmityUploadComplete;
+
+                          amityImage = fileInfo.getFile;
+                          log("check amity image ${amityImage!.fileId}");
+                          imageState = ImageState.hasImage;
+                          notifyListeners();
+                        }).onError((error, stackTrace) async {
+                          log("error: $error");
+                          await AmityDialog().showAlertErrorDialog(
+                              title: "Error!", message: error.toString());
+                          imageState = ImageState.hasImage;
+                          notifyListeners();
+                        });
+                      }
                     }),
                 const Divider(
                   color: Colors.grey,
@@ -65,20 +87,27 @@ class ImagePickerVM extends ChangeNotifier {
                     Navigator.pop(context);
                     final XFile? image =
                         await _picker.pickImage(source: ImageSource.gallery);
-                    await AmityCoreClient.newFileRepository()
-                        .image(File(image!.path))
-                        .upload()
-                        .then((value) {
-                      var fileInfo = value as AmityUploadComplete;
-
-                      amityImage = fileInfo.getFile;
+                    if (image != null) {
+                      imageState = ImageState.loading;
                       notifyListeners();
-                      Navigator.pop(context);
-                    }).onError((error, stackTrace) async {
-                      log("error: $error");
-                      await AmityDialog().showAlertErrorDialog(
-                          title: "Error!", message: error.toString());
-                    });
+                      await AmityCoreClient.newFileRepository()
+                          .image(File(image.path))
+                          .upload()
+                          .then((value) {
+                        var fileInfo = value as AmityUploadComplete;
+
+                        amityImage = fileInfo.getFile;
+                        imageState = ImageState.hasImage;
+                        notifyListeners();
+                        Navigator.pop(context);
+                      }).onError((error, stackTrace) async {
+                        log("error: $error");
+                        await AmityDialog().showAlertErrorDialog(
+                            title: "Error!", message: error.toString());
+                        imageState = ImageState.hasImage;
+                        notifyListeners();
+                      });
+                    }
                   },
                 ),
               ],
