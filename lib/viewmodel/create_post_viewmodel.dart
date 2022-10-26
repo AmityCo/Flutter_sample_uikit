@@ -58,7 +58,8 @@ class CreatePostVM extends ChangeNotifier {
 
   Future<void> addFiles() async {
     if (isNotSelectVideoYet()) {
-      final List<XFile>? images = await _picker.pickMultiImage(imageQuality: 1);
+      final List<XFile>? images =
+          await _picker.pickMultiImage(imageQuality: 100);
       if (images != null) {
         for (var image in images) {
           var fileWithStatus = AmityFileInfoWithUploadStatus();
