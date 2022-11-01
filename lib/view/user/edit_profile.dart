@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:amity_sdk/amity_sdk.dart';
 import 'package:amity_uikit_beta_service/components/alert_dialog.dart';
 import 'package:animation_wrappers/animation_wrappers.dart';
@@ -24,11 +26,11 @@ class ProfileScreenState extends State<ProfileScreen> {
   final TextEditingController _descriptionController = TextEditingController();
 
   Widget imageWidgetBuilder(ImageState imageState) {
-    print("image state$imageState");
-    print("ImagePickerVM:${Provider.of<ImagePickerVM>(
+    log("image state$imageState");
+    log("ImagePickerVM:${Provider.of<ImagePickerVM>(
       context,
     ).amityImage?.fileUrl}");
-    print("AmityVM:${Provider.of<AmityVM>(
+    log("AmityVM:${Provider.of<AmityVM>(
       context,
     ).currentamityUser?.avatarUrl}");
     var widget = const CircleAvatar();
@@ -97,7 +99,7 @@ class ProfileScreenState extends State<ProfileScreen> {
     final mediaQuery = MediaQuery.of(context);
     final myAppBar = AppBar(
       title: Text(
-        "My Profile",
+        "Edit Profile",
         style: theme.textTheme.headline6,
       ),
       backgroundColor: Colors.white,
@@ -119,10 +121,8 @@ class ProfileScreenState extends State<ProfileScreen> {
               if (Provider.of<ImagePickerVM>(context, listen: false)
                       .amityImage !=
                   null) {
-                print(
-                    "Image was selected and will be adding to user profile...");
-                print(Provider.of<ImagePickerVM>(context, listen: false)
-                    .amityImage);
+                log("Image was selected and will be adding to user profile...");
+
                 await Provider.of<UserFeedVM>(context, listen: false)
                     .editCurrentUserInfo(
                         displayName: _displayNameController.text,
@@ -132,8 +132,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                                 .amityImage
                                 ?.fileId);
               } else {
-                print(
-                    "No Image was selected and current avatarImage will be adding to user profile...");
+                log("No Image was selected and current avatarImage will be adding to user profile...");
                 await Provider.of<UserFeedVM>(context, listen: false)
                     .editCurrentUserInfo(
                         displayName: _displayNameController.text,
@@ -149,7 +148,8 @@ class ProfileScreenState extends State<ProfileScreen> {
                   .then((value) {
                 Navigator.of(context).pop();
                 AmityDialog().showAlertErrorDialog(
-                    title: "Success!", message: "Edit profile success");
+                    title: "Success!",
+                    message: "Profile updated successfully!");
               });
             }
           },

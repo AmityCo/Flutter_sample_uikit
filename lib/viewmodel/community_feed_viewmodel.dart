@@ -84,7 +84,7 @@ class CommuFeedVM extends ChangeNotifier {
   void loadCoomunityMember() {}
 
   void deletePost(AmityPost post, int postIndex) async {
-    print("deleting post....");
+    log("deleting post....");
     AmitySocialClient.newPostRepository()
         .deletePost(postId: post.postId!)
         .then((value) {
@@ -97,11 +97,11 @@ class CommuFeedVM extends ChangeNotifier {
   }
 
   Future<void> checkIsCurrentUserIsAdmin(String communityId) async {
-    print("LOG1 :checkIsCurrentUserIsAdmin");
+    log("LOG1 :checkIsCurrentUserIsAdmin");
     await AmitySocialClient.newCommunityRepository()
         .getCurentUserRoles(communityId)
         .then((value) {
-      print("LOG1" + value.toString());
+      log("LOG1" + value.toString());
       for (var role in value) {
         if (role == "community-moderator") {
           isCurrentUserIsAdmin = true;
@@ -109,7 +109,7 @@ class CommuFeedVM extends ChangeNotifier {
       }
       notifyListeners();
     }).onError((error, stackTrace) {
-      print("LOG1:$error");
+      log("LOG1:$error");
     });
   }
 }

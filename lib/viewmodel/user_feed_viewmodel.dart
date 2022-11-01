@@ -136,7 +136,7 @@ class UserFeedVM extends ChangeNotifier {
         .follow()
         .then((AmityFollowStatus followStatus) {
       //success
-      print("sendFollowRequest: Success");
+      log("sendFollowRequest: Success");
       notifyListeners();
     }).onError((error, stackTrace) {
       //handle error
@@ -151,7 +151,7 @@ class UserFeedVM extends ChangeNotifier {
         .me()
         .unfollow(user.userId!)
         .then((value) {
-      print("withdrawFollowRequest: Success");
+      log("withdrawFollowRequest: Success");
       notifyListeners();
     }).onError((error, stackTrace) {
       AmityDialog()

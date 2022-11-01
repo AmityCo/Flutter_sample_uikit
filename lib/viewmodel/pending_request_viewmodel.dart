@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:amity_sdk/amity_sdk.dart';
 import 'package:flutter/material.dart';
 
@@ -12,7 +14,7 @@ class PendingVM extends ChangeNotifier {
   late PagingController<AmityFollowRelationship> _pendingListController;
 
   Future<void> getMyPendingRequestList() async {
-    print("getMyFollowingList....");
+    log("getMyFollowingList....");
 
     _pendingListController = PagingController(
       pageFuture: (token) => AmityCoreClient.newUserRepository()
@@ -45,7 +47,7 @@ class PendingVM extends ChangeNotifier {
         .status(AmityFollowStatusFilter.PENDING)
         .getPagingData()
         .then((value) {
-      print("getFollowerListOf....Successs");
+      log("getFollowerListOf....Successs");
       _pendingList = value.data;
     }).onError((error, stackTrace) {
       AmityDialog()
@@ -78,7 +80,7 @@ class PendingVM extends ChangeNotifier {
         .accept(userId = userId)
         .then((value) {
       //success
-      print("acceptFollowRequest: Success");
+      log("acceptFollowRequest: Success");
       _pendingList.removeAt(index);
       notifyListeners();
     }).onError((error, stackTrace) {
@@ -95,7 +97,7 @@ class PendingVM extends ChangeNotifier {
         .decline(userId = userId)
         .then((value) {
       //success
-      print("declineFollowRequest: Success");
+      log("declineFollowRequest: Success");
       _pendingList.removeAt(index);
       notifyListeners();
     }).onError((error, stackTrace) {

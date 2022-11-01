@@ -1,4 +1,5 @@
 import 'package:amity_sdk/amity_sdk.dart';
+import 'package:amity_uikit_beta_service/viewmodel/amity_viewmodel.dart';
 import 'package:animation_wrappers/animation_wrappers.dart';
 
 import 'package:flutter/material.dart';
@@ -67,8 +68,9 @@ class CreatePostScreen2State extends State<CreatePostScreen2> {
                 children: [
                   Align(
                       alignment: Alignment.topLeft,
-                      child: getAvatarImage(
-                          AmityCoreClient.getCurrentUser().avatarUrl)),
+                      child: getAvatarImage(Provider.of<AmityVM>(context)
+                          .currentamityUser
+                          ?.avatarUrl)),
                   const SizedBox(
                     height: 10,
                   ),

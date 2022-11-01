@@ -1,5 +1,6 @@
 import 'package:amity_sdk/amity_sdk.dart';
 import 'package:amity_uikit_beta_service/view/social/post_content_widget.dart';
+import 'package:amity_uikit_beta_service/viewmodel/amity_viewmodel.dart';
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,6 +12,8 @@ import 'package:provider/provider.dart';
 import '../../components/custom_user_avatar.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
 import '../../viewmodel/post_viewmodel.dart';
+import '../../viewmodel/user_feed_viewmodel.dart';
+import '../user/user_profile.dart';
 
 class CommentScreen extends StatefulWidget {
   final AmityPost amityPost;
@@ -51,9 +54,9 @@ class CommentScreenState extends State<CommentScreen> {
   }
 
   Widget mediaPostWidgets() {
-    AmityPost parentPost = Provider.of<PostVM>(context, listen: false).amityPost;
-    List<AmityPost> childrenPosts =
-        parentPost.children ?? [];
+    AmityPost parentPost =
+        Provider.of<PostVM>(context, listen: false).amityPost;
+    List<AmityPost> childrenPosts = parentPost.children ?? [];
     if (childrenPosts.isNotEmpty) {
       return AmityPostWidget(
         childrenPosts,
@@ -61,7 +64,7 @@ class CommentScreenState extends State<CommentScreen> {
         false,
         haveChildrenPost: true,
       );
-    } 
+    }
     // else {
     //   TextData textData = parentPost.data as TextData;
     //   if (textData.text != null) {
@@ -389,8 +392,9 @@ class CommentScreenState extends State<CommentScreen> {
                             ]),
                         height: 60,
                         child: ListTile(
-                          leading: getAvatarImage(
-                              widget.amityPost.postedUser!.avatarUrl),
+                          leading: getAvatarImage(Provider.of<AmityVM>(context)
+                              .currentamityUser
+                              ?.avatarUrl),
                           title: TextField(
                             controller: _commentTextEditController,
                             decoration: const InputDecoration(
@@ -475,24 +479,43 @@ class _CommentComponentState extends State<CommentComponent> {
                 return Container(
                   color: Colors.white,
                   child: ListTile(
-                    leading:
-                        getAvatarImage(vm.amityComments[index].user!.avatarUrl),
-                    title: RichText(
-                      text: TextSpan(
-                        style: widget.theme.textTheme.bodyText1!
-                            .copyWith(fontSize: 17),
-                        children: [
-                          TextSpan(
-                            text: comments.user!.displayName!,
-                            style: widget.theme.textTheme.headline6!
-                                .copyWith(fontSize: 14),
-                          ),
-                          TextSpan(
-                              text:
-                                  '   ${DateFormat.yMMMMEEEEd().format(comments.createdAt!)}',
-                              style: const TextStyle(
-                                  fontSize: 10, color: Colors.grey)),
-                        ],
+                    leading: GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => ChangeNotifierProvider(
+                                  create: (context) => UserFeedVM(),
+                                  child: UserProfileScreen(
+                                    amityUser: vm.amityComments[index].user!,
+                                  ))));
+                        },
+                        child: getAvatarImage(
+                            vm.amityComments[index].user!.avatarUrl)),
+                    title: GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => ChangeNotifierProvider(
+                                create: (context) => UserFeedVM(),
+                                child: UserProfileScreen(
+                                  amityUser: vm.amityComments[index].user!,
+                                ))));
+                      },
+                      child: RichText(
+                        text: TextSpan(
+                          style: widget.theme.textTheme.bodyText1!
+                              .copyWith(fontSize: 17),
+                          children: [
+                            TextSpan(
+                              text: comments.user!.displayName!,
+                              style: widget.theme.textTheme.headline6!
+                                  .copyWith(fontSize: 14),
+                            ),
+                            TextSpan(
+                                text:
+                                    '   ${DateFormat.yMMMMEEEEd().format(comments.createdAt!)}',
+                                style: const TextStyle(
+                                    fontSize: 10, color: Colors.grey)),
+                          ],
+                        ),
                       ),
                     ),
                     subtitle: Text(

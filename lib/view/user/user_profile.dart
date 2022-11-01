@@ -105,7 +105,7 @@ class UserProfileScreenState extends State<UserProfileScreen>
       return RefreshIndicator(
         color: Provider.of<AmityUIConfiguration>(context).primaryColor,
         onRefresh: (() async {
-          vm.initUserFeed(AmityCoreClient.getCurrentUser());
+          vm.initUserFeed(widget.amityUser);
         }),
         child: Scaffold(
             backgroundColor: Colors.grey[200],
@@ -187,15 +187,23 @@ class UserProfileScreenState extends State<UserProfileScreen>
                               ],
                             ),
                           ),
-                          Text(
-                            getAmityUser().displayName ?? "",
-                            style: theme.textTheme.headline6,
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 20, right: 20, bottom: 10, top: 10),
+                            child: Text(
+                              getAmityUser().displayName ?? "",
+                              style: theme.textTheme.headline6,
+                            ),
                           ),
-                          Text(
-                            getAmityUser().description ?? "",
-                            style: theme.textTheme.subtitle2!.copyWith(
-                              color: theme.hintColor,
-                              fontSize: 12,
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 20, right: 20, bottom: 10),
+                            child: Text(
+                              getAmityUser().description ?? "",
+                              style: theme.textTheme.subtitle2!.copyWith(
+                                color: theme.hintColor,
+                                fontSize: 12,
+                              ),
                             ),
                           ),
                           // const SizedBox(

@@ -94,7 +94,7 @@ class AmityPostWidgetState extends State<AmityPostWidget> {
 
   bool urlValidation(AmityPost post) {
     final url = extractLink(post); //urlExtraction(post);
-    print("checking url validation ${url}");
+    log("checking url validation ${url}");
     return AnyLinkPreview.isValidLink(url);
   }
 

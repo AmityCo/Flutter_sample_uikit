@@ -24,7 +24,7 @@ class NotificationAllTabScreen extends StatefulWidget {
 class _NotificationAllTabScreenState extends State<NotificationAllTabScreen> {
   @override
   void initState() {
-    print("init NotificationVM");
+    log("init NotificationVM");
     Provider.of<NotificationVM>(context, listen: false).initVM();
     Provider.of<PendingVM>(context, listen: false).getMyPendingRequestList();
     super.initState();

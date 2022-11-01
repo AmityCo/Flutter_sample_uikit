@@ -94,11 +94,14 @@ class AmitySLEUIKit {
     // example of getting token from firebase
     // FirebaseMessaging messaging = FirebaseMessaging.instance;
     // final fcmToken = await messaging.getToken();
-
-    await AmityCoreClient.registerDeviceNotification(fcmToken)
-        .then((value) => {callback(true, null)})
-        .onError((error, stackTrace) =>
-            {callback(false, "Initialize push notification fail...")});
+    // await AmityCoreClient.unregisterDeviceNotification();
+    // log("unregisterDeviceNotification");
+    await AmityCoreClient.registerDeviceNotification(fcmToken).then((value) {
+      print("registerNotification succesfully ✅");
+      callback(true, null);
+    }).onError((error, stackTrace) {
+      callback(false, "Initialize push notification fail...");
+    });
   }
 
   void configAmityThemeColor(
@@ -114,6 +117,18 @@ class AmitySLEUIKit {
   void unRegisterDevice() {
     AmityCoreClient.logout();
     AmityCoreClient.unregisterDeviceNotification();
+  }
+
+  Future<void> joinInitialCommunity(List<String> communityIds) async {
+    for (var i = 0; i < communityIds.length; i++) {
+      AmitySocialClient.newCommunityRepository()
+          .joinCommunity(communityIds[i])
+          .then((value) {
+        log("join community:${communityIds[i]} success");
+      }).onError((error, stackTrace) {
+        log(error.toString());
+      });
+    }
   }
 }
 
@@ -145,6 +160,7 @@ class AmitySLEProvider extends StatelessWidget {
       ],
       child: Builder(
         builder: (context) => MaterialApp(
+          debugShowCheckedModeBanner: false,
           navigatorKey: NavigationService.navigatorKey,
           home: child,
         ),

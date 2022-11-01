@@ -22,10 +22,10 @@ class ImagePickerVM extends ChangeNotifier {
   checkUserImage(String? url) {
     if (url != null && url != "" && url != "null") {
       imageState = ImageState.hasImage;
-      print("has image:$url");
+      log("has image:$url");
     } else {
       imageState = ImageState.noImage;
-      print("no image");
+      log("no image");
     }
   }
 
@@ -55,7 +55,7 @@ class ImagePickerVM extends ChangeNotifier {
                       final XFile? image =
                           await _picker.pickImage(source: ImageSource.gallery);
                       if (image != null) {
-                        print("Image was selected");
+                        log("Image was selected");
                         imageState = ImageState.loading;
                         notifyListeners();
                         await AmityCoreClient.newFileRepository()

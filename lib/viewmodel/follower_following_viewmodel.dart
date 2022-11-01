@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:amity_sdk/amity_sdk.dart';
 import 'package:amity_uikit_beta_service/components/alert_dialog.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +18,7 @@ class FollowerVM extends ChangeNotifier {
   late PagingController<AmityFollowRelationship> _followingController;
 
   Future<void> getFollowingListof({required String userId}) async {
-    print("getFollowingListOf....");
+    log("getFollowingListOf....");
     if (AmityCoreClient.getUserId() == userId) {
       _followingController = PagingController(
         pageFuture: (token) => AmityCoreClient.newUserRepository()
@@ -61,7 +63,7 @@ class FollowerVM extends ChangeNotifier {
           .status(AmityFollowStatusFilter.ACCEPTED)
           .getPagingData()
           .then((value) {
-        print("getFollowerListOf....Successs");
+        log("getFollowerListOf....Successs");
         _followingList = value.data;
       }).onError((error, stackTrace) {
         AmityDialog()
@@ -75,7 +77,7 @@ class FollowerVM extends ChangeNotifier {
           .status(AmityFollowStatusFilter.ACCEPTED)
           .getPagingData()
           .then((value) {
-        print("getFollowerListOf....Successs");
+        log("getFollowerListOf....Successs");
         scrollController = ScrollController();
         _followingList = value.data;
       }).onError((error, stackTrace) {
@@ -89,7 +91,7 @@ class FollowerVM extends ChangeNotifier {
   Future<void> getFollowerListOf({
     required String userId,
   }) async {
-    print("getFollowerListOf....");
+    log("getFollowerListOf....");
     if (AmityCoreClient.getUserId() == userId) {
       _followerController = PagingController(
         pageFuture: (token) => AmityCoreClient.newUserRepository()
@@ -134,7 +136,7 @@ class FollowerVM extends ChangeNotifier {
           .status(AmityFollowStatusFilter.ACCEPTED)
           .getPagingData()
           .then((value) {
-        print("getFollowerListOf....Successs");
+        log("getFollowerListOf....Successs");
         _followerList = value.data;
       }).onError((error, stackTrace) {
         AmityDialog()
@@ -148,7 +150,7 @@ class FollowerVM extends ChangeNotifier {
           .status(AmityFollowStatusFilter.ACCEPTED)
           .getPagingData()
           .then((value) {
-        print("getFollowerListOf....Successs");
+        log("getFollowerListOf....Successs");
         scrollController = ScrollController();
         _followerList = value.data;
       }).onError((error, stackTrace) {
@@ -180,7 +182,7 @@ class FollowerVM extends ChangeNotifier {
         .follow()
         .then((AmityFollowStatus followStatus) {
       //success
-      print("Follow Success");
+      log("Follow Success");
       notifyListeners();
     }).onError((error, stackTrace) {
       //handle error
@@ -195,7 +197,7 @@ class FollowerVM extends ChangeNotifier {
         .me()
         .unfollow(user.userId!)
         .then((value) {
-      print("with Draw Success");
+      log("with Draw Success");
       notifyListeners();
     }).onError((error, stackTrace) {
       AmityDialog()
