@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:amity_sdk/amity_sdk.dart';
 import 'package:amity_uikit_beta_service/components/alert_dialog.dart';
 import 'package:amity_uikit_beta_service/model/amity_notification_model.dart';
@@ -12,8 +14,10 @@ import '../utils/navigation_key.dart';
 class NotificationVM extends ChangeNotifier {
   AmityNotificationRepoImp channelRepoImp = AmityNotificationRepoImp();
   AmityNotifications? notificationsObject;
+  var actorMapper = {};
+
   void initVM() async {
-    print("NotificationVM: initVM");
+    log("NotificationVM: initVM");
     var accessToken = Provider.of<UserVM>(
             NavigationService.navigatorKey.currentContext!,
             listen: false)
@@ -21,7 +25,7 @@ class NotificationVM extends ChangeNotifier {
 
     if (accessToken != null) {
       channelRepoImp.initRepo(accessToken);
-      print(">>>>updateNotification...");
+      log(">>>>updateNotification...");
       await updateNotification();
     } else {
       AmityDialog().showAlertErrorDialog(
@@ -47,30 +51,48 @@ class NotificationVM extends ChangeNotifier {
     }
   }
 
+  Future<void> mapActor(AmityNotificaion notification) async {
+    if (actorMapper.containsKey(notification.actors![0].id)) {
+      print(">>>>>>>>${actorMapper[notification.actors![0].id]["avatarUrl"]}");
+      print(">>>>>>>>${actorMapper[notification.actors![0].id]["avatarUrl"]}");
+      notification.actors?[0].imageUrl =
+          actorMapper[notification.actors![0].id]["avatarUrl"];
+      notification.actors?[0].name =
+          actorMapper[notification.actors![0].id]["displayName"];
+    } else {
+      if (notification.actors![0].id != "_admin_vodworks-admin") {
+        ///Add first actor image
+        ///TODO: Willuse Map to make sure that each user was loaded only 1 time
+        await AmityCoreClient.newUserRepository()
+            .getUser(notification.actors![0].id!)
+            .then((value) {
+          actorMapper[notification.actors![0].id] = {
+            "displayName": value.displayName,
+            "avatarUrl": value.avatarUrl,
+          };
+
+          notification.actors?[0].imageUrl = value.avatarUrl;
+          notification.actors?[0].name = value.displayName;
+        }).onError((error, stackTrace) {
+          // AmityDialog().showAlertErrorDialog(
+          //     title: "Error!: getUserrrrrr", message: error.toString());
+        });
+      } else {
+        notification.actors![0].name = "Anonymous";
+      }
+    }
+  }
+
   Future<void> addImageNotificationWorkAround(
       AmityNotifications notifications) async {
     for (var i = 0; i < notifications.data!.length; i++) {
       var notification = notificationsObject?.data![i];
 
       if (notification != null) {
-        if (notification.actors![0].id != "_admin_vodworks-admin") {
-          ///Add first actor image
-          ///TODO: Willuse Map to make sure that each user was loaded only 1 time
-          await AmityCoreClient.newUserRepository()
-              .getUser(notification.actors![0].id!)
-              .then((value) {
-            notification.actors?[0].imageUrl = value.avatarUrl;
-            notification.actors?[0].name = value.displayName;
-          }).onError((error, stackTrace) {
-            // AmityDialog().showAlertErrorDialog(
-            //     title: "Error!: getUserrrrrr", message: error.toString());
-          });
-        } else {
-          notification.actors![0].name = "Anonymous";
-        }
+        mapActor(notification);
         if (notification.targetId != null) {
           if (notification.targetType == "community") {
-            print(">>>>>>>>>>is community targetType");
+            log(">>>>>>>>>>is community targetType");
             await AmitySocialClient.newCommunityRepository()
                 .getCommunity(notification.targetId!)
                 .then((value) {
@@ -84,21 +106,21 @@ class NotificationVM extends ChangeNotifier {
                     "https://api.${env!.region}.amity.co/api/v3/files/${value.avatarFileId}/download";
               }
             }).onError((error, stackTrace) {
-              print(error);
+              log(error.toString());
               AmityDialog().showAlertErrorDialog(
                   title: "Error!:getCommunity ", message: error.toString());
             });
           } else if (notification.targetType == "post") {
-            print(">>>>>>>>>>is post targetType");
+            log(">>>>>>>>>>is post targetType");
             await AmitySocialClient.newPostRepository()
                 .getPost(notification.targetId!)
                 .then((value) {
-              print(">>>>CALL BACK FROM newPostRepository");
+              log(">>>>CALL BACK FROM newPostRepository");
               if (value.children != null) {
                 if (value.children!.isNotEmpty) {
                   if (value.children![0].data is ImageData) {
                     var postData = value.children![0].data as ImageData;
-                    print("is imageData: ${postData.fileId}");
+                    log("is imageData: ${postData.fileId}");
 
                     /// add target imageUrl for Post if it's image post'
                     notificationsObject!.data![i].targetImageUrl =
@@ -106,7 +128,7 @@ class NotificationVM extends ChangeNotifier {
                   } else if (value.children![0].data is VideoData) {
                     /// add target imageUrl for Post if it's video post
                     var postData = value.children![0].data as VideoData;
-                    print("is videoData: ${postData.fileId}");
+                    log("is videoData: ${postData.fileId}");
                     if (postData.thumbnail != null) {
                       var thumbnailURL = postData.thumbnail!.fileUrl;
                       notificationsObject!.data![i].targetImageUrl =
@@ -116,13 +138,13 @@ class NotificationVM extends ChangeNotifier {
                 }
               }
             }).onError((error, stackTrace) {
-              print(error);
+              log(error.toString());
               AmityDialog().showAlertErrorDialog(
                   title: "Error! notification.targetType == post",
                   message: error.toString());
             });
           } else {
-            print(">>>>>Unhandle tagetType");
+            log(">>>>>Unhandle tagetType");
           }
         }
       }
