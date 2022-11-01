@@ -100,7 +100,7 @@ class AmitySLEUIKit {
       print("registerNotification succesfully ✅");
       callback(true, null);
     }).onError((error, stackTrace) {
-      callback(false, "Initialize push notification fail...");
+      callback(false, "Initialize push notification fail...❌");
     });
   }
 
@@ -115,8 +115,8 @@ class AmitySLEUIKit {
   }
 
   void unRegisterDevice() {
-    AmityCoreClient.logout();
     AmityCoreClient.unregisterDeviceNotification();
+    AmityCoreClient.logout();
   }
 
   Future<void> joinInitialCommunity(List<String> communityIds) async {

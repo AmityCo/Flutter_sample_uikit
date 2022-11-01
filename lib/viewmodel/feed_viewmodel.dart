@@ -66,24 +66,24 @@ class FeedVM extends ChangeNotifier {
     scrollcontroller.removeListener(() {});
     scrollcontroller.addListener(loadnextpage);
 
-    //inititate the PagingController
-    await AmitySocialClient.newFeedRepository()
-        .getGlobalFeed()
-        .getPagingData()
-        .then((value) async {
-      _amityGlobalFeedPosts = value.data;
-      if (_amityGlobalFeedPosts.isEmpty) {
-        await AmityDialog().showAlertErrorDialog(
-            title: "No Post yet!",
-            message: "please join some community or follow some user 🥳");
-      }
-    }).onError(
-      (error, stackTrace) async {
-        await AmityDialog()
-            .showAlertErrorDialog(title: "Error!", message: error.toString());
-      },
-    );
-    notifyListeners();
+    // //inititate the PagingController
+    // await AmitySocialClient.newFeedRepository()
+    //     .getGlobalFeed()
+    //     .getPagingData()
+    //     .then((value) async {
+    //   _amityGlobalFeedPosts = value.data;
+    //   if (_amityGlobalFeedPosts.isEmpty) {
+    //     await AmityDialog().showAlertErrorDialog(
+    //         title: "No Post yet!",
+    //         message: "please join some community or follow some user 🥳");
+    //   }
+    // }).onError(
+    //   (error, stackTrace) async {
+    //     await AmityDialog()
+    //         .showAlertErrorDialog(title: "Error!", message: error.toString());
+    //   },
+    // );
+    // notifyListeners();
   }
 
   void loadnextpage() async {
