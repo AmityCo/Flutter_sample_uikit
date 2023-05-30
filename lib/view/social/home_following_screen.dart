@@ -145,7 +145,7 @@ class _PostWidgetState extends State<PostWidget>
       'Delete Post'
     ];
 
-    final isFlaggedByMe = widget.post.isFlaggedByMe;
+    final isFlaggedByMe = widget.post.isFlaggedByMe ?? false;
     return PopupMenuButton(
       onSelected: (value) {
         switch (value) {
