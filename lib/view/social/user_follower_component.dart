@@ -68,7 +68,7 @@ class _AmityFollowerScreenState extends State<AmityFollowerScreen> {
                     return StreamBuilder<AmityFollowRelationship>(
                         // key: Key(vm.getFollowRelationships[index].sourceUserId! +
                         //     vm.getFollowRelationships[index].targetUserId!),
-                        stream: vm.getFollowerList[index].listen,
+                        stream: vm.getFollowerList[index].listen.stream,
                         initialData: vm.getFollowerList[index],
                         builder: (context, snapshot) {
                           return Padding(

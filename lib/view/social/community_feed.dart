@@ -305,7 +305,7 @@ class CommunityScreenState extends State<CommunityScreen> {
                         itemBuilder: (context, index) {
                           return StreamBuilder<AmityPost>(
                               key: Key(vm.getCommunityPosts()[index].postId!),
-                              stream: vm.getCommunityPosts()[index].listen,
+                              stream: vm.getCommunityPosts()[index].listen.stream,
                               initialData: vm.getCommunityPosts()[index],
                               builder: (context, snapshot) {
                                 return PostWidget(

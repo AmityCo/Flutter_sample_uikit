@@ -11,7 +11,6 @@ import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:provider/provider.dart';
 
 import '../../viewmodel/configuration_viewmodel.dart';
-import '../../viewmodel/user_viewmodel.dart';
 
 class NotificationAllTabScreen extends StatefulWidget {
   const NotificationAllTabScreen({super.key});

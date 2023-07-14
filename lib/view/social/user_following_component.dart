@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../components/custom_user_avatar.dart';
-import '../../viewmodel/configuration_viewmodel.dart';
 import '../../viewmodel/follower_following_viewmodel.dart';
 
 class AmityFollowingScreen extends StatefulWidget {
@@ -52,7 +51,7 @@ class _AmityFollowingScreenScreenState extends State<AmityFollowingScreen> {
               return StreamBuilder<AmityFollowRelationship>(
                   // key: Key(vm.getFollowRelationships[index].targetUserId! +
                   //     vm.getFollowRelationships[index].targetUserId!),
-                  stream: vm.getFollowingList[index].listen,
+                  stream: vm.getFollowingList[index].listen.stream,
                   initialData: vm.getFollowingList[index],
                   builder: (context, snapshot) {
                     return Padding(

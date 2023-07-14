@@ -4,10 +4,8 @@ import 'package:animation_wrappers/animations/faded_slide_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../components/custom_button.dart';
 import '../../components/custom_user_avatar.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
-import '../../viewmodel/follower_following_viewmodel.dart';
 
 class AmityPendingScreen extends StatefulWidget {
   const AmityPendingScreen({
@@ -58,7 +56,7 @@ class _AmityPendingScreenState extends State<AmityPendingScreen> {
                 return StreamBuilder<AmityFollowRelationship>(
                     // key: Key(vm.getFollowRelationships[index].sourceUserId! +
                     //     vm.getFollowRelationships[index].sourceUserId!),
-                    stream: vm.pendingRequestList[index].listen,
+                    stream: vm.pendingRequestList[index].listen.stream,
                     initialData: vm.pendingRequestList[index],
                     builder: (context, snapshot) {
                       return Padding(

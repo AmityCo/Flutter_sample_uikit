@@ -43,10 +43,6 @@ class GlobalFeedScreenState extends State<GlobalFeedScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final mediaQuery = MediaQuery.of(context);
-    final bHeight = mediaQuery.size.height -
-        mediaQuery.padding.top -
-        AppBar().preferredSize.height;
 
     final theme = Theme.of(context);
     return Consumer<FeedVM>(builder: (context, vm, _) {
@@ -72,7 +68,7 @@ class GlobalFeedScreenState extends State<GlobalFeedScreen> {
                     itemBuilder: (context, index) {
                       return StreamBuilder<AmityPost>(
                           key: Key(vm.getAmityPosts()[index].postId!),
-                          stream: vm.getAmityPosts()[index].listen,
+                          stream: vm.getAmityPosts()[index].listen.stream,
                           initialData: vm.getAmityPosts()[index],
                           builder: (context, snapshot) {
                             return PostWidget(
@@ -145,7 +141,7 @@ class _PostWidgetState extends State<PostWidget>
       'Delete Post'
     ];
 
-    final isFlaggedByMe = widget.post.isFlaggedByMe ?? false;
+    final isFlaggedByMe = widget.post.isFlaggedByMe;
     return PopupMenuButton(
       onSelected: (value) {
         switch (value) {

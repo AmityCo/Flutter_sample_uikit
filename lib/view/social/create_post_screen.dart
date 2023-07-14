@@ -1,4 +1,3 @@
-import 'package:amity_sdk/amity_sdk.dart';
 import 'package:amity_uikit_beta_service/viewmodel/amity_viewmodel.dart';
 import 'package:animation_wrappers/animation_wrappers.dart';
 
@@ -11,11 +10,11 @@ import '../../components/video_player.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
 import '../../viewmodel/create_post_viewmodel.dart';
 
-// ignore: must_be_immutable
+
 class CreatePostScreen2 extends StatefulWidget {
-  String? communityID;
-  BuildContext? context;
-  CreatePostScreen2({Key? key, this.communityID, this.context})
+  final String? communityID;
+  final BuildContext? context;
+  const CreatePostScreen2({Key? key, this.communityID, this.context})
       : super(key: key);
   @override
   CreatePostScreen2State createState() => CreatePostScreen2State();
@@ -31,13 +30,13 @@ class CreatePostScreen2State extends State<CreatePostScreen2> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // final mediaQuery = MediaQuery.of(context);
+  
     final myAppbar = AppBar(
       backgroundColor: Colors.white,
       elevation: 0,
       title: Text("Create Post",
           style:
-              theme.textTheme.headline6!.copyWith(fontWeight: FontWeight.w500)),
+              theme.textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w500)),
       leading: IconButton(
         icon: Icon(
           Icons.chevron_left,
@@ -48,9 +47,6 @@ class CreatePostScreen2State extends State<CreatePostScreen2> {
         },
       ),
     );
-    // final bheight = mediaQuery.size.height -
-    //     mediaQuery.padding.top -
-    //     myAppbar.preferredSize.height;
     return Consumer<CreatePostVM>(builder: (context, vm, m) {
       return Scaffold(
         appBar: myAppbar,
@@ -244,7 +240,7 @@ class CreatePostScreen2State extends State<CreatePostScreen2> {
                             ),
                             child: Text(
                               "Submit Post",
-                              style: theme.textTheme.button,
+                              style: theme.textTheme.bodySmall,
                             ),
                           ),
                         ),

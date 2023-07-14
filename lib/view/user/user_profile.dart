@@ -14,8 +14,8 @@ import 'edit_profile.dart';
 
 class UserProfileScreen extends StatefulWidget {
   final AmityUser amityUser;
-  bool? isEnableAppbar = true;
-  UserProfileScreen({Key? key, required this.amityUser, this.isEnableAppbar})
+  final bool? isEnableAppbar;
+  const UserProfileScreen({Key? key, required this.amityUser, this.isEnableAppbar = true})
       : super(key: key);
   @override
   UserProfileScreenState createState() => UserProfileScreenState();
@@ -23,12 +23,12 @@ class UserProfileScreen extends StatefulWidget {
 
 class UserProfileScreenState extends State<UserProfileScreen>
     with SingleTickerProviderStateMixin {
-  TabController? _tabController;
+  TabController? tabController;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(
+    tabController = TabController(
       length: 2,
       vsync: this,
     );
@@ -313,7 +313,7 @@ class UserProfileScreenState extends State<UserProfileScreen>
                                                   "",
                                                   textAlign: TextAlign.center,
                                                   style: theme
-                                                      .textTheme.subtitle2!
+                                                      .textTheme.titleSmall!
                                                       .copyWith(
                                                     fontSize: 12,
                                                   ),
@@ -323,7 +323,7 @@ class UserProfileScreenState extends State<UserProfileScreen>
                                                 child: StreamBuilder<
                                                         AmityUserFollowInfo>(
                                                     stream: vm.amityMyFollowInfo
-                                                        .listen,
+                                                        .listen.stream,
                                                     initialData:
                                                         vm.amityMyFollowInfo,
                                                     builder:
@@ -368,7 +368,7 @@ class UserProfileScreenState extends State<UserProfileScreen>
                                                                 .center,
                                                             style: theme
                                                                 .textTheme
-                                                                .subtitle2!
+                                                                .titleSmall!
                                                                 .copyWith(
                                                               color: getFollowingStatusTextColor(
                                                                   snapshot.data!
@@ -443,7 +443,7 @@ class UserProfileScreenState extends State<UserProfileScreen>
                               itemBuilder: (context, index) {
                                 // var post = vm.amityPosts[index];
                                 return StreamBuilder<AmityPost>(
-                                    stream: vm.amityPosts[index].listen,
+                                    stream: vm.amityPosts[index].listen.stream,
                                     initialData: vm.amityPosts[index],
                                     builder: (context, snapshot) {
                                       return PostWidget(

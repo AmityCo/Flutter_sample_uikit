@@ -58,17 +58,16 @@ class CreatePostVM extends ChangeNotifier {
 
   Future<void> addFiles() async {
     if (isNotSelectVideoYet()) {
-      final List<XFile>? images =
+      final List<XFile> images =
           await _picker.pickMultiImage(imageQuality: 100);
-      if (images != null) {
+      if (images.isNotEmpty) {
         for (var image in images) {
           var fileWithStatus = AmityFileInfoWithUploadStatus();
           amityImages.add(fileWithStatus);
           notifyListeners();
-          await AmityCoreClient.newFileRepository()
-              .image(File(image.path))
-              .upload()
-              .then((value) {
+          AmityCoreClient.newFileRepository()
+          .uploadImage(File(image.path))
+          ..stream.listen((value) {
             if (value is AmityUploadComplete) {
               var fileInfo = value as AmityUploadComplete;
               amityImages.last.addFile(fileInfo.getFile);
@@ -76,7 +75,8 @@ class CreatePostVM extends ChangeNotifier {
               log(value.toString());
             }
             notifyListeners();
-          }).onError((error, stackTrace) async {
+          })
+          ..addError((error, stackTrace) async {
             log("error: $error");
             await AmityDialog().showAlertErrorDialog(
                 title: "Error!", message: error.toString());
@@ -93,15 +93,15 @@ class CreatePostVM extends ChangeNotifier {
         var fileWithStatus = AmityFileInfoWithUploadStatus();
         amityImages.add(fileWithStatus);
         notifyListeners();
-        await AmityCoreClient.newFileRepository()
-            .image(File(image.path))
-            .upload()
-            .then((value) {
-          var fileInfo = value as AmityUploadComplete;
+        AmityCoreClient.newFileRepository().uploadImage(File(image.path))
+        ..stream.listen((value) {
+           var fileInfo = value as AmityUploadComplete;
 
           amityImages.last.addFile(fileInfo.getFile);
           notifyListeners();
-        }).onError((error, stackTrace) async {
+
+        })
+        ..addError((error, stackTrace) async {
           log("error: $error");
           await AmityDialog()
               .showAlertErrorDialog(title: "Error!", message: error.toString());
@@ -123,8 +123,7 @@ class CreatePostVM extends ChangeNotifier {
 
           notifyListeners();
           await AmityCoreClient.newFileRepository()
-              .video(File(video.path))
-              .upload()
+          .uploadVideo(File(video.path))
               .then((value) {
             var fileInfo = value as AmityUploadComplete;
 
