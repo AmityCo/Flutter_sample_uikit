@@ -7,7 +7,6 @@ import 'package:provider/provider.dart';
 
 import '../../components/alert_dialog.dart';
 import 'amity_viewmodel.dart';
-import 'follower_following_viewmodel.dart';
 
 class UserFeedVM extends ChangeNotifier {
   late AmityUser? amityUser;
@@ -35,8 +34,7 @@ class UserFeedVM extends ChangeNotifier {
       log("isNotCurrentUser:${user.id}");
       amityUser = user;
     }
-
-    amityUser!.relationship().getFollowInfo().then((value) {
+    amityUser!.relationship().getFollowInfo(user.userId ?? '').then((value) {
       amityMyFollowInfo = value;
       notifyListeners();
     }).onError((error, stackTrace) {

@@ -107,19 +107,13 @@ class CommunityListState extends State<CommunityList> {
               child: FadedSlideAnimation(
                 // ignore: sort_child_properties_last
                 child: getLength() < 1
-                    ? Center()
-                    // Center(
-                    //     child: CircularProgressIndicator(
-                    //       color: Provider.of<AmityUIConfiguration>(context)
-                    //           .primaryColor,
-                    //     ),
-                    //   )
+                    ? const Center()
                     : ListView.builder(
                         physics: const BouncingScrollPhysics(),
                         itemCount: getLength(),
                         itemBuilder: (context, index) {
                           return StreamBuilder<AmityCommunity>(
-                              stream: getList()[index].listen,
+                              stream: getList()[index].listen.stream,
                               initialData: getList()[index],
                               builder: (context, snapshot) {
                                 return CommunityWidget(

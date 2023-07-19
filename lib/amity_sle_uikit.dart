@@ -3,7 +3,6 @@
 import 'dart:developer';
 
 import 'package:amity_sdk/amity_sdk.dart';
-import 'package:amity_uikit_beta_service/utils/navigation_key.dart';
 import 'package:amity_uikit_beta_service/viewmodel/notification_viewmodel.dart';
 import 'package:amity_uikit_beta_service/viewmodel/pending_request_viewmodel.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +22,7 @@ import 'viewmodel/user_viewmodel.dart';
 import 'utils/env_manager.dart';
 
 class AmitySLEUIKit {
-  Future<void> initUIKit(String apikey, String region) async {
+  static Future<void> initUIKit(String apikey, String region) async {
     env = ENV(apikey, region);
     AmityRegionalHttpEndpoint? amityEndpoint;
     if (region.isNotEmpty) {
@@ -61,7 +60,7 @@ class AmitySLEUIKit {
         sycInitialization: true);
   }
 
-  Future<void> registerDevice(
+  static Future<void> registerDevice(
       {required BuildContext context,
       required String userId,
       String? displayName,
@@ -89,7 +88,7 @@ class AmitySLEUIKit {
     });
   }
 
-  Future<void> registerNotification(
+  static Future<void> registerNotification(
       String fcmToken, Function(bool isSuccess, String? error) callback) async {
     // example of getting token from firebase
     // FirebaseMessaging messaging = FirebaseMessaging.instance;
@@ -97,29 +96,29 @@ class AmitySLEUIKit {
     // await AmityCoreClient.unregisterDeviceNotification();
     // log("unregisterDeviceNotification");
     await AmityCoreClient.registerDeviceNotification(fcmToken).then((value) {
-      print("registerNotification succesfully ✅");
+      debugPrint("registerNotification succesfully ✅");
       callback(true, null);
     }).onError((error, stackTrace) {
       callback(false, "Initialize push notification fail...❌");
     });
   }
 
-  void configAmityThemeColor(
+  static void configAmityThemeColor(
       BuildContext context, Function(AmityUIConfiguration config) config) {
     var provider = Provider.of<AmityUIConfiguration>(context, listen: false);
     config(provider);
   }
 
-  AmityUser getCurrentUser() {
+  static AmityUser getCurrentUser() {
     return AmityCoreClient.getCurrentUser();
   }
 
-  void unRegisterDevice() {
+  static void unRegisterDevice() {
     AmityCoreClient.unregisterDeviceNotification();
     AmityCoreClient.logout();
   }
 
-  Future<void> joinInitialCommunity(List<String> communityIds) async {
+  static Future<void> joinInitialCommunity(List<String> communityIds) async {
     for (var i = 0; i < communityIds.length; i++) {
       AmitySocialClient.newCommunityRepository()
           .joinCommunity(communityIds[i])
@@ -159,11 +158,7 @@ class AmitySLEProvider extends StatelessWidget {
         ChangeNotifierProvider<PendingVM>(create: ((context) => PendingVM())),
       ],
       child: Builder(
-        builder: (context) => MaterialApp(
-          debugShowCheckedModeBanner: false,
-          navigatorKey: NavigationService.navigatorKey,
-          home: child,
-        ),
+        builder: (context) => child,
       ),
     );
   }

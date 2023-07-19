@@ -93,7 +93,7 @@ class CommentScreenState extends State<CommentScreen> {
     return Consumer<PostVM>(builder: (context, vm, _) {
       return StreamBuilder<AmityPost>(
           key: Key(postData.postId),
-          stream: vm.amityPost.listen,
+          stream: vm.amityPost.listen.stream,
           initialData: vm.amityPost,
           builder: (context, snapshot) {
             return Scaffold(
@@ -470,7 +470,7 @@ class _CommentComponentState extends State<CommentComponent> {
         itemBuilder: (context, index) {
           return StreamBuilder<AmityComment>(
               key: Key(vm.amityComments[index].commentId!),
-              stream: vm.amityComments[index].listen,
+              stream: vm.amityComments[index].listen.stream,
               initialData: vm.amityComments[index],
               builder: (context, snapshot) {
                 var comments = snapshot.data!;

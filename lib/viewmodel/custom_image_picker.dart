@@ -59,16 +59,16 @@ class ImagePickerVM extends ChangeNotifier {
                         imageState = ImageState.loading;
                         notifyListeners();
                         await AmityCoreClient.newFileRepository()
-                            .image(File(image.path))
-                            .upload()
-                            .then((value) {
+                        .uploadImage(File(image.path))
+                        ..stream.listen((value) {
                           var fileInfo = value as AmityUploadComplete;
 
                           amityImage = fileInfo.getFile;
                           log("check amity image ${amityImage!.fileId}");
                           imageState = ImageState.hasImage;
                           notifyListeners();
-                        }).onError((error, stackTrace) async {
+                        })
+                        ..addError((error, stackTrace) async {
                           log("error: $error");
                           await AmityDialog().showAlertErrorDialog(
                               title: "Error!", message: error.toString());
@@ -91,16 +91,16 @@ class ImagePickerVM extends ChangeNotifier {
                       imageState = ImageState.loading;
                       notifyListeners();
                       await AmityCoreClient.newFileRepository()
-                          .image(File(image.path))
-                          .upload()
-                          .then((value) {
+                          .uploadImage(File(image.path))
+                        ..stream.listen((value) {
                         var fileInfo = value as AmityUploadComplete;
 
                         amityImage = fileInfo.getFile;
                         imageState = ImageState.hasImage;
                         notifyListeners();
                         Navigator.pop(context);
-                      }).onError((error, stackTrace) async {
+                      })
+                      ..addError((error, stackTrace) async {
                         log("error: $error");
                         await AmityDialog().showAlertErrorDialog(
                             title: "Error!", message: error.toString());
