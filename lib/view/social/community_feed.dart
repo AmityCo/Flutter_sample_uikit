@@ -79,18 +79,21 @@ class CommunityScreenState extends State<CommunityScreen> {
       children: [
         Row(
           children: [
-            Text(
-              widget.community.displayName != null
-                  ? widget.community.displayName!
-                  : "Community",
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
+            Flexible(
+              child: Text(
+                widget.community.displayName != null
+                    ? widget.community.displayName!
+                    : "Community",
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
-              overflow: TextOverflow.ellipsis,
             ),
-            const Spacer(),
-            IconButton(
+             if (vm.isCurrentUserIsAdmin)
+              const SizedBox(width: 5),
+             if (vm.isCurrentUserIsAdmin)
+              IconButton(
                 onPressed: () {
                   if (vm.isCurrentUserIsAdmin) {
                     showModalBottomSheet(
