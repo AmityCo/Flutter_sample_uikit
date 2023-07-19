@@ -27,7 +27,7 @@ class CommunityScreenState extends State<CommunityScreen> {
   @override
   void initState() {
     Provider.of<CommuFeedVM>(context, listen: false)
-        .initAmityCommunityFeed(widget.community.communityId!);
+        .initAmityCommunityFeed(widget.community);
     super.initState();
   }
 
@@ -80,11 +80,15 @@ class CommunityScreenState extends State<CommunityScreen> {
         Row(
           children: [
             Text(
-                widget.community.displayName != null
-                    ? widget.community.displayName!
-                    : "Community",
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+              widget.community.displayName != null
+                  ? widget.community.displayName!
+                  : "Community",
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
             const Spacer(),
             IconButton(
                 onPressed: () {
@@ -269,7 +273,7 @@ class CommunityScreenState extends State<CommunityScreen> {
           color: Provider.of<AmityUIConfiguration>(context).primaryColor,
           onRefresh: () async {
             Provider.of<CommuFeedVM>(context, listen: false)
-                .initAmityCommunityFeed(widget.community.communityId!);
+                .initAmityCommunityFeed(widget.community);
           },
           child: FadedSlideAnimation(
             beginOffset: const Offset(0, 0.3),
@@ -305,7 +309,8 @@ class CommunityScreenState extends State<CommunityScreen> {
                         itemBuilder: (context, index) {
                           return StreamBuilder<AmityPost>(
                               key: Key(vm.getCommunityPosts()[index].postId!),
-                              stream: vm.getCommunityPosts()[index].listen.stream,
+                              stream:
+                                  vm.getCommunityPosts()[index].listen.stream,
                               initialData: vm.getCommunityPosts()[index],
                               builder: (context, snapshot) {
                                 return PostWidget(
