@@ -7,7 +7,9 @@ class AmityUIConfiguration extends ChangeNotifier {
 
   ChannelListConfig channelListConfig = ChannelListConfig();
   MessageRoomConfig messageRoomConfig = MessageRoomConfig();
-
+  ButtonConfig buttonConfig = ButtonConfig();
+  AppbarConfig appbarConfig = AppbarConfig();
+  
   void updateUI() {
     notifyListeners();
   }
@@ -26,4 +28,24 @@ class MessageRoomConfig {
   Color appbarColor = Colors.white;
   Color textFieldBackGroundColor = Colors.white;
   Color textFieldHintColor = Colors.grey[500]!;
+}
+
+class AppbarConfig{
+  final Color backgroundColor;
+  final Color textColor;
+  final Color iconBackColor;
+  AppbarConfig({
+    this.backgroundColor = Colors.white,
+    this.textColor = Colors.black,
+    this.iconBackColor =Colors.white,
+  });
+}
+
+class ButtonConfig{
+  final Color backgroundColor;
+  final Color textColor;
+  ButtonConfig({
+    this.backgroundColor = Colors.white,
+    this.textColor = Colors.black,
+  });
 }

@@ -10,7 +10,6 @@ import '../../components/video_player.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
 import '../../viewmodel/create_post_viewmodel.dart';
 
-
 class CreatePostScreen2 extends StatefulWidget {
   final String? communityID;
   final BuildContext? context;
@@ -30,17 +29,26 @@ class CreatePostScreen2State extends State<CreatePostScreen2> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-  
+
     final myAppbar = AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: context
+                          .watch<AmityUIConfiguration>()
+                          .appbarConfig
+                          .backgroundColor,
       elevation: 0,
       title: Text("Create Post",
-          style:
-              theme.textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w500)),
+          style: theme.textTheme.titleSmall!
+              .copyWith(fontWeight: FontWeight.w500, color: context
+                          .watch<AmityUIConfiguration>()
+                          .appbarConfig
+                          .textColor)),
       leading: IconButton(
         icon: Icon(
           Icons.chevron_left,
-          color: theme.indicatorColor,
+          color: context
+                          .watch<AmityUIConfiguration>()
+                          .appbarConfig
+                          .iconBackColor,
         ),
         onPressed: () {
           Navigator.of(context).pop();
@@ -234,13 +242,20 @@ class CreatePostScreen2State extends State<CreatePostScreen2> {
                             alignment: Alignment.center,
                             padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                             decoration: BoxDecoration(
-                              color: Provider.of<AmityUIConfiguration>(context)
-                                  .primaryColor,
+                              color: context
+                                  .watch<AmityUIConfiguration>()
+                                  .buttonConfig
+                                  .backgroundColor,
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Text(
                               "Submit Post",
-                              style: theme.textTheme.bodySmall,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: context
+                                    .watch<AmityUIConfiguration>()
+                                    .buttonConfig
+                                    .textColor,
+                              ),
                             ),
                           ),
                         ),
