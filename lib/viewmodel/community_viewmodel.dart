@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../../components/alert_dialog.dart';
 
-enum CommunityListType { my, recommend, trending }
+enum CommunityListType { my, recommend, trending,category }
 
 enum CommunityFeedMenuOption { edit, members }
 

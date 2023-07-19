@@ -1,9 +1,11 @@
+import 'package:amity_uikit_beta_service/view/social/category_list.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../viewmodel/community_viewmodel.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
-import 'community_list.dart';
+import 'all_category_list.dart';
+import 'community_type_list.dart';
 
 class CommunityTabbar extends StatelessWidget {
   const CommunityTabbar({super.key});
@@ -11,7 +13,7 @@ class CommunityTabbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Scaffold(
         appBar: TabBar(
           physics: const BouncingScrollPhysics(),
@@ -25,6 +27,7 @@ class CommunityTabbar extends StatelessWidget {
             Tab(text: "Recommended"),
             Tab(text: "Trending"),
             Tab(text: "Joined"),
+            Tab(text: "Categories"),
           ],
         ),
         body: const TabBarView(
@@ -33,6 +36,7 @@ class CommunityTabbar extends StatelessWidget {
             CommunityList(CommunityListType.recommend),
             CommunityList(CommunityListType.trending),
             CommunityList(CommunityListType.my),
+            AllCategoryList()
           ],
         ),
       ),

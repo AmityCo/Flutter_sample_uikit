@@ -3,6 +3,7 @@ import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../viewmodel/category_viewmodel.dart';
 import '../../viewmodel/community_feed_viewmodel.dart';
 import '../../viewmodel/community_viewmodel.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
@@ -177,6 +178,11 @@ class CommunityWidget extends StatelessWidget {
             Provider.of<CommunityVM>(context, listen: false)
                 .initAmityTrendingCommunityList();
             break;
+          case CommunityListType.category:
+            // ignore: use_build_context_synchronously
+            Provider.of<CategoryVM>(context, listen: false)
+                .initAllCategoryList();
+            break;
           default:
             // ignore: use_build_context_synchronously
             Provider.of<CommunityVM>(context, listen: false)
@@ -193,15 +199,21 @@ class CommunityWidget extends StatelessWidget {
               ListTile(
                   contentPadding: const EdgeInsets.all(0),
                   leading: FadeAnimation(
-                    child: (community.avatarImage?.fileUrl != null)
-                        ? CircleAvatar(
-                            backgroundColor: Colors.transparent,
-                            backgroundImage:
-                                (NetworkImage(community.avatarImage!.fileUrl)))
-                        : const CircleAvatar(
-                            backgroundImage: AssetImage(
-                                "assets/images/user_placeholder.png")),
-                  ),
+                      child: (community.avatarImage?.fileUrl != null)
+                          ? CircleAvatar(
+                              backgroundColor: Colors.transparent,
+                              backgroundImage: (NetworkImage(
+                                  community.avatarImage!.fileUrl)))
+                          : Container(
+                              width: 40,
+                              height: 40,
+                            )
+                      // TODO: fix asset not found
+                      // : const CircleAvatar(
+                      //     backgroundImage:
+                      //     AssetImage(
+                      //         "/assets/images/user_placeholder.png")),
+                      ),
                   title: Text(
                     community.displayName ?? "Community",
                     style: theme.textTheme.bodyText1!

@@ -7,11 +7,15 @@ import '../../components/alert_dialog.dart';
 
 class CategoryVM extends ChangeNotifier {
   var _categories = <AmityCommunityCategory>[];
+  var _allCategories = <AmityCommunityCategory>[];
   var _selectedCategories = <String>[];
   final _categoryIds = <String>[];
   var _community = AmityCommunity();
   List<AmityCommunityCategory> getCategories() {
     return _categories;
+  }
+List<AmityCommunityCategory> getAllCategories() {
+    return _allCategories;
   }
 
   AmityCommunity getCommunity() {
@@ -49,6 +53,26 @@ class CategoryVM extends ChangeNotifier {
     _selectedCategories.add(id);
 
     notifyListeners();
+  }
+
+  void initAllCategoryList() async {
+    if (_allCategories.isNotEmpty) {
+      _allCategories.clear();
+      notifyListeners();
+    }
+    AmitySocialClient.newCommunityRepository()
+        .getCategories()
+        .sortBy(AmityCommunityCategorySortOption.NAME)
+        .includeDeleted(false)
+        .getPagingData(limit: 100)
+        .then((communityCategories) {
+      _allCategories = communityCategories.data;
+
+      notifyListeners();
+    }).onError((error, stackTrace) async {
+      await AmityDialog()
+          .showAlertErrorDialog(title: "Error!", message: error.toString());
+    });
   }
 
   void initCategoryList(List<String> ids) async {
