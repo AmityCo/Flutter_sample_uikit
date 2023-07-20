@@ -141,7 +141,7 @@ class _PostWidgetState extends State<PostWidget>
 
       'Delete Post'
     ];
-
+  
     final isFlaggedByMe = widget.post.isFlaggedByMe;
     return PopupMenuButton(
       onSelected: (value) {
@@ -251,17 +251,23 @@ class _PostWidgetState extends State<PostWidget>
                                       amityUser: widget.post.postedUser!,
                                     ))));
                           },
-                          child: Text(
-                            widget.post.postedUser!.userId !=
-                                    AmityCoreClient.getCurrentUser().userId
-                                ? widget.post.postedUser?.displayName ??
-                                    "Display name"
-                                : Provider.of<AmityVM>(context)
-                                        .currentamityUser!
-                                        .displayName ??
-                                    "",
-                            style: widget.theme.textTheme.bodyText1!.copyWith(
-                                fontWeight: FontWeight.bold, fontSize: 16),
+                          child: Row(
+                            children: [
+                              Text(
+                                widget.post.postedUser!.userId !=
+                                        AmityCoreClient.getCurrentUser().userId
+                                    ? widget.post.postedUser?.displayName ??
+                                        "Display name"
+                                    : Provider.of<AmityVM>(context)
+                                            .currentamityUser!
+                                            .displayName ??
+                                        "",
+                                style: widget.theme.textTheme.bodyText1!.copyWith(
+                                    fontWeight: FontWeight.bold, fontSize: 16),
+                              ),
+                              // Image.asset("assets/Icons/user_moderator.svg")
+                              // widget.post.postedUser != null && widget.post.postedUser!.roles!.contains("community-moderator") ? Image.asset("assets/icons/user_moderator.svg") : Container()
+                            ],
                           ),
                         ),
                         widget.post.targetType ==
