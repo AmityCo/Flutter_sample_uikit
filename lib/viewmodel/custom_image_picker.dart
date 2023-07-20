@@ -11,7 +11,7 @@ enum ImageState { noImage, loading, hasImage }
 
 class ImagePickerVM extends ChangeNotifier {
   final ImagePicker _picker = ImagePicker();
-  AmityFileInfo? amityImage;
+  AmityImage? amityImage;
   ImageState imageState = ImageState.loading;
 
   void init(String? imageurl) {
@@ -58,23 +58,7 @@ class ImagePickerVM extends ChangeNotifier {
                         log("Image was selected");
                         imageState = ImageState.loading;
                         notifyListeners();
-                        await AmityCoreClient.newFileRepository()
-                        .uploadImage(File(image.path))
-                        ..stream.listen((value) {
-                          var fileInfo = value as AmityUploadComplete;
-
-                          amityImage = fileInfo.getFile;
-                          log("check amity image ${amityImage!.fileId}");
-                          imageState = ImageState.hasImage;
-                          notifyListeners();
-                        })
-                        ..addError((error, stackTrace) async {
-                          log("error: $error");
-                          await AmityDialog().showAlertErrorDialog(
-                              title: "Error!", message: error.toString());
-                          imageState = ImageState.hasImage;
-                          notifyListeners();
-                        });
+                        uploadImage(File(image.path));
                       }
                     }),
                 const Divider(
@@ -86,27 +70,11 @@ class ImagePickerVM extends ChangeNotifier {
                   onTap: () async {
                     Navigator.pop(context);
                     final XFile? image =
-                        await _picker.pickImage(source: ImageSource.gallery);
+                        await _picker.pickImage(source: ImageSource.camera);
                     if (image != null) {
                       imageState = ImageState.loading;
                       notifyListeners();
-                      await AmityCoreClient.newFileRepository()
-                          .uploadImage(File(image.path))
-                        ..stream.listen((value) {
-                        var fileInfo = value as AmityUploadComplete;
-
-                        amityImage = fileInfo.getFile;
-                        imageState = ImageState.hasImage;
-                        notifyListeners();
-                        Navigator.pop(context);
-                      })
-                      ..addError((error, stackTrace) async {
-                        log("error: $error");
-                        await AmityDialog().showAlertErrorDialog(
-                            title: "Error!", message: error.toString());
-                        imageState = ImageState.hasImage;
-                        notifyListeners();
-                      });
+                      uploadImage(File(image.path));
                     }
                   },
                 ),
@@ -114,5 +82,41 @@ class ImagePickerVM extends ChangeNotifier {
             ),
           );
         });
+  }
+
+  void uploadImage(File imageFile) {
+    AmityCoreClient.newFileRepository()
+        .uploadImage(imageFile, isFullImage: false)
+        .stream
+        .listen((amityUploadResult) {
+      amityUploadResult.when(
+        progress: (uploadInfo, cancelToken) {
+          // int progress = uploadInfo.getProgressPercentage();
+        },
+        complete: (file) {
+          //check if the upload result is complete
+
+          final AmityImage uploadedImage = file;
+          //proceed result with uploadedImage
+          amityImage = uploadedImage;
+          log("check amity image ${amityImage!.fileId}");
+          imageState = ImageState.hasImage;
+          notifyListeners();
+        },
+        error: (error) async {
+          final AmityException amityException = error;
+
+          log("error: $error");
+          await AmityDialog().showAlertErrorDialog(
+              title: "Error ${amityException.code}!",
+              message: amityException.message);
+          imageState = ImageState.hasImage;
+          notifyListeners();
+        },
+        cancel: () {
+          //upload is cancelled
+        },
+      );
+    });
   }
 }

@@ -116,7 +116,7 @@ class CreatePostScreen2State extends State<CreatePostScreen2> {
                                         fit: StackFit.expand,
                                         children: [
                                           Image.network(
-                                            "${vm.amityImages[i].fileInfo!.fileUrl}?size=medium",
+                                            "${vm.amityImages[i].data!.fileUrl}?size=medium",
                                             fit: BoxFit.cover,
                                           ),
                                           Align(

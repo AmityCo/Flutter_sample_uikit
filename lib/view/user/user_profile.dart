@@ -15,7 +15,8 @@ import 'edit_profile.dart';
 class UserProfileScreen extends StatefulWidget {
   final AmityUser amityUser;
   final bool? isEnableAppbar;
-  const UserProfileScreen({Key? key, required this.amityUser, this.isEnableAppbar = true})
+  const UserProfileScreen(
+      {Key? key, required this.amityUser, this.isEnableAppbar = true})
       : super(key: key);
   @override
   UserProfileScreenState createState() => UserProfileScreenState();
@@ -87,9 +88,10 @@ class UserProfileScreenState extends State<UserProfileScreen>
     final theme = Theme.of(context);
     final mediaQuery = MediaQuery.of(context);
     final myAppBar = AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor:
+          context.watch<AmityUIConfiguration>().appbarConfig.backgroundColor,
       leading: IconButton(
-        color: Provider.of<AmityUIConfiguration>(context).primaryColor,
+        color: context.watch<AmityUIConfiguration>().appbarConfig.iconBackColor,
         onPressed: () {
           Navigator.of(context).pop();
         },
@@ -117,7 +119,7 @@ class UserProfileScreenState extends State<UserProfileScreen>
                 children: [
                   Container(
                     color: Colors.white,
-                    padding: const EdgeInsets.only(bottom: 10),
+                    padding: const EdgeInsets.only(bottom: 10, top: 15),
                     // height: bheight * 0.4,
                     child: LayoutBuilder(
                       builder: (context, constraints) => Column(
@@ -235,17 +237,20 @@ class UserProfileScreenState extends State<UserProfileScreen>
                                                   width: 1),
                                               borderRadius:
                                                   BorderRadius.circular(10),
-                                              color: Colors.white),
+                                              color: context
+                                                  .watch<AmityUIConfiguration>()
+                                                  .buttonConfig
+                                                  .backgroundColor),
                                           padding: const EdgeInsets.fromLTRB(
                                               10, 10, 10, 10),
                                           child: Text(
                                             "Edit Profile",
                                             style: theme.textTheme.subtitle2!
                                                 .copyWith(
-                                              color: Provider.of<
-                                                          AmityUIConfiguration>(
-                                                      context)
-                                                  .primaryColor,
+                                              color: context
+                                                  .watch<AmityUIConfiguration>()
+                                                  .buttonConfig
+                                                  .textColor,
                                               fontSize: 12,
                                             ),
                                             textAlign: TextAlign.center,
