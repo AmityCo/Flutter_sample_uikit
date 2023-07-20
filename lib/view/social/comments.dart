@@ -109,14 +109,22 @@ class CommentScreenState extends State<CommentScreen> {
                           controller: vm.scrollcontroller,
                           child: Column(
                             children: [
-                              Align(
-                                alignment: Alignment.topLeft,
-                                child: IconButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  icon: const Icon(Icons.chevron_left,
-                                      color: Colors.black, size: 35),
+                              Container(
+                                color:  context.watch<AmityUIConfiguration>().appbarConfig.backgroundColor,
+                                padding: const EdgeInsets.symmetric(vertical: 8),
+                                child: Row(
+                                  children: [
+                                    Align(
+                                      alignment: Alignment.topLeft,
+                                      child: IconButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        icon: Icon(Icons.chevron_left,
+                                            color: context.watch<AmityUIConfiguration>().appbarConfig.iconBackColor, size: 35,),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                               Stack(
@@ -147,9 +155,9 @@ class CommentScreenState extends State<CommentScreen> {
                                           CrossAxisAlignment.stretch,
                                       children: [
                                         Container(
-                                          decoration: const BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius: BorderRadius.only(
+                                          decoration: BoxDecoration(
+                                            color: context.watch<AmityUIConfiguration>().primaryColor,
+                                            borderRadius: const BorderRadius.only(
                                               topLeft: Radius.circular(30),
                                               topRight: Radius.circular(30),
                                             ),

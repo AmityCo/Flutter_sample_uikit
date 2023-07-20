@@ -240,13 +240,17 @@ class CommunityScreenState extends State<CommunityScreen> {
   @override
   Widget build(BuildContext context) {
     final myAppBar = AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: context
+                          .watch<AmityUIConfiguration>()
+                          .appbarConfig.backgroundColor,
       leading: IconButton(
         color: Provider.of<AmityUIConfiguration>(context).primaryColor,
         onPressed: () {
           Navigator.of(context).pop();
         },
-        icon: const Icon(Icons.chevron_left),
+        icon: Icon(Icons.chevron_left, color: context
+                          .watch<AmityUIConfiguration>()
+                          .appbarConfig.iconBackColor,),
       ),
       elevation: 0,
     );

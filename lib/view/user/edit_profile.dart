@@ -100,11 +100,14 @@ class ProfileScreenState extends State<ProfileScreen> {
     final myAppBar = AppBar(
       title: Text(
         "Edit Profile",
-        style: theme.textTheme.headline6,
+        style: theme.textTheme.headlineSmall?.copyWith(
+            color:
+                context.watch<AmityUIConfiguration>().appbarConfig.textColor),
       ),
-      backgroundColor: Colors.white,
+      backgroundColor:
+          context.watch<AmityUIConfiguration>().appbarConfig.backgroundColor,
       leading: IconButton(
-        color: Provider.of<AmityUIConfiguration>(context).primaryColor,
+        color: context.watch<AmityUIConfiguration>().appbarConfig.iconBackColor,
         onPressed: () {
           Navigator.of(context).pop();
         },
@@ -155,13 +158,16 @@ class ProfileScreenState extends State<ProfileScreen> {
           },
           child: Text(
             "Save",
-            style: theme.textTheme.button!.copyWith(
+            style: theme.textTheme.bodyMedium!.copyWith(
                 color: Provider.of<ImagePickerVM>(
                           context,
                         ).imageState ==
                         ImageState.loading
                     ? Colors.grey
-                    : Provider.of<AmityUIConfiguration>(context).primaryColor,
+                    : context
+                        .watch<AmityUIConfiguration>()
+                        .appbarConfig
+                        .textColor,
                 fontWeight: FontWeight.bold),
           ),
         ),
@@ -208,12 +214,18 @@ class ProfileScreenState extends State<ProfileScreen> {
                             padding: const EdgeInsets.all(5),
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: Provider.of<AmityUIConfiguration>(context)
-                                  .primaryColor,
+                              color: context
+                                  .watch<AmityUIConfiguration>()
+                                  .buttonConfig
+                                  .backgroundColor,
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Icons.camera_alt,
                               size: 18,
+                              color: context
+                                  .watch<AmityUIConfiguration>()
+                                  .buttonConfig
+                                  .textColor,
                             ),
                           ),
                         ),
@@ -229,7 +241,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                         width: double.infinity,
                         child: Text(
                           "Profile Info",
-                          style: theme.textTheme.headline6!.copyWith(
+                          style: theme.textTheme.headlineSmall!.copyWith(
                             color: Colors.grey,
                             fontSize: 16,
                           ),
