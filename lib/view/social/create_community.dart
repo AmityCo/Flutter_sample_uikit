@@ -6,6 +6,7 @@ import 'package:animation_wrappers/animations/faded_slide_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../components/alert_dialog.dart';
 import 'all_user_list.dart';
 import 'category_list_create_community.dart';
 
@@ -18,6 +19,7 @@ class CreateCommunityScreen extends StatefulWidget {
 
 class CreateCommunityScreenState extends State<CreateCommunityScreen> {
   double radius = 60;
+  OverlayEntry? overlayEntry;
   TextEditingController _displayNameController = TextEditingController();
   TextEditingController _descriptionController = TextEditingController();
   bool isCommunityPublic = true;
@@ -25,6 +27,7 @@ class CreateCommunityScreenState extends State<CreateCommunityScreen> {
   List<AmityUser> selectedUsers = [];
   AmityCommunityCategory? selectedCategory;
   File? selectedImage;
+  GlobalKey<OverlayState> _overlayKey = GlobalKey<OverlayState>();
 
   @override
   void initState() {
@@ -48,6 +51,7 @@ class CreateCommunityScreenState extends State<CreateCommunityScreen> {
         complete: (file) {
           // Check if the upload result is complete
           // Then create an image post
+          print("upload image complete");
           createCommunity(avatarImage: (file as AmityImage));
         },
         error: (error) {
@@ -59,14 +63,21 @@ class CreateCommunityScreenState extends State<CreateCommunityScreen> {
   }
 
   void createCommunityClicked() {
-    if (selectedImage != null &&
-        selectedCategory != null &&
+    if (selectedCategory != null &&
         selectedUsers != null &&
         _descriptionController.text.isNotEmpty &&
         _displayNameController.text.isNotEmpty) {
-      createAvatar(selectedImage!);
+      if (selectedImage != null) {
+        showLoadingOverlay();
+        createAvatar(selectedImage!);
+      } else {
+        showLoadingOverlay();
+        createCommunity();
+      }
     } else {
-      createCommunity();
+      // showLoadingOverlay();
+      AmityDialog().showAlertErrorDialog(
+          title: "Error!", message: "Please fill in all required fields");
     }
   }
 
@@ -85,10 +96,20 @@ class CreateCommunityScreenState extends State<CreateCommunityScreen> {
             .isPublic(isCommunityPublic)
             .userIds(userIds)
             .create()
-            .then((AmityCommunity community) =>
-                {print("Successfully create community $community")})
-            .onError((error, stackTrace) =>
-                {print("Error creating a community $error")});
+            .then((AmityCommunity community) {
+              print("Successfully create community $community");
+              hideLoadingOverlay();
+              AmityDialog().showAlertErrorDialog(
+                  title: "Success!",
+                  message: "Successfully created community!");
+            })
+            .onError((error, stackTrace) {
+              print("Error creating a community $error");
+              hideLoadingOverlay();
+              AmityDialog().showAlertErrorDialog(
+                  title: "Error!",
+                  message: "Unable to create community, please try again.");
+            });
       } else {
         AmitySocialClient.newCommunityRepository()
             .createCommunity(_displayNameController.text)
@@ -97,10 +118,20 @@ class CreateCommunityScreenState extends State<CreateCommunityScreen> {
             .isPublic(isCommunityPublic)
             .userIds(userIds)
             .create()
-            .then((AmityCommunity community) =>
-                {print("Successfully create community $community")})
-            .onError((error, stackTrace) =>
-                {print("Error creating a community $error")});
+            .then((AmityCommunity community) {
+              print("Successfully create community $community");
+              hideLoadingOverlay();
+              AmityDialog().showAlertErrorDialog(
+                  title: "Success!",
+                  message: "Successfully created community!");
+            })
+            .onError((error, stackTrace) {
+              print("Error creating a community $error");
+              hideLoadingOverlay();
+              AmityDialog().showAlertErrorDialog(
+                  title: "Error!",
+                  message: "Unable to create community, please try again.");
+            });
       }
     }
   }
@@ -163,6 +194,29 @@ class CreateCommunityScreenState extends State<CreateCommunityScreen> {
     return truncatedNames;
   }
 
+  void showLoadingOverlay() {
+    OverlayEntry entry = OverlayEntry(
+      builder: (context) => Positioned.fill(
+        child: Container(
+          color: Colors.black.withOpacity(0.5),
+          child: Center(
+            child: CircularProgressIndicator(),
+          ),
+        ),
+      ),
+    );
+    overlayEntry = entry;
+    Overlay.of(context)?.insert(overlayEntry!);
+  }
+
+  void hideLoadingOverlay() {
+    if(overlayEntry != null){
+      overlayEntry!.remove();
+      overlayEntry = null;
+    }
+   
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -172,9 +226,9 @@ class CreateCommunityScreenState extends State<CreateCommunityScreen> {
         "Create Community",
         style: theme.textTheme.headline6,
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: theme.primaryColor,
       leading: IconButton(
-        color: Colors.grey,
+        color: theme.indicatorColor,
         onPressed: () {
           Navigator.of(context).pop();
         },
@@ -189,7 +243,7 @@ class CreateCommunityScreenState extends State<CreateCommunityScreen> {
           child: Text(
             "Save",
             style: theme.textTheme.button!.copyWith(
-              color: Colors.grey,
+              color: theme.primaryColor,
               fontWeight: FontWeight.bold,
             ),
           ),
