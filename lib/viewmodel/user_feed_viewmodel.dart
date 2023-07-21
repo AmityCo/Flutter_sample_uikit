@@ -12,7 +12,9 @@ class UserFeedVM extends ChangeNotifier {
   late AmityUser? amityUser;
   late AmityUserFollowInfo amityMyFollowInfo = AmityUserFollowInfo();
   late PagingController<AmityPost> _controller;
+  late PagingController<AmityPost> _mediaController;
   final amityPosts = <AmityPost>[];
+  final amityMediaPosts = <AmityPost>[];
 
   final scrollcontroller = ScrollController();
   bool loading = false;
@@ -20,6 +22,11 @@ class UserFeedVM extends ChangeNotifier {
   void initUserFeed(AmityUser user) async {
     getUser(user);
     listenForUserFeed(user.userId!);
+  }
+
+  void initUserGalleryFeed(AmityUser user) async {
+    getUser(user);
+    listenForUserMediaFeed(user.userId!);
   }
 
   void getUser(AmityUser user) {
@@ -41,6 +48,37 @@ class UserFeedVM extends ChangeNotifier {
       AmityDialog()
           .showAlertErrorDialog(title: "Error", message: error.toString());
     });
+  }
+
+  void listenForUserMediaFeed(String userId) {
+    _mediaController = PagingController(
+      pageFuture: (token) => AmitySocialClient.newFeedRepository()
+          .getUserFeed(userId)
+          .includeDeleted(false)
+          .types([AmityDataType.IMAGE, AmityDataType.VIDEO])
+          .getPagingData(
+              token: token, limit: 20),
+      pageSize: 20,
+    )..addListener(
+        () {
+          if (_mediaController.error == null) {
+            amityMediaPosts.clear();
+            amityMediaPosts.addAll(_mediaController.loadedItems);
+            log("successfully query media post ${_mediaController.loadedItems.length}");
+            notifyListeners();
+          } else {
+            //Error on pagination controller
+            log("Error: listenForUserMediaFeed... with userId = $userId");
+            log("ERROR::${_controller.error.toString()}");
+          }
+        },
+      );
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _mediaController.fetchNextPage();
+    });
+
+    scrollcontroller.addListener(loadnextpage);
   }
 
   void listenForUserFeed(String userId) {
@@ -77,6 +115,10 @@ class UserFeedVM extends ChangeNotifier {
             scrollcontroller.position.maxScrollExtent) &&
         _controller.hasMoreItems) {
       _controller.fetchNextPage();
+    } else if ((scrollcontroller.position.pixels ==
+            scrollcontroller.position.maxScrollExtent) &&
+        _mediaController.hasMoreItems) {
+      _mediaController.fetchNextPage();
     }
   }
 

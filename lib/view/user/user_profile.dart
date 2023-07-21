@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:amity_sdk/amity_sdk.dart';
 import 'package:amity_uikit_beta_service/view/social/user_follow_screen.dart';
 import 'package:amity_uikit_beta_service/viewmodel/follower_following_viewmodel.dart';
@@ -25,6 +27,7 @@ class UserProfileScreen extends StatefulWidget {
 class UserProfileScreenState extends State<UserProfileScreen>
     with SingleTickerProviderStateMixin {
   TabController? tabController;
+  int _selectedIndex = 0;
 
   @override
   void initState() {
@@ -33,8 +36,15 @@ class UserProfileScreenState extends State<UserProfileScreen>
       length: 2,
       vsync: this,
     );
+    tabController!.addListener(() {
+      setState(() {
+        _selectedIndex = tabController!.index;
+      });
+    });
     Provider.of<UserFeedVM>(context, listen: false)
         .initUserFeed(widget.amityUser);
+    Provider.of<UserFeedVM>(context, listen: false)
+        .initUserGalleryFeed(widget.amityUser);
   }
 
   String getFollowingStatusString(AmityFollowStatus amityFollowStatus) {
@@ -108,6 +118,7 @@ class UserProfileScreenState extends State<UserProfileScreen>
         color: Provider.of<AmityUIConfiguration>(context).primaryColor,
         onRefresh: (() async {
           vm.initUserFeed(widget.amityUser);
+          vm.initUserGalleryFeed(widget.amityUser);
         }),
         child: Scaffold(
             backgroundColor: Colors.grey[200],
@@ -435,13 +446,24 @@ class UserProfileScreenState extends State<UserProfileScreen>
                             ),
                           ],
                         )
-                      : vm.amityPosts.isEmpty
-                          ? Container(
-                              color: Colors.grey[200],
-                              width: 100,
-                              height: bheight - 400,
-                            )
-                          : ListView.builder(
+                      : TabBar(
+                          controller: tabController,
+                          indicatorColor:
+                              Provider.of<AmityUIConfiguration>(context)
+                                  .primaryColor,
+                          tabs: [
+                            Tab(text: "Feed"),
+                            Tab(text: "Gallery"),
+                          ],
+                        ),
+                  vm.amityPosts.isEmpty
+                      ? Container(
+                          color: Colors.grey[200],
+                          width: 100,
+                          height: bheight - 400,
+                        )
+                      : _selectedIndex == 0
+                          ? ListView.builder(
                               physics: const NeverScrollableScrollPhysics(),
                               shrinkWrap: true,
                               itemCount: vm.amityPosts.length,
@@ -459,6 +481,42 @@ class UserProfileScreenState extends State<UserProfileScreen>
                                     });
                               },
                             )
+                          : vm.amityMediaPosts.isEmpty
+                              ? Container(
+                                  color: Colors.grey[200],
+                                  width: 100,
+                                  height: bheight - 400,
+                                )
+                              : GridView.builder(
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  shrinkWrap: true,
+                                  gridDelegate:
+                                      const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 3,
+                                    crossAxisSpacing: 0,
+                                    mainAxisSpacing: 0,
+                                  ),
+                                  itemCount: vm.amityMediaPosts
+                                      .length, // Replace with your gallery items
+                                  itemBuilder: (context, index) {
+                                    log('checking media post list ${vm.amityMediaPosts.length}');
+                                    return StreamBuilder<AmityPost>(
+                                        stream: vm.amityMediaPosts[index].listen
+                                            .stream,
+                                        initialData: vm.amityMediaPosts[index],
+                                        builder: (context, snapshot) {
+                                          return GestureDetector(
+                                            onTap: () {
+                                              // Handle gallery item tap here
+                                            },
+                                            child: Image.network(
+                                              'https://images.unsplash.com/photo-1598128558393-70ff21433be0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=978&q=80', //snapshot.data!.data!.fileInfo.fileUrl, // Replace with the URL of your gallery item
+                                              fit: BoxFit.cover,
+                                            ),
+                                          );
+                                        });
+                                  },
+                                ),
 
                   //   Container(),
                   // ],

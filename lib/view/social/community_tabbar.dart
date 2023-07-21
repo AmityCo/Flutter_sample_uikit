@@ -5,6 +5,7 @@ import '../../viewmodel/community_viewmodel.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
 import 'all_category_list.dart';
 import 'community_type_list.dart';
+import 'create_community.dart';
 
 class CommunityTabbar extends StatelessWidget {
   const CommunityTabbar({super.key});
@@ -14,6 +15,15 @@ class CommunityTabbar extends StatelessWidget {
     return DefaultTabController(
       length: 4,
       child: Scaffold(
+        floatingActionButton:FloatingActionButton(
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context2) => const CreateCommunityScreen()));
+                },
+                backgroundColor:
+                    Provider.of<AmityUIConfiguration>(context).primaryColor,
+                child: const Icon(Icons.add),
+              ),
         appBar: TabBar(
           physics: const BouncingScrollPhysics(),
           isScrollable: true,
