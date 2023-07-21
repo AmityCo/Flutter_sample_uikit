@@ -446,15 +446,25 @@ class UserProfileScreenState extends State<UserProfileScreen>
                             ),
                           ],
                         )
-                      : TabBar(
-                          controller: tabController,
-                          indicatorColor:
-                              Provider.of<AmityUIConfiguration>(context)
-                                  .primaryColor,
-                          tabs: [
-                            Tab(text: "Feed"),
-                            Tab(text: "Gallery"),
-                          ],
+                      : Container(
+                          color: Colors.white,
+                          child: TabBar(
+                            controller: tabController,
+                            indicatorColor:
+                                Provider.of<AmityUIConfiguration>(context)
+                                    .primaryColor,
+                            unselectedLabelStyle:
+                                const TextStyle(fontWeight: FontWeight.w400),
+                            labelColor: context
+                                .watch<AmityUIConfiguration>()
+                                .primaryColor,
+                            labelStyle:
+                                const TextStyle(fontWeight: FontWeight.bold),
+                            tabs: const [
+                              Tab(text: "Feed"),
+                              Tab(text: "Gallery"),
+                            ],
+                          ),
                         ),
                   vm.amityPosts.isEmpty
                       ? Container(
