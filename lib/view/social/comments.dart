@@ -14,6 +14,7 @@ import '../../viewmodel/configuration_viewmodel.dart';
 import '../../viewmodel/post_viewmodel.dart';
 import '../../viewmodel/user_feed_viewmodel.dart';
 import '../user/user_profile.dart';
+import 'edit_comment.dart';
 
 class CommentScreen extends StatefulWidget {
   final AmityPost amityPost;
@@ -109,14 +110,32 @@ class CommentScreenState extends State<CommentScreen> {
                           controller: vm.scrollcontroller,
                           child: Column(
                             children: [
-                              Align(
-                                alignment: Alignment.topLeft,
-                                child: IconButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  icon: const Icon(Icons.chevron_left,
-                                      color: Colors.black, size: 35),
+                              Container(
+                                color: context
+                                    .watch<AmityUIConfiguration>()
+                                    .appbarConfig
+                                    .backgroundColor,
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8),
+                                child: Row(
+                                  children: [
+                                    Align(
+                                      alignment: Alignment.topLeft,
+                                      child: IconButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        icon: Icon(
+                                          Icons.chevron_left,
+                                          color: context
+                                              .watch<AmityUIConfiguration>()
+                                              .appbarConfig
+                                              .iconBackColor,
+                                          size: 35,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                               Stack(
@@ -147,9 +166,12 @@ class CommentScreenState extends State<CommentScreen> {
                                           CrossAxisAlignment.stretch,
                                       children: [
                                         Container(
-                                          decoration: const BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius: BorderRadius.only(
+                                          decoration: BoxDecoration(
+                                            color: context
+                                                .watch<AmityUIConfiguration>()
+                                                .primaryColor,
+                                            borderRadius:
+                                                const BorderRadius.only(
                                               topLeft: Radius.circular(30),
                                               topRight: Radius.circular(30),
                                             ),
@@ -451,6 +473,17 @@ class _CommentComponentState extends State<CommentComponent> {
     super.initState();
   }
 
+  void navigateToEditComment(AmityComment comment) {
+   
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => Builder(builder: (context) {
+        return EditCommentScreen(
+          comment: comment,
+        );
+      }),
+    ));
+  }
+
   bool isLiked(AsyncSnapshot<AmityComment> snapshot) {
     var comments = snapshot.data!;
     if (comments.myReactions != null) {
@@ -518,27 +551,111 @@ class _CommentComponentState extends State<CommentComponent> {
                         ),
                       ),
                     ),
-                    subtitle: Text(
-                      commentData.text!,
-                      style: widget.theme.textTheme.subtitle2!.copyWith(
-                        fontSize: 12,
-                      ),
-                    ),
-                    trailing: isLiked(snapshot)
-                        ? GestureDetector(
-                            onTap: () {
-                              vm.removeCommentReaction(comments);
-                            },
-                            child: const Icon(
-                              Icons.favorite,
-                              color: Colors.red,
+                    subtitle: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0, bottom: 8),
+                          child: Text(
+                            commentData.text!,
+                            style: widget.theme.textTheme.subtitle2!.copyWith(
+                              fontSize: 12,
                             ),
-                          )
-                        : GestureDetector(
-                            onTap: () {
-                              vm.addCommentReaction(comments);
-                            },
-                            child: const Icon(Icons.favorite_border)),
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            isLiked(snapshot)
+                                ? GestureDetector(
+                                    onTap: () {
+                                      vm.removeCommentReaction(comments);
+                                    },
+                                    child: const Icon(
+                                      Icons.favorite,
+                                      color: Colors.red,
+                                    ),
+                                  )
+                                : GestureDetector(
+                                    onTap: () {
+                                      vm.addCommentReaction(comments);
+                                    },
+                                    child: const Icon(Icons.favorite_border)),
+                            if (snapshot.data?.userId ==
+                                AmityCoreClient.getCurrentUser().userId)
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 8.0, right: 8.0),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    navigateToEditComment(snapshot.data!);
+                                  },
+                                  child: const Icon(
+                                    Icons.edit_outlined,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ),
+                            if (snapshot.data?.userId ==
+                                AmityCoreClient.getCurrentUser().userId)
+                              GestureDetector(
+                                onTap: () {
+                                  if (snapshot.data != null) {
+                                    vm.deleteComment(snapshot.data!);
+                                  }
+                                },
+                                child: const Icon(
+                                  Icons.delete,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                          ],
+                        )
+                      ],
+                    ),
+                    // trailing: Column(
+                    //   children: [
+                    //     isLiked(snapshot)
+                    //         ? GestureDetector(
+                    //             onTap: () {
+                    //               vm.removeCommentReaction(comments);
+                    //             },
+                    //             child: const Icon(
+                    //               Icons.favorite,
+                    //               color: Colors.red,
+                    //             ),
+                    //           )
+                    //         : GestureDetector(
+                    //             onTap: () {
+                    //               vm.addCommentReaction(comments);
+                    //             },
+                    //             child: const Icon(Icons.favorite_border)),
+                    //     if (snapshot.data?.userId ==
+                    //         AmityCoreClient.getCurrentUser().userId)
+                    //       GestureDetector(
+                    //         onTap: () {
+                    //           navigateToEditComment(snapshot.data!);
+                    //         },
+                    //         child: const Icon(
+                    //           Icons.edit_outlined,
+                    //           color: Colors.grey,
+                    //         ),
+                    //       ),
+                    //     if (snapshot.data?.userId ==
+                    //         AmityCoreClient.getCurrentUser().userId)
+                    //       GestureDetector(
+                    //         onTap: () {
+                    //           if (snapshot.data != null) {
+                    //             vm.deleteComment(snapshot.data!);
+                    //           }
+                    //         },
+                    //         child: const Icon(
+                    //           Icons.delete,
+                    //           color: Colors.grey,
+                    //         ),
+                    //       ),
+                    //   ],
+                    // ),
                   ),
                 );
               });
