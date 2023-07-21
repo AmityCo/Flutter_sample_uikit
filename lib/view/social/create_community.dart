@@ -1,10 +1,12 @@
 import 'dart:io';
 
 import 'package:amity_sdk/amity_sdk.dart';
+import 'package:amity_uikit_beta_service/viewmodel/configuration_viewmodel.dart';
 import 'package:animation_wrappers/animations/faded_scale_animation.dart';
 import 'package:animation_wrappers/animations/faded_slide_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 import '../../components/alert_dialog.dart';
 import 'all_user_list.dart';
@@ -224,15 +226,17 @@ class CreateCommunityScreenState extends State<CreateCommunityScreen> {
     final myAppBar = AppBar(
       title: Text(
         "Create Community",
-        style: theme.textTheme.headline6,
+        style: theme.textTheme.titleLarge?.copyWith(
+          color: context.watch<AmityUIConfiguration>().appbarConfig.textColor,
+        ),
       ),
-      backgroundColor: theme.primaryColor,
+      backgroundColor: context.watch<AmityUIConfiguration>().appbarConfig.backgroundColor,
       leading: IconButton(
         color: theme.indicatorColor,
         onPressed: () {
           Navigator.of(context).pop();
         },
-        icon: const Icon(Icons.chevron_left),
+        icon: Icon(Icons.chevron_left, color: context.watch<AmityUIConfiguration>().appbarConfig.iconBackColor,),
       ),
       elevation: 0,
       actions: [
@@ -242,8 +246,8 @@ class CreateCommunityScreenState extends State<CreateCommunityScreen> {
           },
           child: Text(
             "Save",
-            style: theme.textTheme.button!.copyWith(
-              color: theme.primaryColor,
+            style: theme.textTheme.bodyMedium!.copyWith(
+              color: context.watch<AmityUIConfiguration>().appbarConfig.textColor,
               fontWeight: FontWeight.bold,
             ),
           ),
