@@ -29,6 +29,24 @@ class PostVM extends ChangeNotifier {
     });
   }
 
+Future<bool> editComment(AmityComment comment, String text) async {
+    try {
+      await comment.edit().text(text).build().update();
+      // Success, notify listeners and return true
+      int index = _controller.loadedItems
+          .indexWhere((element) => comment.commentId == element.commentId);
+      if (index != -1) {
+        _controller.loadedItems[index] = comment;
+      }
+      notifyListeners(); // Replace 'notifyListener()' with the actual method call to notify listeners
+      return true;
+    } catch (error, stackTrace) {
+      // Error occurred, notify listeners and return false
+      notifyListeners(); // Replace 'notifyListener()' with the actual method call to notify listeners
+      return false;
+    }
+  }
+
   void listenForComments(String postID) {
     _controller = PagingController(
       pageFuture: (token) => AmitySocialClient.newCommentRepository()
@@ -129,6 +147,15 @@ class PostVM extends ChangeNotifier {
     HapticFeedback.heavyImpact();
     post.react().removeReaction('like').then((value) => {
           //success
+        });
+  }
+
+  void deleteComment(AmityComment comment) {
+    comment.delete().then((value) => {
+          // success
+          amityComments
+              .removeWhere((element) => element.commentId == comment.commentId),
+          notifyListeners()
         });
   }
 
