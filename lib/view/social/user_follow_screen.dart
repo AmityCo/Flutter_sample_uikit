@@ -22,12 +22,20 @@ class _FollowScreenState extends State<FollowScreen> {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: context.watch<AmityUIConfiguration>().appbarConfig.backgroundColor,
         title: Text(
           widget.user.displayName ?? "displayname is null",
-          style: Theme.of(context).textTheme.headline6!.copyWith(fontSize: 24),
+          style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                fontSize: 24,
+                color: context
+                    .watch<AmityUIConfiguration>()
+                    .appbarConfig
+                    .textColor,
+              ),
         ),
       ),
-      backgroundColor: Provider.of<AmityUIConfiguration>(context)
+      backgroundColor: context
+          .watch<AmityUIConfiguration>()
           .messageRoomConfig
           .backgroundColor,
       body: SafeArea(
@@ -45,13 +53,13 @@ class _FollowScreenState extends State<FollowScreen> {
                     Tab(
                       child: Text(
                         "Follower",
-                        style: theme.textTheme.bodyText1,
+                        style: theme.textTheme.bodyMedium,
                       ),
                     ),
                     Tab(
                       child: Text(
                         "Following",
-                        style: theme.textTheme.bodyText1,
+                        style: theme.textTheme.bodyMedium,
                       ),
                     ),
                   ],

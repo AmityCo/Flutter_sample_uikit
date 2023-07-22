@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:amity_sdk/amity_sdk.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -30,8 +31,7 @@ class CreatePostVM extends ChangeNotifier {
   final TextEditingController textEditingController =
       TextEditingController(text: "");
   final ImagePicker _picker = ImagePicker();
-  List<AmityFileInfoWithUploadStatus> amityImages =
-      <AmityFileInfoWithUploadStatus>[];
+  List<UploadStatus<AmityImage>> amityImages = <UploadStatus<AmityImage>>[];
   AmityFileInfoWithUploadStatus? amityVideo;
   bool isloading = false;
   void inits() {
@@ -62,25 +62,7 @@ class CreatePostVM extends ChangeNotifier {
           await _picker.pickMultiImage(imageQuality: 100);
       if (images.isNotEmpty) {
         for (var image in images) {
-          var fileWithStatus = AmityFileInfoWithUploadStatus();
-          amityImages.add(fileWithStatus);
-          notifyListeners();
-          AmityCoreClient.newFileRepository()
-          .uploadImage(File(image.path))
-          ..stream.listen((value) {
-            if (value is AmityUploadComplete) {
-              var fileInfo = value as AmityUploadComplete;
-              amityImages.last.addFile(fileInfo.getFile);
-            } else {
-              log(value.toString());
-            }
-            notifyListeners();
-          })
-          ..addError((error, stackTrace) async {
-            log("error: $error");
-            await AmityDialog().showAlertErrorDialog(
-                title: "Error!", message: error.toString());
-          });
+          uploadImage(File(image.path));
         }
       }
     }
@@ -90,24 +72,54 @@ class CreatePostVM extends ChangeNotifier {
     if (isNotSelectVideoYet()) {
       final XFile? image = await _picker.pickImage(source: ImageSource.camera);
       if (image != null) {
-        var fileWithStatus = AmityFileInfoWithUploadStatus();
-        amityImages.add(fileWithStatus);
-        notifyListeners();
-        AmityCoreClient.newFileRepository().uploadImage(File(image.path))
-        ..stream.listen((value) {
-           var fileInfo = value as AmityUploadComplete;
-
-          amityImages.last.addFile(fileInfo.getFile);
-          notifyListeners();
-
-        })
-        ..addError((error, stackTrace) async {
-          log("error: $error");
-          await AmityDialog()
-              .showAlertErrorDialog(title: "Error!", message: error.toString());
-        });
+        uploadImage(File(image.path));
       }
     }
+  }
+
+  void uploadImage(File imageFile) {
+    amityImages.add(UploadStatus<AmityImage>(path: imageFile.path));
+    notifyListeners();
+    AmityCoreClient.newFileRepository()
+        .uploadImage(imageFile, isFullImage: false)
+        .stream
+        .listen((amityUploadResult) {
+      amityUploadResult.when(
+        progress: (uploadInfo, cancelToken) {
+          // int progress = uploadInfo.getProgressPercentage();
+        },
+        complete: (file) {
+          //check if the upload result is complete
+
+          final AmityImage uploadedImage = file;
+          int idx = amityImages
+              .indexWhere((element) => element.path == imageFile.path);
+          if (idx != -1) {
+            final uploadStatus = amityImages[idx];
+            amityImages[idx] = uploadStatus.copyWith(data: uploadedImage, isComplete: true);
+            notifyListeners();
+          }
+        },
+        error: (error) async {
+          final AmityException amityException = error;
+
+          log("error: $error");
+          await AmityDialog().showAlertErrorDialog(
+              title: "Error ${amityException.code}!",
+              message: amityException.message);
+          notifyListeners();
+        },
+        cancel: () {
+          //upload is cancelled
+          int idx = amityImages
+              .indexWhere((element) => element.path == imageFile.path);
+          if (idx != -1) {
+            amityImages.removeAt(idx);
+            notifyListeners();
+          }
+        },
+      );
+    });
   }
 
   Future<void> addVideo() async {
@@ -123,7 +135,7 @@ class CreatePostVM extends ChangeNotifier {
 
           notifyListeners();
           await AmityCoreClient.newFileRepository()
-          .uploadVideo(File(video.path))
+              .uploadVideo(File(video.path))
               .then((value) {
             var fileInfo = value as AmityUploadComplete;
 
@@ -246,11 +258,10 @@ class CreatePostVM extends ChangeNotifier {
       {String? communityId}) async {
     log("creatImagePost...");
     List<AmityImage> images = [];
-    for (var amityImage in amityImages) {
-      if (amityImage.fileInfo is AmityImage) {
-        var image = amityImage.fileInfo as AmityImage;
-        images.add(image);
-        log("add file to _images");
+    for(final up in amityImages){
+      final im = up.data;
+      if(im != null){
+        images.add(im);
       }
     }
     log(images.toString());
@@ -336,5 +347,34 @@ class CreatePostVM extends ChangeNotifier {
             });
       }
     }
+  }
+}
+
+class UploadStatus<T> extends Equatable {
+  final bool isComplete;
+  final String path;
+  final T? data;
+  const UploadStatus({
+    this.isComplete = false,
+    this.data,
+    required this.path,
+  });
+
+  @override
+  List<dynamic> get props => [isComplete, data];
+
+  @override
+  bool get stringify => true;
+
+  UploadStatus<T> copyWith({
+    bool? isComplete,
+    T? data,
+    String? path,
+  }) {
+    return UploadStatus<T>(
+      isComplete: isComplete ?? this.isComplete,
+      data: data ?? this.data,
+      path: path ?? this.path,
+    );
   }
 }
