@@ -10,6 +10,7 @@ class PostVM extends ChangeNotifier {
   late AmityPost amityPost;
   late PagingController<AmityComment> _controller;
   final amityComments = <AmityComment>[];
+  final amityReplyComments = <AmityComment>[];
 
   final scrollcontroller = ScrollController();
 
@@ -29,7 +30,7 @@ class PostVM extends ChangeNotifier {
     });
   }
 
-Future<bool> editComment(AmityComment comment, String text) async {
+  Future<bool> editComment(AmityComment comment, String text) async {
     try {
       await comment.edit().text(text).build().update();
       // Success, notify listeners and return true
@@ -47,6 +48,38 @@ Future<bool> editComment(AmityComment comment, String text) async {
     }
   }
 
+  void listenForReplyComments(String postID, String commentID) {
+    _controller = PagingController(
+      pageFuture: (token) => AmitySocialClient.newCommentRepository()
+          .getComments()
+          .post(postID)
+          .includeDeleted(false)
+          .parentId(commentID)
+          .sortBy(_sortOption)
+          .getPagingData(token: token, limit: 20),
+      pageSize: 20,
+    )..addListener(
+        () async {
+          if (_controller.error == null) {
+            amityReplyComments.clear();
+            amityReplyComments.addAll(_controller.loadedItems);
+            notifyListeners();
+          } else {
+            //Error on pagination controller
+            log("error");
+            await AmityDialog().showAlertErrorDialog(
+                title: "Error!", message: _controller.error.toString());
+          }
+        },
+      );
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _controller.fetchNextPage();
+    });
+
+    scrollcontroller.addListener(loadnextpage);
+  }
+
   void listenForComments(String postID) {
     _controller = PagingController(
       pageFuture: (token) => AmitySocialClient.newCommentRepository()
@@ -60,11 +93,9 @@ Future<bool> editComment(AmityComment comment, String text) async {
           if (_controller.error == null) {
             amityComments.clear();
             amityComments.addAll(_controller.loadedItems);
-
             notifyListeners();
           } else {
             //Error on pagination controller
-
             log("error");
             await AmityDialog().showAlertErrorDialog(
                 title: "Error!", message: _controller.error.toString());
@@ -98,6 +129,28 @@ Future<bool> editComment(AmityComment comment, String text) async {
       _controller.add(comment);
       amityComments.clear();
       amityComments.addAll(_controller.loadedItems);
+      Future.delayed(const Duration(milliseconds: 300)).then((value) {
+        scrollcontroller.jumpTo(scrollcontroller.position.maxScrollExtent);
+      });
+    }).onError((error, stackTrace) async {
+      log(error.toString());
+      await AmityDialog()
+          .showAlertErrorDialog(title: "Error!", message: error.toString());
+    });
+  }
+
+  Future<void> createReplyComment(String postId,String commentId, String text) async {
+    await AmitySocialClient.newCommentRepository()
+        .createComment()
+        .post(postId)
+        .parentId(commentId)
+        .create()
+        .text(text)
+        .send()
+        .then((comment) async {
+      _controller.add(comment);
+      amityReplyComments.clear();
+      amityReplyComments.addAll(_controller.loadedItems);
       Future.delayed(const Duration(milliseconds: 300)).then((value) {
         scrollcontroller.jumpTo(scrollcontroller.position.maxScrollExtent);
       });

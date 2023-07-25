@@ -14,6 +14,7 @@ import '../../viewmodel/configuration_viewmodel.dart';
 import '../../viewmodel/post_viewmodel.dart';
 import '../../viewmodel/user_feed_viewmodel.dart';
 import '../user/user_profile.dart';
+import 'comment_reply_list.dart';
 import 'edit_comment.dart';
 
 class CommentScreen extends StatefulWidget {
@@ -474,7 +475,6 @@ class _CommentComponentState extends State<CommentComponent> {
   }
 
   void navigateToEditComment(AmityComment comment) {
-   
     Navigator.of(context).push(MaterialPageRoute(
       builder: (context) => Builder(builder: (context) {
         return EditCommentScreen(
@@ -491,6 +491,14 @@ class _CommentComponentState extends State<CommentComponent> {
     } else {
       return false;
     }
+  }
+
+  void onShowRepliesClicked(String postId,String commentId) {
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (_) => ReplyCommentScreen(
+          postId: postId,
+              commentId: commentId,
+            )));
   }
 
   @override
@@ -556,61 +564,88 @@ class _CommentComponentState extends State<CommentComponent> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.only(top: 8.0, bottom: 8),
+                          padding: const EdgeInsets.only(top: 8.0, bottom: 12.0),
                           child: Text(
                             commentData.text!,
                             style: widget.theme.textTheme.subtitle2!.copyWith(
-                              fontSize: 12,
+                              fontSize: 14,
                             ),
                           ),
                         ),
+                        if (snapshot.data!.childrenNumber! > 0)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom:8.0),
+                          child: GestureDetector(
+                                      onTap: () {
+                                        onShowRepliesClicked(widget.postId,snapshot.data!.commentId!);
+                                      },
+                                      child: const Text("Show replies",style: TextStyle(color: Colors.blue,fontWeight: FontWeight.w600)),
+                                    ),
+                        ),
                         Row(
-                          children: [
-                            isLiked(snapshot)
-                                ? GestureDetector(
+                            children: [
+                              isLiked(snapshot)
+                                  ? GestureDetector(
+                                      onTap: () {
+                                        vm.removeCommentReaction(comments);
+                                      },
+                                      child: const Icon(
+                                        Icons.favorite,
+                                        color: Colors.red,
+                                      ),
+                                    )
+                                  : GestureDetector(
+                                      onTap: () {
+                                        vm.addCommentReaction(comments);
+                                      },
+                                      child: const Icon(Icons.favorite_border),),
+                                  if (snapshot.data!.childrenNumber! == 0)
+                                      Padding(
+                                        padding: const EdgeInsets.only(left:8.0),
+                                        child: GestureDetector(
+                                            onTap: () {
+                                              Navigator.of(context).push(MaterialPageRoute(
+                                            builder: (_) => ReplyCommentScreen(
+                                              postId: widget.postId,
+                                              commentId: snapshot.data!.commentId!,
+                                            )));
+                                          },
+                                          child: const Icon(
+                                            Icons.reply,
+                                          ),
+                                        ),
+                                      ),
+                              if (snapshot.data?.userId ==
+                                  AmityCoreClient.getCurrentUser().userId)
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
+                                  child: GestureDetector(
                                     onTap: () {
-                                      vm.removeCommentReaction(comments);
+                                      navigateToEditComment(snapshot.data!);
                                     },
                                     child: const Icon(
-                                      Icons.favorite,
-                                      color: Colors.red,
+                                      Icons.edit_outlined,
+                                      color: Colors.grey,
                                     ),
-                                  )
-                                : GestureDetector(
-                                    onTap: () {
-                                      vm.addCommentReaction(comments);
-                                    },
-                                    child: const Icon(Icons.favorite_border)),
-                            if (snapshot.data?.userId ==
-                                AmityCoreClient.getCurrentUser().userId)
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 8.0, right: 8.0),
-                                child: GestureDetector(
+                                  ),
+                                ),
+                              if (snapshot.data?.userId ==
+                                  AmityCoreClient.getCurrentUser().userId)
+                                GestureDetector(
                                   onTap: () {
-                                    navigateToEditComment(snapshot.data!);
+                                    if (snapshot.data != null) {
+                                      vm.deleteComment(snapshot.data!);
+                                    }
                                   },
                                   child: const Icon(
-                                    Icons.edit_outlined,
+                                    Icons.delete,
                                     color: Colors.grey,
                                   ),
                                 ),
-                              ),
-                            if (snapshot.data?.userId ==
-                                AmityCoreClient.getCurrentUser().userId)
-                              GestureDetector(
-                                onTap: () {
-                                  if (snapshot.data != null) {
-                                    vm.deleteComment(snapshot.data!);
-                                  }
-                                },
-                                child: const Icon(
-                                  Icons.delete,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                          ],
-                        )
+                            ],
+                          ),
+                        
                       ],
                     ),
                     // trailing: Column(
