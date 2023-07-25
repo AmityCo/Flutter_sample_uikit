@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 
 import '../../components/custom_user_avatar.dart';
 
+import '../../components/select_post_dialog.dart';
 import '../../viewmodel/community_feed_viewmodel.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
 import '../../viewmodel/edit_post_viewmodel.dart';
@@ -30,8 +31,10 @@ class GlobalFeedScreen extends StatefulWidget {
 }
 
 class GlobalFeedScreenState extends State<GlobalFeedScreen> {
+  final selectPostDialog = SelectPostDialog();
   @override
   void dispose() {
+    selectPostDialog.close();
     super.dispose();
   }
 
@@ -50,34 +53,65 @@ class GlobalFeedScreenState extends State<GlobalFeedScreen> {
         onRefresh: () async {
           await vm.initAmityGlobalfeed();
         },
-        child: Column(
+        child: Stack(
           children: [
-            Expanded(
-              child: Container(
-                color: Colors.grey[200],
-                child: FadedSlideAnimation(
-                  beginOffset: const Offset(0, 0.3),
-                  endOffset: const Offset(0, 0),
-                  slideCurve: Curves.linearToEaseOut,
-                  child: ListView.builder(
-                    // shrinkWrap: true,
-                    controller: vm.scrollcontroller,
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    itemCount: vm.getAmityPosts().length,
-                    itemBuilder: (context, index) {
-                      return StreamBuilder<AmityPost>(
-                          key: Key(vm.getAmityPosts()[index].postId!),
-                          stream: vm.getAmityPosts()[index].listen.stream,
-                          initialData: vm.getAmityPosts()[index],
-                          builder: (context, snapshot) {
-                            return PostWidget(
-                              post: snapshot.data!,
-                              theme: theme,
-                              postIndex: index,
-                              isFromFeed: true,
-                            );
-                          });
-                    },
+            Column(
+              children: [
+                Expanded(
+                  child: Container(
+                    color: Colors.grey[200],
+                    child: FadedSlideAnimation(
+                      beginOffset: const Offset(0, 0.3),
+                      endOffset: const Offset(0, 0),
+                      slideCurve: Curves.linearToEaseOut,
+                      child: ListView.builder(
+                        // shrinkWrap: true,
+                        controller: vm.scrollcontroller,
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        itemCount: vm.getAmityPosts().length,
+                        itemBuilder: (context, index) {
+                          return StreamBuilder<AmityPost>(
+                              key: Key(vm.getAmityPosts()[index].postId!),
+                              stream: vm.getAmityPosts()[index].listen.stream,
+                              initialData: vm.getAmityPosts()[index],
+                              builder: (context, snapshot) {
+                                return PostWidget(
+                                  post: snapshot.data!,
+                                  theme: theme,
+                                  postIndex: index,
+                                  isFromFeed: true,
+                                );
+                              });
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Positioned(
+              right: 15,
+              bottom: 15,
+              child: GestureDetector(
+                onTap: () async {
+                  selectPostDialog.open(context: context);
+                },
+                child: ClipOval(
+                  child: Container(
+                    width: 50,
+                    height: 50,
+                    color: context
+                        .watch<AmityUIConfiguration>()
+                        .buttonConfig
+                        .backgroundColor,
+                    child: Icon(
+                      Icons.add,
+                      color: context
+                          .watch<AmityUIConfiguration>()
+                          .buttonConfig
+                          .textColor,
+                      size: 25,
+                    ),
                   ),
                 ),
               ),

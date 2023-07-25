@@ -12,71 +12,29 @@ class AmityVM extends ChangeNotifier {
       {required String userID, String? displayName, String? authToken}) async {
     if (!isProcessing) {
       isProcessing = true;
-
       log("login with $userID");
-      if (authToken == null) {
-        if (displayName != null) {
-          await AmityCoreClient.login(userID)
-              .displayName(displayName)
-              .submit()
-              .then((value) async {
-            log("success");
-            isProcessing = false;
-            getUserByID(userID);
-            currentamityUser = value;
-            notifyListeners();
-          }).catchError((error, stackTrace) async {
-            isProcessing = false;
-            log(error.toString());
-            await AmityDialog().showAlertErrorDialog(
-                title: "Error!", message: error.toString());
-          });
-        } else {
-          await AmityCoreClient.login(userID).submit().then((value) async {
-            log("success");
-            isProcessing = false;
-            getUserByID(userID);
-            currentamityUser = value;
-            notifyListeners();
-          }).catchError((error, stackTrace) async {
-            isProcessing = false;
-            log(error.toString());
-            await AmityDialog().showAlertErrorDialog(
-                title: "Error!", message: error.toString());
-          });
-        }
-      } else {
-        if (displayName != null) {
-          await AmityCoreClient.login(userID)
-              .displayName(displayName)
-              .submit()
-              .then((value) async {
-            log("success");
-            isProcessing = false;
-            getUserByID(userID);
-            currentamityUser = value;
-            notifyListeners();
-          }).catchError((error, stackTrace) async {
-            isProcessing = false;
-            log(error.toString());
-            await AmityDialog().showAlertErrorDialog(
-                title: "Error!", message: error.toString());
-          });
-        } else {
-          await AmityCoreClient.login(userID).submit().then((value) async {
-            log("success");
-            isProcessing = false;
-            getUserByID(userID);
-            currentamityUser = value;
-            notifyListeners();
-          }).catchError((error, stackTrace) async {
-            isProcessing = false;
-            log(error.toString());
-            await AmityDialog().showAlertErrorDialog(
-                title: "Error!", message: error.toString());
-          });
-        }
+      final client = AmityCoreClient.login(userID);
+
+      if (authToken != null) {
+        client.authToken(authToken);
       }
+
+      if (displayName != null) {
+        client.displayName(displayName);
+      }
+
+      await client.submit().then((value) async {
+        log("success");
+        isProcessing = false;
+        currentamityUser = value;
+        getUserByID(userID);
+        notifyListeners();
+      }).catchError((error, stackTrace) async {
+        isProcessing = false;
+        log(error.toString());
+        await AmityDialog()
+            .showAlertErrorDialog(title: "Error!", message: error.toString());
+      });
     } else {
       /// processing
       log("processing login...");
