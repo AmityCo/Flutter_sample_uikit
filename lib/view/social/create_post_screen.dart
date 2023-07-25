@@ -31,24 +31,21 @@ class CreatePostScreen2State extends State<CreatePostScreen2> {
     final theme = Theme.of(context);
 
     final myAppbar = AppBar(
-      backgroundColor: context
-                          .watch<AmityUIConfiguration>()
-                          .appbarConfig
-                          .backgroundColor,
+      backgroundColor:
+          context.watch<AmityUIConfiguration>().appbarConfig.backgroundColor,
       elevation: 0,
       title: Text("Create Post",
-          style: theme.textTheme.titleSmall!
-              .copyWith(fontWeight: FontWeight.w500, color: context
-                          .watch<AmityUIConfiguration>()
-                          .appbarConfig
-                          .textColor)),
+          style: theme.textTheme.titleSmall!.copyWith(
+              fontWeight: FontWeight.w500,
+              color: context
+                  .watch<AmityUIConfiguration>()
+                  .appbarConfig
+                  .textColor)),
       leading: IconButton(
         icon: Icon(
           Icons.chevron_left,
-          color: context
-                          .watch<AmityUIConfiguration>()
-                          .appbarConfig
-                          .iconBackColor,
+          color:
+              context.watch<AmityUIConfiguration>().appbarConfig.iconBackColor,
         ),
         onPressed: () {
           Navigator.of(context).pop();
@@ -225,17 +222,13 @@ class CreatePostScreen2State extends State<CreatePostScreen2> {
                         )
                       : GestureDetector(
                           onTap: () async {
-                            if (widget.communityID == null) {
-                              //creat post in user Timeline
-                              await vm.createPost(context);
-                            } else {
-                              //create post in Community
-                              await vm.createPost(widget.context!,
-                                  communityId: widget.communityID);
+                            await vm.createPost(
+                              context: widget.context,
+                              communityId: widget.communityID,
+                            );
+                            if (mounted) {
+                              Navigator.of(context).pop();
                             }
-
-                            // ignore: use_build_context_synchronously
-                            Navigator.of(context).pop();
                           },
                           child: Container(
                             margin: const EdgeInsets.only(top: 15),

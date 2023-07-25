@@ -96,7 +96,8 @@ class CreatePostVM extends ChangeNotifier {
               .indexWhere((element) => element.path == imageFile.path);
           if (idx != -1) {
             final uploadStatus = amityImages[idx];
-            amityImages[idx] = uploadStatus.copyWith(data: uploadedImage, isComplete: true);
+            amityImages[idx] =
+                uploadStatus.copyWith(data: uploadedImage, isComplete: true);
             notifyListeners();
           }
         },
@@ -166,186 +167,135 @@ class CreatePostVM extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> createPost(BuildContext context, {String? communityId}) async {
+  Future<void> createPost({BuildContext? context, String? communityId}) async {
     isloading = true;
     notifyListeners();
     HapticFeedback.heavyImpact();
-    bool isCommunity = (communityId != null) ? true : false;
-    if (isCommunity) {
-      if (isNotSelectVideoYet() && isNotSelectedImageYet()) {
-        log("isNotSelectVideoYet() & isNotSelectVideoYet()");
+    if (isNotSelectVideoYet() && isNotSelectedImageYet()) {
+      log("isNotSelectVideoYet() & isNotSelectVideoYet()");
 
-        ///create text post
-        await createTextpost(context, communityId: communityId);
-      } else if (isNotSelectedImageYet()) {
-        log("isNotSelectedImageYet");
+      ///create text post
+      await createTextpost(
+        context,
+        communityId: communityId,
+      );
+    } else if (isNotSelectedImageYet()) {
+      log("isNotSelectedImageYet");
 
-        ///create video post
-        await creatVideoPost(context, communityId: communityId);
-      } else if (isNotSelectVideoYet()) {
-        log("isNotSelectVideoYet");
+      ///create video post
+      await creatVideoPost(
+        context,
+        communityId: communityId,
+      );
+    } else if (isNotSelectVideoYet()) {
+      log("isNotSelectVideoYet");
 
-        ///create image post
-        await creatImagePost(context, communityId: communityId);
-      }
-    } else {
-      if (isNotSelectVideoYet() && isNotSelectedImageYet()) {
-        log("isNotSelectVideoYet() & isNotSelectVideoYet()");
-
-        ///create text post
-        await createTextpost(context);
-      } else if (isNotSelectedImageYet()) {
-        log("isNotSelectedImageYet");
-
-        ///create video post
-        await creatVideoPost(context);
-      } else if (isNotSelectVideoYet()) {
-        log("isNotSelectVideoYet");
-
-        ///create image post
-        await creatImagePost(context);
-      }
+      ///create image post
+      await creatImagePost(
+        context,
+        communityId: communityId,
+      );
     }
+
     isloading = false;
     notifyListeners();
   }
 
-  Future<void> createTextpost(BuildContext context,
+  Future<void> createTextpost(BuildContext? context,
       {String? communityId}) async {
     log("createTextpost...");
     bool isCommunity = (communityId != null) ? true : false;
+    AmityPostCreateDataTypeSelector client =
+        AmitySocialClient.newPostRepository().createPost().targetMe();
+
     if (isCommunity) {
-      log("in community...");
-      await AmitySocialClient.newPostRepository()
+      client = AmitySocialClient.newPostRepository()
           .createPost()
-          .targetCommunity(communityId)
-          .text(textEditingController.text)
-          .post()
-          .then((AmityPost post) {
-        ///add post to feed
-        Provider.of<CommuFeedVM>(context, listen: false).addPostToFeed(post);
-        Provider.of<CommuFeedVM>(context, listen: false)
-            .scrollcontroller
-            .jumpTo(0);
-        notifyListeners();
-      }).onError((error, stackTrace) async {
-        log(error.toString());
-        await AmityDialog()
-            .showAlertErrorDialog(title: "Error!", message: error.toString());
-      });
-    } else {
-      await AmitySocialClient.newPostRepository()
-          .createPost()
-          .targetMe() // or targetMe(), targetCommunity(communityId: String)
-          .text(textEditingController.text)
-          .post()
-          .then((AmityPost post) {
-        ///add post to feed
-        Provider.of<FeedVM>(context, listen: false).addPostToFeed(
-          post,
-        );
-        Provider.of<FeedVM>(context, listen: false).scrollcontroller.jumpTo(0);
-        notifyListeners();
-      }).onError((error, stackTrace) async {
-        log(error.toString());
-        await AmityDialog()
-            .showAlertErrorDialog(title: "Error!", message: error.toString());
-      });
+          .targetCommunity(communityId);
     }
+
+    await client.text(textEditingController.text).post().then((AmityPost post) {
+      _updateCommuFeedVM(context, post);
+    }).onError((error, stackTrace) async {
+      log(error.toString());
+      await AmityDialog()
+          .showAlertErrorDialog(title: "Error!", message: error.toString());
+    });
   }
 
-  Future<void> creatImagePost(BuildContext context,
+  Future<void> creatImagePost(BuildContext? context,
       {String? communityId}) async {
     log("creatImagePost...");
     List<AmityImage> images = [];
-    for(final up in amityImages){
+    for (final up in amityImages) {
       final im = up.data;
-      if(im != null){
+      if (im != null) {
         images.add(im);
       }
     }
     log(images.toString());
     bool isCommunity = (communityId != null) ? true : false;
+
+    AmityPostCreateDataTypeSelector client =
+        AmitySocialClient.newPostRepository().createPost().targetMe();
+
     if (isCommunity) {
-      await AmitySocialClient.newPostRepository()
+      client = AmitySocialClient.newPostRepository()
           .createPost()
-          .targetCommunity(communityId)
-          .image(images)
-          .text(textEditingController.text)
-          .post()
-          .then((AmityPost post) {
-        ///add post to feedx
-        Provider.of<CommuFeedVM>(context, listen: false).addPostToFeed(post);
-        Provider.of<CommuFeedVM>(context, listen: false)
-            .scrollcontroller
-            .jumpTo(0);
-      }).onError((error, stackTrace) async {
-        log(error.toString());
-        await AmityDialog()
-            .showAlertErrorDialog(title: "Error!", message: error.toString());
-      });
-    } else {
-      await AmitySocialClient.newPostRepository()
-          .createPost()
-          .targetMe()
-          .image(images)
-          .text(textEditingController.text)
-          .post()
-          .then((AmityPost post) {
-        ///add post to feedx
-        Provider.of<FeedVM>(context, listen: false).addPostToFeed(post);
-        Provider.of<FeedVM>(context, listen: false).scrollcontroller.jumpTo(0);
-      }).onError((error, stackTrace) async {
-        log(error.toString());
-        await AmityDialog()
-            .showAlertErrorDialog(title: "Error!", message: error.toString());
-      });
+          .targetCommunity(communityId);
     }
+
+    await client
+        .image(images)
+        .text(textEditingController.text)
+        .post()
+        .then((AmityPost post) {
+      _updateCommuFeedVM(context, post);
+    }).onError((error, stackTrace) async {
+      log(error.toString());
+      await AmityDialog()
+          .showAlertErrorDialog(title: "Error!", message: error.toString());
+    });
   }
 
-  Future<void> creatVideoPost(BuildContext context,
-      {String? communityId}) async {
+  Future<void> creatVideoPost(BuildContext? context,
+      {String? communityId, bool isOutside = false}) async {
     log("creatVideoPost...");
     if (amityVideo != null) {
       bool isCommunity = (communityId != null) ? true : false;
+      AmityPostCreateDataTypeSelector client =
+          AmitySocialClient.newPostRepository().createPost().targetMe();
+
       if (isCommunity) {
-        await AmitySocialClient.newPostRepository()
+        client = AmitySocialClient.newPostRepository()
             .createPost()
-            .targetCommunity(communityId)
-            .video([amityVideo?.fileInfo as AmityVideo])
-            .text(textEditingController.text)
-            .post()
-            .then((AmityPost post) {
-              ///add post to feedx
-              Provider.of<CommuFeedVM>(context, listen: false)
-                  .addPostToFeed(post);
-              Provider.of<CommuFeedVM>(context, listen: false)
-                  .scrollcontroller
-                  .jumpTo(0);
-            })
-            .onError((error, stackTrace) async {
-              await AmityDialog().showAlertErrorDialog(
-                  title: "Error!", message: error.toString());
-            });
-      } else {
-        await AmitySocialClient.newPostRepository()
-            .createPost()
-            .targetMe()
-            .video([amityVideo?.fileInfo as AmityVideo])
-            .text(textEditingController.text)
-            .post()
-            .then((AmityPost post) {
-              ///add post to feedx
-              Provider.of<FeedVM>(context, listen: false).addPostToFeed(post);
-              Provider.of<FeedVM>(context, listen: false)
-                  .scrollcontroller
-                  .jumpTo(0);
-            })
-            .onError((error, stackTrace) async {
-              await AmityDialog().showAlertErrorDialog(
-                  title: "Error!", message: error.toString());
-            });
+            .targetCommunity(communityId);
       }
+      await client
+          .video([amityVideo?.fileInfo as AmityVideo])
+          .text(textEditingController.text)
+          .post()
+          .then((AmityPost post) {
+            _updateCommuFeedVM(context, post);
+          })
+          .onError((error, stackTrace) async {
+            await AmityDialog().showAlertErrorDialog(
+                title: "Error!", message: error.toString());
+          });
+    }
+  }
+
+  void _updateCommuFeedVM(
+    BuildContext? context,
+    AmityPost post,
+  ) {
+    if (context != null) {
+      ///add post to feed
+      Provider.of<CommuFeedVM>(context, listen: false).addPostToFeed(post);
+      Provider.of<CommuFeedVM>(context, listen: false)
+          .scrollcontroller
+          .jumpTo(0);
+      notifyListeners();
     }
   }
 }
