@@ -1,7 +1,11 @@
 import 'dart:async';
 
 import 'package:amity_sdk/amity_sdk.dart';
+import 'package:amity_uikit_beta_service/view/social/community_feed.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../viewmodel/community_feed_viewmodel.dart';
 
 class SearchCommunitiesScreen extends StatefulWidget {
   const SearchCommunitiesScreen({Key? key}) : super(key: key);
@@ -77,7 +81,20 @@ class _SearchCommunitiesScreenState extends State<SearchCommunitiesScreen> {
   }
 
   void _navigateToCommunityDetails(AmityCommunity community) {
-    // Perform navigation to another page with community details
+    // Navigator.of(context).push(MaterialPageRoute(
+    //   builder: (context) =>  CommunityScreen(
+    //     community: community,
+    //     isFromFeed: false,
+    //   ),
+    // ));
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => ChangeNotifierProvider(
+              create: (context) => CommuFeedVM(),
+              child: CommunityScreen(
+                community: community,
+        isFromFeed: false,
+              ),
+            )));
   }
 
   @override
