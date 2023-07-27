@@ -106,7 +106,7 @@ class NotificationVM extends ChangeNotifier {
                     "https://api.${env!.region}.amity.co/api/v3/files/${value.avatarFileId}/download";
               }
             }).onError((error, stackTrace) {
-              log(error.toString());
+              log('ERROR NotificationVM addImageNotificationWorkAround getCommunity:$error');
               AmityDialog().showAlertErrorDialog(
                   title: "Error!:getCommunity ", message: error.toString());
             });
@@ -138,7 +138,7 @@ class NotificationVM extends ChangeNotifier {
                 }
               }
             }).onError((error, stackTrace) {
-              log(error.toString());
+              log('ERROR NotificationVM addImageNotificationWorkAround getPost:$error');
               AmityDialog().showAlertErrorDialog(
                   title: "Error! notification.targetType == post",
                   message: error.toString());

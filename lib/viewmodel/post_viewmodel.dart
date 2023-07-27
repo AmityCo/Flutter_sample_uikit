@@ -24,7 +24,7 @@ class PostVM extends ChangeNotifier {
         .then((AmityPost post) {
       amityPost = post;
     }).onError<AmityException>((error, stackTrace) async {
-      log(error.toString());
+      log('ERROR PostVM getPost:$error');
       await AmityDialog()
           .showAlertErrorDialog(title: "Error!", message: error.toString());
     });
@@ -133,7 +133,7 @@ class PostVM extends ChangeNotifier {
         scrollcontroller.jumpTo(scrollcontroller.position.maxScrollExtent);
       });
     }).onError((error, stackTrace) async {
-      log(error.toString());
+      log('ERROR PostVM createComment:$error');
       await AmityDialog()
           .showAlertErrorDialog(title: "Error!", message: error.toString());
     });
@@ -155,7 +155,7 @@ class PostVM extends ChangeNotifier {
         scrollcontroller.jumpTo(scrollcontroller.position.maxScrollExtent);
       });
     }).onError((error, stackTrace) async {
-      log(error.toString());
+      log('ERROR PostVM createReplyComment:$error');
       await AmityDialog()
           .showAlertErrorDialog(title: "Error!", message: error.toString());
     });

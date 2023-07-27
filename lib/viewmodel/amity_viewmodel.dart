@@ -31,7 +31,7 @@ class AmityVM extends ChangeNotifier {
         notifyListeners();
       }).catchError((error, stackTrace) async {
         isProcessing = false;
-        log(error.toString());
+        log('ERROR AmityVM login:$error');
         await AmityDialog()
             .showAlertErrorDialog(title: "Error!", message: error.toString());
       });
@@ -54,7 +54,7 @@ class AmityVM extends ChangeNotifier {
         currentamityUser = user;
         notifyListeners();
       }).onError((error, stackTrace) async {
-        log(error.toString());
+        log('ERROR AmityVM refreshCurrentUserData:$error');
         await AmityDialog()
             .showAlertErrorDialog(title: "Error!", message: error.toString());
       });
@@ -65,7 +65,7 @@ class AmityVM extends ChangeNotifier {
     await AmityCoreClient.newUserRepository().getUser(id).then((user) {
       log("IsGlobalban: ${user.isGlobalBan}");
     }).onError((error, stackTrace) async {
-      log(error.toString());
+      log('ERROR AmityVM getUserByID:$error');
       await AmityDialog()
           .showAlertErrorDialog(title: "Error!", message: error.toString());
     });

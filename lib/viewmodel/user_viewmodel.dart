@@ -48,7 +48,7 @@ class UserVM extends ChangeNotifier {
       log("IsGlobalban: ${user.isGlobalBan}");
       amityUser = user;
     }).onError((error, stackTrace) async {
-      log(error.toString());
+      log('ERROR UserVM getUserByID:$error');
       await AmityDialog()
           .showAlertErrorDialog(title: "Error!", message: error.toString());
     });
@@ -78,7 +78,7 @@ class UserVM extends ChangeNotifier {
       _userList.addAll(users);
       notifyListeners();
     }).catchError((error, stackTrace) async {
-      log(error.toString());
+      log('ERROR UserVM getUsers:$error');
       await AmityDialog()
           .showAlertErrorDialog(title: "Error!", message: error.toString());
       notifyListeners();

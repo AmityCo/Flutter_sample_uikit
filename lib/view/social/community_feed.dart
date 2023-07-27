@@ -172,7 +172,7 @@ class CommunityScreenState extends State<CommunityScreen> {
                       });
                     }).onError((error, stackTrace) {
                       //handle error
-                      log(error.toString());
+                      log('ERROR CommunityScreen leaveCommunity:$error');
                     });
                   } else {
                     AmitySocialClient.newCommunityRepository()
@@ -183,7 +183,7 @@ class CommunityScreenState extends State<CommunityScreen> {
                             !(widget.community.isJoined!);
                       });
                     }).onError((error, stackTrace) {
-                      log(error.toString());
+                      log('ERROR CommunityScreen joinCommunity:$error');
                     });
                   }
                 }
