@@ -232,7 +232,7 @@ class CreatePostVM extends ChangeNotifier {
     await client.text(textEditingController.text).post().then((AmityPost post) {
       _updateCommuFeedVM(context, post);
     }).onError((error, stackTrace) async {
-      log(error.toString());
+      log('ERROR CreatePostVM createTextpost:$error');
       await AmityDialog()
           .showAlertErrorDialog(title: "Error!", message: error.toString());
     });
@@ -267,7 +267,7 @@ class CreatePostVM extends ChangeNotifier {
         .then((AmityPost post) {
       _updateCommuFeedVM(context, post);
     }).onError((error, stackTrace) async {
-      log(error.toString());
+      log('ERROR CreatePostVM creatImagePost:$error');
       await AmityDialog()
           .showAlertErrorDialog(title: "Error!", message: error.toString());
     });
@@ -294,6 +294,7 @@ class CreatePostVM extends ChangeNotifier {
             _updateCommuFeedVM(context, post);
           })
           .onError((error, stackTrace) async {
+            log('ERROR CreatePostVM creatVideoPost:$error');
             await AmityDialog().showAlertErrorDialog(
                 title: "Error!", message: error.toString());
           });

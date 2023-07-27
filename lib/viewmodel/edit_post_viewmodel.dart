@@ -61,7 +61,7 @@ class EditPostVM extends CreatePostVM {
         .then((value) {
       log('Update Post OK');
     }).onError((error, stackTrace) async {
-      log(error.toString());
+      log('ERROR EditPostVM createTextpost:$error');
       await AmityDialog()
           .showAlertErrorDialog(title: "Error!", message: error.toString());
     });

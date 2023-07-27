@@ -10,7 +10,6 @@ import 'package:provider/provider.dart';
 import '../../components/custom_user_avatar.dart';
 import '../../viewmodel/amity_viewmodel.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
-import '../../viewmodel/feed_viewmodel.dart';
 import '../../viewmodel/user_feed_viewmodel.dart';
 import '../social/home_following_screen.dart';
 import 'edit_profile.dart';

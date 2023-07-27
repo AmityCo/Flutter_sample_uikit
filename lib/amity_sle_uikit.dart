@@ -126,7 +126,7 @@ class AmitySLEUIKit {
           .then((value) {
         log("join community:${communityIds[i]} success");
       }).onError((error, stackTrace) {
-        log(error.toString());
+        log('ERROR AmitySLEUIKit joinInitialCommunity:$error');
       });
     }
   }
