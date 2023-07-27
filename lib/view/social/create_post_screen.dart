@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
+import '../../components/custom_app_bar.dart';
 import '../../components/custom_user_avatar.dart';
 import '../../components/video_player.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
@@ -30,31 +31,9 @@ class CreatePostScreen2State extends State<CreatePostScreen2> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    final myAppbar = AppBar(
-      backgroundColor:
-          context.watch<AmityUIConfiguration>().appbarConfig.backgroundColor,
-      elevation: 0,
-      title: Text("Create Post",
-          style: theme.textTheme.titleSmall!.copyWith(
-              fontWeight: FontWeight.w500,
-              color: context
-                  .watch<AmityUIConfiguration>()
-                  .appbarConfig
-                  .textColor)),
-      leading: IconButton(
-        icon: Icon(
-          Icons.chevron_left,
-          color:
-              context.watch<AmityUIConfiguration>().appbarConfig.iconBackColor,
-        ),
-        onPressed: () {
-          Navigator.of(context).pop();
-        },
-      ),
-    );
     return Consumer<CreatePostVM>(builder: (context, vm, m) {
       return Scaffold(
-        appBar: myAppbar,
+        appBar: customAppBar(context, title: 'Create Post'),
         body: SafeArea(
           child: FadedSlideAnimation(
             beginOffset: const Offset(0, 0.3),
@@ -117,15 +96,17 @@ class CreatePostScreen2State extends State<CreatePostScreen2> {
                                             fit: BoxFit.cover,
                                           ),
                                           Align(
-                                              alignment: Alignment.topRight,
-                                              child: GestureDetector(
-                                                  onTap: () {
-                                                    vm.deleteImageAt(index: i);
-                                                  },
-                                                  child: Icon(
-                                                    Icons.cancel,
-                                                    color: Colors.grey.shade100,
-                                                  ))),
+                                            alignment: Alignment.topRight,
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                vm.deleteImageAt(index: i);
+                                              },
+                                              child: Icon(
+                                                Icons.cancel,
+                                                color: Colors.grey.shade100,
+                                              ),
+                                            ),
+                                          ),
                                         ],
                                       ),
                                     )
@@ -222,6 +203,9 @@ class CreatePostScreen2State extends State<CreatePostScreen2> {
                         )
                       : GestureDetector(
                           onTap: () async {
+                            if(vm.isUploading){
+                              return;
+                            }
                             await vm.createPost(
                               context: widget.context,
                               communityId: widget.communityID,
@@ -235,10 +219,11 @@ class CreatePostScreen2State extends State<CreatePostScreen2> {
                             alignment: Alignment.center,
                             padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                             decoration: BoxDecoration(
-                              color: context
+                              color: !vm.isUploading ? context
                                   .watch<AmityUIConfiguration>()
                                   .buttonConfig
-                                  .backgroundColor,
+                                  .backgroundColor
+                                  : theme.disabledColor,
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Text(

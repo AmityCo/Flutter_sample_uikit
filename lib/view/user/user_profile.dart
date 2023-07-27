@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import '../../components/custom_user_avatar.dart';
 import '../../viewmodel/amity_viewmodel.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
+import '../../viewmodel/feed_viewmodel.dart';
 import '../../viewmodel/user_feed_viewmodel.dart';
 import '../social/home_following_screen.dart';
 import 'edit_profile.dart';
@@ -160,11 +161,11 @@ class UserProfileScreenState extends State<UserProfileScreen>
                                       Text(
                                           vm.amityMyFollowInfo.followerCount
                                               .toString(),
-                                          style: theme.textTheme.headline6),
+                                          style: theme.textTheme.titleLarge),
                                       Text(
                                         'Followers',
                                         style:
-                                            theme.textTheme.subtitle2!.copyWith(
+                                            theme.textTheme.titleSmall!.copyWith(
                                           color: theme.hintColor,
                                           fontSize: 12,
                                         ),
@@ -186,11 +187,11 @@ class UserProfileScreenState extends State<UserProfileScreen>
                                     Text(
                                         vm.amityMyFollowInfo.followingCount
                                             .toString(),
-                                        style: theme.textTheme.headline6),
+                                        style: theme.textTheme.titleLarge),
                                     Text(
                                       "Following",
                                       style:
-                                          theme.textTheme.subtitle2!.copyWith(
+                                          theme.textTheme.titleSmall!.copyWith(
                                         color: theme.hintColor,
                                         fontSize: 12,
                                       ),
@@ -205,7 +206,7 @@ class UserProfileScreenState extends State<UserProfileScreen>
                                 left: 20, right: 20, bottom: 10, top: 10),
                             child: Text(
                               getAmityUser().displayName ?? "",
-                              style: theme.textTheme.headline6,
+                              style: theme.textTheme.titleLarge,
                             ),
                           ),
                           Padding(
@@ -213,7 +214,7 @@ class UserProfileScreenState extends State<UserProfileScreen>
                                 left: 20, right: 20, bottom: 10),
                             child: Text(
                               getAmityUser().description ?? "",
-                              style: theme.textTheme.subtitle2!.copyWith(
+                              style: theme.textTheme.titleSmall!.copyWith(
                                 color: theme.hintColor,
                                 fontSize: 12,
                               ),
@@ -256,7 +257,7 @@ class UserProfileScreenState extends State<UserProfileScreen>
                                               10, 10, 10, 10),
                                           child: Text(
                                             "Edit Profile",
-                                            style: theme.textTheme.subtitle2!
+                                            style: theme.textTheme.titleSmall!
                                                 .copyWith(
                                               color: context
                                                   .watch<AmityUIConfiguration>()
@@ -487,6 +488,9 @@ class UserProfileScreenState extends State<UserProfileScreen>
                                         post: snapshot.data!,
                                         theme: theme,
                                         postIndex: index,
+                                        onDeleteAction: (_){
+                                          vm.listenForUserFeed(widget.amityUser.userId!);
+                                        },
                                       );
                                     });
                               },

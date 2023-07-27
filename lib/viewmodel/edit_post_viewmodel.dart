@@ -1,17 +1,21 @@
 import 'dart:developer';
 
 import 'package:amity_sdk/amity_sdk.dart';
+import 'package:flutter/material.dart';
 
+import '../components/alert_dialog.dart';
 import '../utils/env_manager.dart';
 import 'create_post_viewmodel.dart';
 
 class EditPostVM extends CreatePostVM {
-  List<String> imageUrlList = [];
   String? videoUrl;
+  late AmityPost currentPost;
+  VideoData? videoData;
 
   void initForEditPost(AmityPost post) {
+    currentPost = post;
     textEditingController.clear();
-    imageUrlList.clear();
+    inits();
     videoUrl = null;
 
     var textdata = post.data as TextData;
@@ -19,46 +23,57 @@ class EditPostVM extends CreatePostVM {
     var children = post.children;
     if (children != null) {
       if (children[0].data is ImageData) {
-        imageUrlList = [];
+        amityImages = [];
         for (var child in children) {
           var imageData = child.data as ImageData;
-          imageUrlList.add(imageData.fileInfo.fileUrl);
+          amityImages.add(
+            UploadStatus(
+              path: imageData.fileInfo.fileUrl,
+              data: imageData.image,
+              isComplete: true,
+            ),
+          );
         }
 
-        log("ImageData: $imageUrlList");
+        log("AmityImages: $amityImages");
       } else if (children[0].data is VideoData) {
-        var videoData = children[0].data as VideoData;
-
+        var vData = children[0].data as VideoData;
+        videoData = vData;
         videoUrl =
-            "https://api.${env!.region}.amity.co/api/v3/files/${videoData.fileId}/download?size=full";
+            "https://api.${env!.region}.amity.co/api/v3/files/${vData.fileId}/download?size=full";
         log("VideoPost: $videoUrl");
       }
     }
   }
 
   @override
-  void deleteImageAt({required int index}) {
-    imageUrlList.removeAt(index);
-    notifyListeners();
+  Future<void> createTextpost(
+    BuildContext? context, {
+    String? communityId,
+  }) async {
+    log("createTextpost...");
+
+    currentPost
+        .edit()
+        .text(textEditingController.text)
+        .build()
+        .update()
+        .then((value) {
+      log('Update Post OK');
+    }).onError((error, stackTrace) async {
+      log(error.toString());
+      await AmityDialog()
+          .showAlertErrorDialog(title: "Error!", message: error.toString());
+    });
   }
 
   @override
   bool isNotSelectedImageYet() {
-    if (imageUrlList.isEmpty) {
-      return true;
-    } else {
-      return false;
-    }
+    return false;
   }
 
   @override
   bool isNotSelectVideoYet() {
-    if (amityVideo == null) {
-      return true;
-    } else {
-      return false;
-    }
+    return false;
   }
-
-  Future<void> editPost() async {}
 }

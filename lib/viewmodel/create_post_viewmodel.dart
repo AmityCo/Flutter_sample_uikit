@@ -10,7 +10,6 @@ import 'package:provider/provider.dart';
 
 import '../../components/alert_dialog.dart';
 import 'community_feed_viewmodel.dart';
-import 'feed_viewmodel.dart';
 
 class AmityFileInfoWithUploadStatus {
   AmityFileInfo? fileInfo;
@@ -34,10 +33,12 @@ class CreatePostVM extends ChangeNotifier {
   List<UploadStatus<AmityImage>> amityImages = <UploadStatus<AmityImage>>[];
   AmityFileInfoWithUploadStatus? amityVideo;
   bool isloading = false;
+  bool isUploading = false;
   void inits() {
     textEditingController.clear();
     amityVideo = null;
     amityImages.clear();
+    isUploading = false;
   }
 
   bool isNotSelectedImageYet() {
@@ -80,6 +81,7 @@ class CreatePostVM extends ChangeNotifier {
   void uploadImage(File imageFile) {
     amityImages.add(UploadStatus<AmityImage>(path: imageFile.path));
     notifyListeners();
+    isUploading = true;
     AmityCoreClient.newFileRepository()
         .uploadImage(imageFile, isFullImage: false)
         .stream
@@ -100,6 +102,7 @@ class CreatePostVM extends ChangeNotifier {
                 uploadStatus.copyWith(data: uploadedImage, isComplete: true);
             notifyListeners();
           }
+          _checkUploadImage();
         },
         error: (error) async {
           final AmityException amityException = error;
@@ -123,6 +126,17 @@ class CreatePostVM extends ChangeNotifier {
     });
   }
 
+  void _checkUploadImage(){
+    bool uploading = false;
+    for(final data in amityImages){
+      if(!data.isComplete){
+        uploading = true;
+      }
+    }
+    isUploading = uploading;
+    notifyListeners();
+  }
+
   Future<void> addVideo() async {
     if (isNotSelectedImageYet()) {
       try {
@@ -130,6 +144,7 @@ class CreatePostVM extends ChangeNotifier {
             await _picker.pickVideo(source: ImageSource.gallery);
 
         if (video != null) {
+          isUploading = true;
           var fileWithStatus = AmityFileInfoWithUploadStatus();
           amityVideo = fileWithStatus;
           amityVideo!.file = File(video.path);
@@ -142,7 +157,7 @@ class CreatePostVM extends ChangeNotifier {
 
             amityVideo!.addFile(fileInfo.getFile);
             log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>${fileInfo.getFile.fileId}");
-
+            isUploading = false;
             notifyListeners();
           }).onError((error, stackTrace) async {
             log("error: $error");

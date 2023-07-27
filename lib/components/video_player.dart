@@ -67,9 +67,9 @@ class _LocalVideoPlayerState extends State<LocalVideoPlayer> {
               ? Chewie(
                   controller: chewieController!,
                 )
-              : Column(
+              : const Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
+                  children: [
                     CircularProgressIndicator(),
                     SizedBox(height: 20),
                     Text('Loading',
@@ -88,13 +88,15 @@ class MyVideoPlayer2 extends StatefulWidget {
   final AmityPost post;
   final bool isInFeed;
   final bool isEnableVideoTools;
-  const MyVideoPlayer2(
-      {Key? key,
-      required this.url,
-      required this.isInFeed,
-      required this.isEnableVideoTools,
-      required this.post})
-      : super(key: key);
+  final VideoData? videoData;
+  const MyVideoPlayer2({
+    Key? key,
+    required this.url,
+    required this.isInFeed,
+    required this.isEnableVideoTools,
+    required this.post,
+    this.videoData,
+  }) : super(key: key);
 
   @override
   State<MyVideoPlayer2> createState() => _MyVideoPlayer2State();
@@ -107,11 +109,21 @@ class _MyVideoPlayer2State extends State<MyVideoPlayer2> {
 
   @override
   void initState() {
-    var postData = widget.post.data as VideoData;
-    if (postData.thumbnail != null) {
-      thumbnailURL = postData.thumbnail!.fileUrl;
-      log(thumbnailURL.toString());
+    VideoData? vData;
+    if (widget.post.data is VideoData) {
+      var postData = widget.post.data as VideoData;
+      vData = postData;
+    }else if(widget.videoData != null){
+      vData = widget.videoData;
     }
+
+    if(vData != null){
+       if (vData.thumbnail != null) {
+        thumbnailURL = vData.thumbnail!.fileUrl;
+        log(thumbnailURL.toString());
+      }
+    }
+
     if (!widget.isInFeed) {
       initializePlayer();
     }
@@ -144,8 +156,8 @@ class _MyVideoPlayer2State extends State<MyVideoPlayer2> {
         });
       }
     });
-
-    videoPlayerController = VideoPlayerController.network(videoUrl);
+    final videoUri = Uri.parse(videoUrl);
+    videoPlayerController = VideoPlayerController.networkUrl(videoUri);
     await videoPlayerController.initialize();
 
     var chewieProgressColors = ChewieProgressColors(
@@ -207,9 +219,9 @@ class _MyVideoPlayer2State extends State<MyVideoPlayer2> {
                                   controller: chewieController!,
                                 ),
                               )
-                            : Column(
+                            : const Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
+                                children: [
                                   // CircularProgressIndicator(
                                   //   color: Theme.of(context).primaryColor,
                                   // )
@@ -234,9 +246,9 @@ class _MyVideoPlayer2State extends State<MyVideoPlayer2> {
                             ),
                             imageUrl: thumbnailURL ?? "",
                             fit: BoxFit.fill,
-                            placeholder: (context, url) => Column(
+                            placeholder: (context, url) => const Column(
                               mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
+                              children: [
                                 //  CircularProgressIndicator()
                               ],
                             ),
