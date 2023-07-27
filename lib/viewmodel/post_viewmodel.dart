@@ -41,7 +41,7 @@ class PostVM extends ChangeNotifier {
       }
       notifyListeners(); // Replace 'notifyListener()' with the actual method call to notify listeners
       return true;
-    } catch (error, stackTrace) {
+    } catch (error, _) {
       // Error occurred, notify listeners and return false
       notifyListeners(); // Replace 'notifyListener()' with the actual method call to notify listeners
       return false;

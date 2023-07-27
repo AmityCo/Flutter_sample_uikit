@@ -92,17 +92,17 @@ class CommuFeedVM extends ChangeNotifier {
 
   void loadCoomunityMember() {}
 
-  void deletePost(AmityPost post, int postIndex) async {
+  Future<void> deletePost(AmityPost post, int postIndex) async {
     log("deleting post....");
-    AmitySocialClient.newPostRepository()
+    await AmitySocialClient.newPostRepository()
         .deletePost(postId: post.postId!)
-        .then((value) {
-      _amityCommunityFeedPosts.removeAt(postIndex);
-      notifyListeners();
-    }).onError((error, stackTrace) async {
+        .onError((error, stackTrace) async {
       await AmityDialog()
           .showAlertErrorDialog(title: "Error!", message: error.toString());
+      return;
     });
+     _amityCommunityFeedPosts.removeAt(postIndex);
+      notifyListeners();
   }
 
   Future<void> checkIsCurrentUserIsAdmin(String communityId) async {

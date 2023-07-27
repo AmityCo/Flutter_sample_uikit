@@ -24,16 +24,17 @@ class FeedVM extends ChangeNotifier {
     notifyListeners();
   }
 
-  void deletePost(AmityPost post, int postIndex) async {
-    AmitySocialClient.newPostRepository()
+  Future<void> deletePost(AmityPost post, int postIndex) async {
+    await AmitySocialClient.newPostRepository()
         .deletePost(postId: post.postId!)
-        .then((value) {
-      _amityGlobalFeedPosts.removeAt(postIndex);
-      notifyListeners();
-    }).onError((error, stackTrace) async {
+        .onError((error, stackTrace) async {
       await AmityDialog()
           .showAlertErrorDialog(title: "Error!", message: error.toString());
+          return;
     });
+
+    _amityGlobalFeedPosts.removeAt(postIndex);
+    notifyListeners();
   }
 
   Future<void> initAmityGlobalfeed() async {

@@ -124,19 +124,21 @@ class GlobalFeedScreenState extends State<GlobalFeedScreen> {
 }
 
 class PostWidget extends StatefulWidget {
-  const PostWidget(
-      {Key? key,
-      required this.post,
-      required this.theme,
-      required this.postIndex,
-      this.isFromFeed = false,
-      this.isCommunity})
-      : super(key: key);
+  const PostWidget({
+    Key? key,
+    required this.post,
+    required this.theme,
+    required this.postIndex,
+    this.isFromFeed = false,
+    this.isCommunity,
+    this.onDeleteAction,
+  }) : super(key: key);
   final bool? isCommunity;
   final AmityPost post;
   final ThemeData theme;
   final int postIndex;
   final bool isFromFeed;
+  final ValueChanged? onDeleteAction;
 
   @override
   State<PostWidget> createState() => _PostWidgetState();
@@ -167,16 +169,11 @@ class _PostWidgetState extends State<PostWidget>
   Widget postOptions(BuildContext context) {
     bool isPostOwner =
         widget.post.postedUserId == AmityCoreClient.getCurrentUser().userId;
-    List<String> postOwnerMenu = [
-      //TODO: waiting for SDK edit post then uncomment this
-      // 'Edit Post',
-
-      'Delete Post'
-    ];
+    List<String> postOwnerMenu = ['Edit Post', 'Delete Post'];
 
     final isFlaggedByMe = widget.post.isFlaggedByMe;
     return PopupMenuButton(
-      onSelected: (value) {
+      onSelected: (value) async {
         switch (value) {
           case 'Report Post':
           case 'Unreport Post':
@@ -197,11 +194,14 @@ class _PostWidgetState extends State<PostWidget>
             break;
           case 'Delete Post':
             if (widget.isCommunity == null || widget.isCommunity == false) {
-              Provider.of<FeedVM>(context, listen: false)
+              await Provider.of<FeedVM>(context, listen: false)
                   .deletePost(widget.post, widget.postIndex);
             } else {
-              Provider.of<CommuFeedVM>(context, listen: false)
+              await Provider.of<CommuFeedVM>(context, listen: false)
                   .deletePost(widget.post, widget.postIndex);
+            }
+            if(widget.onDeleteAction != null){
+              widget.onDeleteAction!(1);
             }
             break;
           default:
@@ -213,12 +213,7 @@ class _PostWidgetState extends State<PostWidget>
         color: Colors.grey,
       ),
       itemBuilder: (context) {
-        return List.generate(
-            //TODO: waiting for SDK edit post then uncomment this
-            //   isPostOwner ? 2
-
-            // :
-            1, (index) {
+        return List.generate(isPostOwner ? 2 : 1, (index) {
           return PopupMenuItem(
               value: isPostOwner
                   ? postOwnerMenu[index]

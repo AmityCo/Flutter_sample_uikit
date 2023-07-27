@@ -172,8 +172,7 @@ class UserFeedVM extends ChangeNotifier {
   Future<void> sendFollowRequest({required AmityUser user}) async {
     AmityCoreClient.newUserRepository()
         .relationship()
-        .user(user.userId!)
-        .follow()
+        .follow(user.userId!)
         .then((AmityFollowStatus followStatus) {
       //success
       log("sendFollowRequest: Success");
@@ -188,7 +187,6 @@ class UserFeedVM extends ChangeNotifier {
   void withdrawFollowRequest(AmityUser user) {
     AmityCoreClient.newUserRepository()
         .relationship()
-        .me()
         .unfollow(user.userId!)
         .then((value) {
       log("withdrawFollowRequest: Success");
