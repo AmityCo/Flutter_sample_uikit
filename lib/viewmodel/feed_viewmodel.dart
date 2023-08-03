@@ -8,7 +8,7 @@ import '../../components/alert_dialog.dart';
 enum Feedtype { global, commu }
 
 class FeedVM extends ChangeNotifier {
-  var _amityGlobalFeedPosts = <AmityPost>[];
+  final _amityGlobalFeedPosts = <AmityPost>[];
 
   late PagingController<AmityPost> _controllerGlobal;
 

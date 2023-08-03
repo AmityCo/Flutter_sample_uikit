@@ -5,6 +5,7 @@ import 'package:amity_uikit_beta_service/viewmodel/amity_viewmodel.dart';
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
 import 'package:provider/provider.dart';
 
@@ -200,7 +201,7 @@ class _PostWidgetState extends State<PostWidget>
               await Provider.of<CommuFeedVM>(context, listen: false)
                   .deletePost(widget.post, widget.postIndex);
             }
-            if(widget.onDeleteAction != null){
+            if (widget.onDeleteAction != null) {
               widget.onDeleteAction!(1);
             }
             break;
@@ -288,11 +289,11 @@ class _PostWidgetState extends State<PostWidget>
                                         .currentamityUser!
                                         .displayName ??
                                     "",
-                            style: widget.theme.textTheme.bodyText1!.copyWith(
+                            style: widget.theme.textTheme.bodyLarge!.copyWith(
                                 fontWeight: FontWeight.bold, fontSize: 16),
                           ),
                         ),
-                        //TODO: Need community role in user object
+                        // TODO: Need community role in user object
                         // if (widget.post.postedUser != null &&
                         //     widget.post.postedUser!.roles!
                         //         .contains("community-moderator"))
@@ -332,7 +333,7 @@ class _PostWidgetState extends State<PostWidget>
                                           .targetCommunity!
                                           .displayName ??
                                       "Community name",
-                                  style: widget.theme.textTheme.bodyText1!
+                                  style: widget.theme.textTheme.bodyLarge!
                                       .copyWith(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 16),
@@ -342,8 +343,8 @@ class _PostWidgetState extends State<PostWidget>
                       ],
                     ),
                     subtitle: Text(
-                      " ${widget.post.createdAt?.toLocal().day}-${widget.post.createdAt?.toLocal().month}-${widget.post.createdAt?.toLocal().year}",
-                      style: widget.theme.textTheme.bodyText1!
+                      DateFormat.yMMMMEEEEd().format(widget.post.createdAt!),
+                      style: widget.theme.textTheme.bodyLarge!
                           .copyWith(color: Colors.grey, fontSize: 13),
                     ),
                     trailing: Row(

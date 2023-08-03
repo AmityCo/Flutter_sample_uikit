@@ -80,7 +80,7 @@ class _CommunityUserListScreenState extends State<CommunityUserListScreen> {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Community Members'),
+        title: const Text('Community Members'),
       ),
       body: SafeArea(
         child: FadedSlideAnimation(
@@ -135,7 +135,7 @@ class _CommunityUserListScreenState extends State<CommunityUserListScreen> {
                 ),
               ),
               if (_isLoading && _communityMembers.isEmpty)
-                Positioned.fill(
+                const Positioned.fill(
                   child: Align(
                     alignment: Alignment.center,
                     child: CircularProgressIndicator(),

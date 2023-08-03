@@ -204,7 +204,7 @@ class CommunityWidget extends StatelessWidget {
                               backgroundColor: Colors.transparent,
                               backgroundImage: (NetworkImage(
                                   community.avatarImage!.fileUrl)))
-                          : Container(
+                          : const SizedBox(
                               width: 40,
                               height: 40,
                             )
@@ -216,12 +216,12 @@ class CommunityWidget extends StatelessWidget {
                       ),
                   title: Text(
                     community.displayName ?? "Community",
-                    style: theme.textTheme.bodyText1!
+                    style: theme.textTheme.bodyLarge!
                         .copyWith(fontWeight: FontWeight.bold),
                   ),
                   subtitle: Text(
                     " ${community.membersCount} members",
-                    style: theme.textTheme.bodyText1!
+                    style: theme.textTheme.bodyLarge!
                         .copyWith(color: Colors.grey, fontSize: 11),
                   ),
                   trailing: ElevatedButton(

@@ -22,14 +22,13 @@ class CreateCommunityScreen extends StatefulWidget {
 class CreateCommunityScreenState extends State<CreateCommunityScreen> {
   double radius = 60;
   OverlayEntry? overlayEntry;
-  TextEditingController _displayNameController = TextEditingController();
-  TextEditingController _descriptionController = TextEditingController();
+  final _displayNameController = TextEditingController();
+  final _descriptionController = TextEditingController();
   bool isCommunityPublic = true;
   List<String> categoryIds = [];
   List<AmityUser> selectedUsers = [];
   AmityCommunityCategory? selectedCategory;
   File? selectedImage;
-  GlobalKey<OverlayState> _overlayKey = GlobalKey<OverlayState>();
 
   @override
   void initState() {
@@ -53,11 +52,11 @@ class CreateCommunityScreenState extends State<CreateCommunityScreen> {
         complete: (file) {
           // Check if the upload result is complete
           // Then create an image post
-          print("upload image complete");
+          debugPrint("upload image complete");
           createCommunity(avatarImage: (file as AmityImage));
         },
         error: (error) {
-          final AmityException amityException = error;
+              debugPrint(error.toString());
         },
         cancel: () {},
       );
@@ -66,7 +65,6 @@ class CreateCommunityScreenState extends State<CreateCommunityScreen> {
 
   void createCommunityClicked() {
     if (selectedCategory != null &&
-        selectedUsers != null &&
         _descriptionController.text.isNotEmpty &&
         _displayNameController.text.isNotEmpty) {
       if (selectedImage != null) {
@@ -86,7 +84,6 @@ class CreateCommunityScreenState extends State<CreateCommunityScreen> {
   void createCommunity({AmityImage? avatarImage}) {
     List<String> userIds = selectedUsers.map((e) => e.userId!).toList();
     if (selectedCategory != null &&
-        selectedUsers != null &&
         _descriptionController.text.isNotEmpty &&
         _displayNameController.text.isNotEmpty) {
       if (avatarImage != null) {
@@ -99,14 +96,14 @@ class CreateCommunityScreenState extends State<CreateCommunityScreen> {
             .userIds(userIds)
             .create()
             .then((AmityCommunity community) {
-              print("Successfully create community $community");
+              debugPrint("Successfully create community $community");
               hideLoadingOverlay();
               AmityDialog().showAlertErrorDialog(
                   title: "Success!",
                   message: "Successfully created community!");
             })
             .onError((error, stackTrace) {
-              print("Error creating a community $error");
+              debugPrint("Error creating a community $error");
               hideLoadingOverlay();
               AmityDialog().showAlertErrorDialog(
                   title: "Error!",
@@ -121,14 +118,14 @@ class CreateCommunityScreenState extends State<CreateCommunityScreen> {
             .userIds(userIds)
             .create()
             .then((AmityCommunity community) {
-              print("Successfully create community $community");
+              debugPrint("Successfully create community $community");
               hideLoadingOverlay();
               AmityDialog().showAlertErrorDialog(
                   title: "Success!",
                   message: "Successfully created community!");
             })
             .onError((error, stackTrace) {
-              print("Error creating a community $error");
+              debugPrint("Error creating a community $error");
               hideLoadingOverlay();
               AmityDialog().showAlertErrorDialog(
                   title: "Error!",
@@ -155,7 +152,7 @@ class CreateCommunityScreenState extends State<CreateCommunityScreen> {
   }
 
   void navigateToCategoryList() async {
-    print("Clicking navigate to category");
+    debugPrint("Clicking navigate to category");
     final result = await Navigator.push<AmityCommunityCategory?>(
       context,
       MaterialPageRoute(
@@ -182,7 +179,7 @@ class CreateCommunityScreenState extends State<CreateCommunityScreen> {
 
   String _buildSelectedUserNames(List<AmityUser> users) {
     final List<String> userNames = [];
-    if (users == null || users.isEmpty) {
+    if (users.isEmpty) {
       return "Select user";
     }
     for (final user in selectedUsers) {
@@ -191,7 +188,7 @@ class CreateCommunityScreenState extends State<CreateCommunityScreen> {
     final String truncatedNames = userNames.join(', ');
     const int maxNameLength = 30;
     if (truncatedNames.length > maxNameLength) {
-      return truncatedNames.substring(0, maxNameLength) + '...';
+      return '${truncatedNames.substring(0, maxNameLength)}...';
     }
     return truncatedNames;
   }
@@ -201,14 +198,14 @@ class CreateCommunityScreenState extends State<CreateCommunityScreen> {
       builder: (context) => Positioned.fill(
         child: Container(
           color: Colors.black.withOpacity(0.5),
-          child: Center(
+          child: const Center(
             child: CircularProgressIndicator(),
           ),
         ),
       ),
     );
     overlayEntry = entry;
-    Overlay.of(context)?.insert(overlayEntry!);
+    Overlay.of(context).insert(overlayEntry!);
   }
 
   void hideLoadingOverlay() {
@@ -296,7 +293,7 @@ class CreateCommunityScreenState extends State<CreateCommunityScreen> {
                         top: 7,
                         child: Container(
                           padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             shape: BoxShape.circle,
                             color: Colors.grey,
                           ),
@@ -318,7 +315,7 @@ class CreateCommunityScreenState extends State<CreateCommunityScreen> {
                       width: double.infinity,
                       child: Text(
                         "Community Info",
-                        style: theme.textTheme.headline6!.copyWith(
+                        style: theme.textTheme.headlineMedium!.copyWith(
                           color: Colors.grey,
                           fontSize: 16,
                         ),
@@ -363,7 +360,7 @@ class CreateCommunityScreenState extends State<CreateCommunityScreen> {
                         children: [
                           Text(
                             "Community Type",
-                            style: theme.textTheme.subtitle1!.copyWith(
+                            style: theme.textTheme.headlineSmall!.copyWith(
                               color: Colors.grey,
                             ),
                           ),
@@ -405,7 +402,7 @@ class CreateCommunityScreenState extends State<CreateCommunityScreen> {
                                     Text(
                                       "Category List",
                                       style:
-                                          theme.textTheme.subtitle1!.copyWith(
+                                          theme.textTheme.headlineSmall!.copyWith(
                                         color: Colors.grey,
                                       ),
                                     ),
@@ -414,11 +411,11 @@ class CreateCommunityScreenState extends State<CreateCommunityScreen> {
                                       selectedCategory != null
                                           ? "${selectedCategory!.name}"
                                           : "Select Category",
-                                      style: theme.textTheme.bodyText2,
+                                      style: theme.textTheme.bodyLarge,
                                     ),
                                   ],
                                 ),
-                                Icon(
+                                const Icon(
                                   Icons.arrow_forward_ios,
                                   size: 18,
                                   color: Colors.grey,
@@ -471,18 +468,18 @@ class CreateCommunityScreenState extends State<CreateCommunityScreen> {
                                     Text(
                                       "User List",
                                       style:
-                                          theme.textTheme.subtitle1!.copyWith(
+                                          theme.textTheme.headlineSmall!.copyWith(
                                         color: Colors.grey,
                                       ),
                                     ),
                                     const SizedBox(height: 8),
                                     Text(
                                       _buildSelectedUserNames(selectedUsers),
-                                      style: theme.textTheme.bodyText2,
+                                      style: theme.textTheme.bodyLarge,
                                     ),
                                   ],
                                 ),
-                                Icon(
+                                const Icon(
                                   Icons.arrow_forward_ios,
                                   size: 18,
                                   color: Colors.grey,

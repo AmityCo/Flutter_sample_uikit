@@ -52,7 +52,7 @@ class ChatSingleScreen extends StatelessWidget {
             child: Text(
               channel.displayName ?? "N/A",
               overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.headline6!.copyWith(
+              style: theme.textTheme.headlineMedium!.copyWith(
                 fontSize: 16.7,
                 fontWeight: FontWeight.w500,
               ),
@@ -298,7 +298,7 @@ class _MessageComponentState extends State<MessageComponent> {
                                     child: Text(
                                       vm.amityMessageList?[index].data!.text ??
                                           "N/A",
-                                      style: widget.theme.textTheme.bodyText1!
+                                      style: widget.theme.textTheme.bodyLarge!
                                           .copyWith(
                                               fontSize: 14.7,
                                               color: isSendbyCurrentUser

@@ -1,13 +1,10 @@
 import 'package:amity_sdk/amity_sdk.dart';
 import 'package:amity_uikit_beta_service/view/social/community_list_by_category_id.dart';
 import 'package:animation_wrappers/animation_wrappers.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../viewmodel/category_viewmodel.dart';
-import '../../viewmodel/community_feed_viewmodel.dart';
-import '../../viewmodel/community_viewmodel.dart';
 
 class AllCategoryList extends StatefulWidget {
   const AllCategoryList({super.key});
@@ -117,7 +114,7 @@ class CategoryWidget extends StatelessWidget {
                             backgroundColor: Colors.transparent,
                             backgroundImage:
                                 (NetworkImage(category.avatar!.fileUrl)))
-                        : Container(
+                        : const SizedBox(
                             width: 40,
                             height: 40,
                           )
@@ -129,7 +126,7 @@ class CategoryWidget extends StatelessWidget {
                     ),
                 title: Text(
                   category.name ?? "Category",
-                  style: theme.textTheme.bodyText1!
+                  style: theme.textTheme.bodyLarge!
                       .copyWith(fontWeight: FontWeight.bold),
                 ),
               ),

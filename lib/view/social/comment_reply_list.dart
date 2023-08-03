@@ -1,12 +1,9 @@
 import 'package:amity_sdk/amity_sdk.dart';
-import 'package:amity_uikit_beta_service/view/social/post_content_widget.dart';
 import 'package:amity_uikit_beta_service/viewmodel/amity_viewmodel.dart';
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:linkwell/linkwell.dart';
-import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:provider/provider.dart';
 
 import '../../components/custom_user_avatar.dart';
@@ -49,8 +46,6 @@ class ReplyCommentScreenState extends State<ReplyCommentScreen> {
     var postData =
         Provider.of<PostVM>(context, listen: false).amityPost.data as TextData;
     final theme = Theme.of(context);
-    final mediaQuery = MediaQuery.of(context);
-    final bHeight = mediaQuery.size.height - mediaQuery.padding.top;
 
     return Consumer<PostVM>(builder: (context, vm, _) {
       return StreamBuilder<AmityPost>(
@@ -274,7 +269,7 @@ class _CommentComponentState extends State<CommentComponent> {
                           children: [
                             TextSpan(
                               text: comments.user!.displayName!,
-                              style: widget.theme.textTheme.headline6!
+                              style: widget.theme.textTheme.headlineMedium!
                                   .copyWith(fontSize: 14),
                             ),
                             TextSpan(
@@ -294,7 +289,7 @@ class _CommentComponentState extends State<CommentComponent> {
                           padding: const EdgeInsets.only(top: 8.0, bottom: 8),
                           child: Text(
                             commentData.text!,
-                            style: widget.theme.textTheme.subtitle2!.copyWith(
+                            style: widget.theme.textTheme.headlineSmall!.copyWith(
                               fontSize: 12,
                             ),
                           ),
