@@ -185,7 +185,7 @@ class CategoryWidget extends StatelessWidget {
           ),
           title: Text(
             category.name ?? "Category",
-            style: theme.textTheme.bodyText1!
+            style: theme.textTheme.bodyLarge!
                 .copyWith(fontWeight: FontWeight.bold),
           ),
           trailing: Provider.of<CategoryVM>(context, listen: true)

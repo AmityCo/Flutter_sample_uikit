@@ -234,7 +234,7 @@ class CommentScreenState extends State<CommentScreen> {
                                                                       .createdAt!),
                                                               style: theme
                                                                   .textTheme
-                                                                  .bodyText1!
+                                                                  .bodyLarge!
                                                                   .copyWith(
                                                                       color: Colors
                                                                           .grey,
@@ -341,7 +341,7 @@ class CommentScreenState extends State<CommentScreen> {
                                                             .data!.reactionCount
                                                             .toString(),
                                                         style: theme.textTheme
-                                                            .bodyText1!
+                                                            .bodyLarge!
                                                             .copyWith(
                                                                 color:
                                                                     Colors.grey,
@@ -366,7 +366,7 @@ class CommentScreenState extends State<CommentScreen> {
                                                                 TextAlign.left,
                                                             style: theme
                                                                 .textTheme
-                                                                .headline6!
+                                                                .headlineMedium!
                                                                 .copyWith(
                                                                     fontWeight:
                                                                         FontWeight
@@ -542,12 +542,12 @@ class _CommentComponentState extends State<CommentComponent> {
                       },
                       child: RichText(
                         text: TextSpan(
-                          style: widget.theme.textTheme.bodyText1!
+                          style: widget.theme.textTheme.bodyLarge!
                               .copyWith(fontSize: 17),
                           children: [
                             TextSpan(
                               text: comments.user!.displayName!,
-                              style: widget.theme.textTheme.headline6!
+                              style: widget.theme.textTheme.headlineMedium!
                                   .copyWith(fontSize: 14),
                             ),
                             TextSpan(
@@ -567,7 +567,7 @@ class _CommentComponentState extends State<CommentComponent> {
                           padding: const EdgeInsets.only(top: 8.0, bottom: 12.0),
                           child: Text(
                             commentData.text!,
-                            style: widget.theme.textTheme.subtitle2!.copyWith(
+                            style: widget.theme.textTheme.headlineSmall!.copyWith(
                               fontSize: 14,
                             ),
                           ),

@@ -34,11 +34,14 @@ class CreatePostVM extends ChangeNotifier {
   AmityFileInfoWithUploadStatus? amityVideo;
   bool isloading = false;
   bool isUploading = false;
+  AmityPost? lastPost;
+
   void inits() {
     textEditingController.clear();
     amityVideo = null;
     amityImages.clear();
     isUploading = false;
+    lastPost = null;
   }
 
   bool isNotSelectedImageYet() {
@@ -305,6 +308,7 @@ class CreatePostVM extends ChangeNotifier {
     BuildContext? context,
     AmityPost post,
   ) {
+    lastPost = post;
     if (context != null) {
       ///add post to feed
       Provider.of<CommuFeedVM>(context, listen: false).addPostToFeed(post);

@@ -11,7 +11,7 @@ class SearchCommunitiesScreen extends StatefulWidget {
   const SearchCommunitiesScreen({Key? key}) : super(key: key);
 
   @override
-  _SearchCommunitiesScreenState createState() =>
+  createState() =>
       _SearchCommunitiesScreenState();
 }
 
@@ -126,7 +126,7 @@ class _SearchCommunitiesScreenState extends State<SearchCommunitiesScreen> {
                 ),
               ),
               if (_isLoading)
-                Positioned(
+                const Positioned(
                   right: 12,
                   top: 20,
                   child: SizedBox(

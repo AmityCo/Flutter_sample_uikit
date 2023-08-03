@@ -54,7 +54,7 @@ class _CategoryListForCreateCommunityState
         _isLoading = false;
       });
     } catch (error) {
-      print("query categories error " + error.toString());
+      debugPrint("query categories error $error");
       setState(() {
         _isLoading = false;
         _error = 'Error fetching categories. Please try again.';
@@ -81,7 +81,7 @@ class _CategoryListForCreateCommunityState
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Select Category'),
+        title: const Text('Select Category'),
       ),
       body: SafeArea(
         child: FadedSlideAnimation(
@@ -146,7 +146,7 @@ class _CategoryListForCreateCommunityState
                 ),
               ),
               if (_isLoading && _categories.isEmpty)
-                Positioned.fill(
+                const Positioned.fill(
                   child: Align(
                     alignment: Alignment.center,
                     child: CircularProgressIndicator(),

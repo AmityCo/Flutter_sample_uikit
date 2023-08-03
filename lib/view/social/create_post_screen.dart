@@ -1,4 +1,5 @@
 import 'package:amity_uikit_beta_service/viewmodel/amity_viewmodel.dart';
+import 'package:amity_uikit_beta_service/viewmodel/feed_viewmodel.dart';
 import 'package:animation_wrappers/animation_wrappers.dart';
 
 import 'package:flutter/material.dart';
@@ -210,6 +211,10 @@ class CreatePostScreen2State extends State<CreatePostScreen2> {
                               context: widget.context,
                               communityId: widget.communityID,
                             );
+                            if(widget.context == null && widget.communityID == null && vm.lastPost != null){
+                              // ignore: use_build_context_synchronously
+                              context.read<FeedVM>().addPostToFeed(vm.lastPost!);
+                            }
                             if (mounted) {
                               Navigator.of(context).pop();
                             }

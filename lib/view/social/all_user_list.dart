@@ -96,12 +96,12 @@ class _AllUserListScreenState extends State<AllUserListScreen> {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Select User'),
+        title: const Text('Select User'),
         actions: [
           if (_isMultipleSelect)
             TextButton(
               onPressed: _onDoneButtonPressed,
-              child: Text(
+              child: const Text(
                 'Done',
                 style: TextStyle(color: Colors.black),
               ),
@@ -168,7 +168,7 @@ class _AllUserListScreenState extends State<AllUserListScreen> {
                 ),
               ),
               if (_isLoading && _amityUsers.isEmpty)
-                Positioned.fill(
+                const Positioned.fill(
                   child: Align(
                     alignment: Alignment.center,
                     child: CircularProgressIndicator(),

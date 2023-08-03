@@ -37,7 +37,7 @@ class _AmityPendingScreenState extends State<AmityPendingScreen> {
           title: Text(
             "Follow Request",
             style:
-                Theme.of(context).textTheme.headline6!.copyWith(fontSize: 24),
+                Theme.of(context).textTheme.headlineMedium!.copyWith(fontSize: 24),
           ),
         ),
         body: FadedSlideAnimation(

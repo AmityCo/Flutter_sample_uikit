@@ -134,7 +134,7 @@ class _NotificationAllTabScreenState extends State<NotificationAllTabScreen> {
                                         // ),
                                         title: RichText(
                                           text: TextSpan(
-                                            style: theme.textTheme.subtitle1!
+                                            style: theme.textTheme.headlineSmall!
                                                 .copyWith(
                                               letterSpacing: 0.5,
                                             ),
@@ -142,7 +142,7 @@ class _NotificationAllTabScreenState extends State<NotificationAllTabScreen> {
                                               TextSpan(
                                                   text: "Follow Request",
                                                   style: theme
-                                                      .textTheme.subtitle2!
+                                                      .textTheme.headlineSmall!
                                                       .copyWith(fontSize: 12)),
                                             ],
                                           ),
@@ -152,7 +152,7 @@ class _NotificationAllTabScreenState extends State<NotificationAllTabScreen> {
                                               Provider.of<PendingVM>(context,
                                                       listen: true)
                                                   .pendingRequestList),
-                                          style: theme.textTheme.subtitle2!
+                                          style: theme.textTheme.headlineSmall!
                                               .copyWith(
                                             fontSize: 9,
                                             color: theme.hintColor,
@@ -169,7 +169,7 @@ class _NotificationAllTabScreenState extends State<NotificationAllTabScreen> {
                                   vm.notificationsObject?.data?.isEmpty ?? false
                                       ? ""
                                       : "This month",
-                                  style: theme.textTheme.headline6,
+                                  style: theme.textTheme.headlineMedium,
                                 )),
                             vm.notificationsObject?.data?.isEmpty ?? false
                                 ? const Center(
@@ -210,7 +210,7 @@ class _NotificationAllTabScreenState extends State<NotificationAllTabScreen> {
                                             title: RichText(
                                               text: TextSpan(
                                                 style: theme
-                                                    .textTheme.subtitle1!
+                                                    .textTheme.headlineSmall!
                                                     .copyWith(
                                                   letterSpacing: 0.5,
                                                 ),
@@ -222,7 +222,7 @@ class _NotificationAllTabScreenState extends State<NotificationAllTabScreen> {
                                                                       .actors ??
                                                                   []),
                                                       style: theme
-                                                          .textTheme.subtitle2!
+                                                          .textTheme.headlineSmall!
                                                           .copyWith(
                                                               fontSize: 12)),
                                                   TextSpan(
@@ -241,7 +241,7 @@ class _NotificationAllTabScreenState extends State<NotificationAllTabScreen> {
                                                           notificationItem
                                                               .targetDisplayName),
                                                       style: theme
-                                                          .textTheme.subtitle2!
+                                                          .textTheme.headlineSmall!
                                                           .copyWith(
                                                         fontSize: 12,
                                                       )),
@@ -253,7 +253,7 @@ class _NotificationAllTabScreenState extends State<NotificationAllTabScreen> {
                                                   .notificationsObject!
                                                   .data![index]
                                                   .lastUpdate!),
-                                              style: theme.textTheme.subtitle2!
+                                              style: theme.textTheme.headlineSmall!
                                                   .copyWith(
                                                 fontSize: 9,
                                                 color: theme.hintColor,

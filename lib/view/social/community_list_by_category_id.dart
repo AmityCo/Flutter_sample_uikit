@@ -54,7 +54,7 @@ class _CommunityListByCategoryIdScreenState extends State<CommunityListByCategor
         _isLoading = false;
       });
     } catch (error) {
-      print("query communities error " + error.toString());
+      debugPrint("query communities error $error");
       setState(() {
         _isLoading = false;
         _error = 'Error fetching communities. Please try again.';
@@ -130,7 +130,7 @@ class _CommunityListByCategoryIdScreenState extends State<CommunityListByCategor
                                 child: Text(
                                   community.displayName ??
                                       'displayname not found',
-                                  style: theme.textTheme.bodyText1!,
+                                  style: theme.textTheme.bodyLarge!,
                                 ),
                               ),
                             ),
@@ -142,7 +142,7 @@ class _CommunityListByCategoryIdScreenState extends State<CommunityListByCategor
                 ),
               ),
               if (_isLoading && _communities.isEmpty)
-                Positioned.fill(
+                const Positioned.fill(
                   child: Align(
                     alignment: Alignment.center,
                     child: CircularProgressIndicator(),
