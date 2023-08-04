@@ -38,7 +38,7 @@ class EditPostScreenState extends State<EditPostScreen> {
     final theme = Theme.of(context);
     return Consumer<EditPostVM>(builder: (context, vm, m) {
       return Scaffold(
-        appBar: customAppBar(context, title: 'Edit'),
+        appBar: CustomAppBar(context: context, titleText: 'Edit'),
         body: SafeArea(
           child: FadedSlideAnimation(
             beginOffset: const Offset(0, 0.3),

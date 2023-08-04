@@ -34,7 +34,7 @@ class CreatePostScreen2State extends State<CreatePostScreen2> {
 
     return Consumer<CreatePostVM>(builder: (context, vm, m) {
       return Scaffold(
-        appBar: customAppBar(context, title: 'Create Post'),
+        appBar: CustomAppBar(context: context, titleText: 'Create Post'),
         body: SafeArea(
           child: FadedSlideAnimation(
             beginOffset: const Offset(0, 0.3),
