@@ -34,7 +34,7 @@ class CreatePostScreen2State extends State<CreatePostScreen2> {
 
     return Consumer<CreatePostVM>(builder: (context, vm, m) {
       return Scaffold(
-        appBar: customAppBar(context, title: 'Create Post'),
+        appBar: CustomAppBar(context: context, titleText: 'Create Post'),
         body: SafeArea(
           child: FadedSlideAnimation(
             beginOffset: const Offset(0, 0.3),
@@ -59,10 +59,13 @@ class CreatePostScreen2State extends State<CreatePostScreen2> {
                     child: SingleChildScrollView(
                       child: Column(
                         children: [
-                          TextField(
+                          TextFormField(
                             controller: vm.textEditingController,
                             scrollPhysics: const NeverScrollableScrollPhysics(),
                             maxLines: null,
+                            onTapOutside: (_){
+                              FocusManager.instance.primaryFocus?.unfocus();
+                            },
                             decoration: const InputDecoration(
                               border: InputBorder.none,
                               hintText: "Write something to post",

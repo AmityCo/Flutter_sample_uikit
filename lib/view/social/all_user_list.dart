@@ -1,6 +1,11 @@
+import 'dart:developer';
+
 import 'package:amity_sdk/amity_sdk.dart';
+import 'package:amity_uikit_beta_service/constans/app_text_style.dart';
+import 'package:amity_uikit_beta_service/viewmodel/configuration_viewmodel.dart';
 import 'package:animation_wrappers/animations/faded_slide_animation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class AllUserListScreen extends StatefulWidget {
   final List<AmityUser>? selectedUsers;
@@ -35,7 +40,6 @@ class _AllUserListScreenState extends State<AllUserListScreen> {
   }
 
   void getUsers(AmityUserSortOption amityUserSortOption) async {
-    
     if (_pageToken == null) {
       setState(() {
         _amityUsers.clear();
@@ -62,18 +66,25 @@ class _AllUserListScreenState extends State<AllUserListScreen> {
         _isLoading = false;
         _error = 'Error fetching users. Please try again.';
       });
+      log(_error ?? '');
       // Handle error
     }
   }
 
   void _toggleUserSelection(AmityUser? user) {
     if (user?.userId != null) {
+
+      int idx = _selectedUsers.indexWhere(
+        (element) => element.userId == user?.userId,
+      );
+
+      if (idx != -1) {
+         _selectedUsers.removeAt(idx);
+        
+      } else {
+        _selectedUsers.add(user!);
+      }
       setState(() {
-        if (_selectedUsers.contains(user)) {
-          _selectedUsers.remove(user);
-        } else {
-          _selectedUsers.add(user!);
-        }
       });
     }
   }
@@ -93,7 +104,7 @@ class _AllUserListScreenState extends State<AllUserListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Select User'),
@@ -101,9 +112,14 @@ class _AllUserListScreenState extends State<AllUserListScreen> {
           if (_isMultipleSelect)
             TextButton(
               onPressed: _onDoneButtonPressed,
-              child: const Text(
+              child: Text(
                 'Done',
-                style: TextStyle(color: Colors.black),
+                style: TextStyle(
+                  color: context
+                      .watch<AmityUIConfiguration>()
+                      .appbarConfig
+                      .iconBackColor,
+                ),
               ),
             ),
         ],
@@ -131,16 +147,17 @@ class _AllUserListScreenState extends State<AllUserListScreen> {
                     return GestureDetector(
                       onTap: () => _toggleUserSelection(user),
                       child: Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 8),
                         child: Row(
                           children: [
                             CircleAvatar(
                               radius: 20,
-                              backgroundImage: NetworkImage(
-                                user.avatarUrl != null
-                                    ? user.avatarUrl!
-                                    : 'https://images.unsplash.com/photo-1598128558393-70ff21433be0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=978&q=80',
-                              ),
+                              backgroundColor: Colors.grey.withOpacity(0.5),
+                              foregroundImage: user.avatarUrl != null
+                                    ? NetworkImage(
+                                user.avatarUrl!,
+                              ):null,
                             ),
                             const SizedBox(width: 8.0),
                             Expanded(
@@ -148,9 +165,13 @@ class _AllUserListScreenState extends State<AllUserListScreen> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(
-                                    user.displayName ?? 'displayname not found',
-                                    style: theme.textTheme.bodyMedium,
+                                  Expanded(
+                                    child: Text(
+                                      user.displayName ??
+                                          'displayname not found',
+                                      style: AppTextStyle.header2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
                                   if (isSelected)
                                     Icon(

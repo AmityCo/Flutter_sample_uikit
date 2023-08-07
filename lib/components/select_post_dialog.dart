@@ -1,5 +1,4 @@
 import 'package:amity_sdk/amity_sdk.dart';
-import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -8,6 +7,7 @@ import '../view/social/create_post_screen.dart';
 import '../viewmodel/amity_viewmodel.dart';
 import '../viewmodel/community_viewmodel.dart';
 import '../viewmodel/configuration_viewmodel.dart';
+import 'custom_list_tile.dart';
 
 class SelectPostDialog {
   bool isOpenDialog = false;
@@ -126,7 +126,7 @@ class _CustomWidgetState extends State<_CustomWidget> {
         child: Column(
           children: [
             Consumer<AmityVM>(builder: (_, vm, __) {
-              return _ShowTitle(
+              return CustomListTitle(
                 title: 'My Timeline',
                 url: vm.currentamityUser?.avatarUrl,
                 iconNoImage: Icon(
@@ -163,7 +163,7 @@ class _CustomWidgetState extends State<_CustomWidget> {
                     data.length,
                     (index) {
                       final community = data[index];
-                      return _ShowTitle(
+                      return CustomListTitle(
                         title: community.displayName ?? "Community",
                         url: community.avatarImage?.fileUrl,
                         onPressed: () {
@@ -187,57 +187,6 @@ class _CustomWidgetState extends State<_CustomWidget> {
   }
 }
 
-class _ShowTitle extends StatelessWidget {
-  const _ShowTitle({
-    required this.title,
-    this.url,
-    this.iconNoImage,
-    this.onPressed,
-  });
-  final String title;
-  final String? url;
-  final Icon? iconNoImage;
-  final VoidCallback? onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      onTap: onPressed,
-      leading: FadeAnimation(
-        child: (url != null)
-            ? CircleAvatar(
-                backgroundColor: Colors.transparent,
-                backgroundImage: NetworkImage(url!),
-              )
-            : ClipOval(
-                child: Container(
-                  width: 40,
-                  height: 40,
-                  color: context
-                      .watch<AmityUIConfiguration>()
-                      .buttonConfig
-                      .backgroundColor,
-                  child: iconNoImage ??
-                      Icon(
-                        Icons.question_answer,
-                        color: context
-                            .watch<AmityUIConfiguration>()
-                            .buttonConfig
-                            .textColor,
-                      ),
-                ),
-              ),
-      ),
-      title: Text(
-        title,
-        style: Theme.of(context)
-            .textTheme
-            .bodyMedium
-            ?.copyWith(fontWeight: FontWeight.bold),
-      ),
-    );
-  }
-}
 
 enum _SelectPostType {
   my,

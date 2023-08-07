@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class AmityUIConfiguration extends ChangeNotifier {
   Color primaryColor = Colors.grey;
+  Color secondaryColor = Colors.black;
   IconData placeHolderIcon = Icons.chat;
   Color displaynameColor = Colors.black;
 

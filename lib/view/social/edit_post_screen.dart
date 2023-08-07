@@ -38,7 +38,7 @@ class EditPostScreenState extends State<EditPostScreen> {
     final theme = Theme.of(context);
     return Consumer<EditPostVM>(builder: (context, vm, m) {
       return Scaffold(
-        appBar: customAppBar(context, title: 'Edit'),
+        appBar: CustomAppBar(context: context, titleText: 'Edit'),
         body: SafeArea(
           child: FadedSlideAnimation(
             beginOffset: const Offset(0, 0.3),
@@ -135,10 +135,13 @@ class EditPostScreenState extends State<EditPostScreen> {
                     child: SingleChildScrollView(
                       child: Column(
                         children: [
-                          TextField(
+                          TextFormField(
                             controller: vm.textEditingController,
                             scrollPhysics: const NeverScrollableScrollPhysics(),
                             maxLines: null,
+                            onTapOutside: (_) {
+                              FocusManager.instance.primaryFocus?.unfocus();
+                            },
                             decoration: const InputDecoration(
                               border: InputBorder.none,
                               hintText: "Write something to Post",

@@ -1,12 +1,15 @@
 import 'dart:developer';
 
 import 'package:amity_sdk/amity_sdk.dart';
+import 'package:amity_uikit_beta_service/components/custom_app_bar.dart';
+import 'package:amity_uikit_beta_service/constans/app_text_style.dart';
 import 'package:amity_uikit_beta_service/view/social/user_follow_screen.dart';
 import 'package:amity_uikit_beta_service/viewmodel/follower_following_viewmodel.dart';
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../amity_sle_uikit.dart';
 import '../../components/custom_user_avatar.dart';
 import '../../viewmodel/amity_viewmodel.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
@@ -18,11 +21,13 @@ class UserProfileScreen extends StatefulWidget {
   final AmityUser amityUser;
   final bool? isEnableAppbar;
   final bool openTabView;
+  final ValueChanged? logout;
   const UserProfileScreen({
     Key? key,
     required this.amityUser,
     this.isEnableAppbar = true,
     this.openTabView = true,
+    this.logout,
   }) : super(key: key);
   @override
   UserProfileScreenState createState() => UserProfileScreenState();
@@ -32,6 +37,7 @@ class UserProfileScreenState extends State<UserProfileScreen>
     with SingleTickerProviderStateMixin {
   TabController? tabController;
   int _selectedIndex = 0;
+  List<String> moreActions = ['Logout'];
 
   @override
   void initState() {
@@ -59,21 +65,46 @@ class UserProfileScreenState extends State<UserProfileScreen>
     }
   }
 
+  Future<void> moreActionPressed(String name) async {
+    if (name == moreActions[0]) {
+      bool isCurrentUser =
+          AmityCoreClient.getCurrentUser().userId == widget.amityUser.userId;
+      if (!isCurrentUser) {
+        return;
+      }
+      final amity = context.read<AmityVM>();
+      Future.delayed(const Duration(milliseconds: 500), () {
+        Future.delayed(const Duration(milliseconds: 500), () {
+          amity.logout();
+        });
+        AmitySLEUIKit.unRegisterDevice();
+        Navigator.pop(context);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final mediaQuery = MediaQuery.of(context);
-    final myAppBar = AppBar(
-      backgroundColor:
-          context.watch<AmityUIConfiguration>().appbarConfig.backgroundColor,
-      leading: IconButton(
-        color: context.watch<AmityUIConfiguration>().appbarConfig.iconBackColor,
-        onPressed: () {
-          Navigator.of(context).pop();
-        },
-        icon: const Icon(Icons.chevron_left),
-      ),
-      elevation: 0,
+    bool isCurrentUser =
+        AmityCoreClient.getCurrentUser().userId == widget.amityUser.userId;
+    final myAppBar = CustomAppBar(
+      context: context,
+      actions: [
+        if (isCurrentUser)
+          PopupMenuButton(itemBuilder: (BuildContext context) {
+            return List.generate(moreActions.length, (index) {
+              return PopupMenuItem(
+                onTap: () => moreActionPressed(moreActions[index]),
+                child: Text(
+                  moreActions[index],
+                  style: AppTextStyle.body1,
+                ),
+              );
+            });
+          }),
+      ],
     );
     final bheight = mediaQuery.size.height -
         mediaQuery.padding.top -
@@ -97,8 +128,9 @@ class UserProfileScreenState extends State<UserProfileScreen>
                 _HeaderUserProfile(
                   amityUser: widget.amityUser,
                   currentUser: getAmityUser(),
+                  logout: () => moreActionPressed(moreActions[0]),
                 ),
-                if(widget.openTabView)
+                if (widget.openTabView)
                   _TabUserProfile(
                     tabController: tabController,
                     isPrivate: vm.amityMyFollowInfo.status !=
@@ -183,9 +215,11 @@ class _HeaderUserProfile extends StatelessWidget {
   const _HeaderUserProfile({
     required this.amityUser,
     required this.currentUser,
+    this.logout,
   });
   final AmityUser amityUser;
   final AmityUser currentUser;
+  final VoidCallback? logout;
 
   @override
   Widget build(BuildContext context) {
@@ -205,7 +239,9 @@ class _HeaderUserProfile extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    GestureDetector(
+                    _ShowMemberText(
+                      members: vm.amityMyFollowInfo.followerCount ?? 0,
+                      title: 'Followers',
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
@@ -214,48 +250,42 @@ class _HeaderUserProfile extends StatelessWidget {
                               child: FollowScreen(
                                 key: UniqueKey(),
                                 user: amityUser,
+                                initialIndex: 0,
                               ),
                             ),
                           ),
                         );
                       },
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(vm.amityMyFollowInfo.followerCount.toString(),
-                              style: theme.textTheme.titleLarge),
-                          Text(
-                            'Followers',
-                            style: theme.textTheme.titleSmall!.copyWith(
-                              color: theme.hintColor,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
+                    ),
+                    GestureDetector(
+                      onTap: logout,
+                      child: FadedScaleAnimation(
+                        child: getAvatarImage(
+                            isCurrentUser
+                                ? Provider.of<AmityVM>(
+                                    context,
+                                  ).currentamityUser?.avatarUrl
+                                : amityUser.avatarUrl,
+                            radius: 50),
                       ),
                     ),
-                    FadedScaleAnimation(
-                      child: getAvatarImage(
-                          isCurrentUser
-                              ? Provider.of<AmityVM>(
-                                  context,
-                                ).currentamityUser?.avatarUrl
-                              : amityUser.avatarUrl,
-                          radius: 50),
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(vm.amityMyFollowInfo.followingCount.toString(),
-                            style: theme.textTheme.titleLarge),
-                        Text(
-                          "Following",
-                          style: theme.textTheme.titleSmall!.copyWith(
-                            color: theme.hintColor,
-                            fontSize: 12,
+                    _ShowMemberText(
+                      members: vm.amityMyFollowInfo.followingCount ?? 0,
+                      title: 'Following',
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => ChangeNotifierProvider(
+                              create: (context) => FollowerVM(),
+                              child: FollowScreen(
+                                key: UniqueKey(),
+                                user: amityUser,
+                                initialIndex: 1,
+                              ),
+                            ),
                           ),
-                        ),
-                      ],
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -497,5 +527,37 @@ class _TabUserProfile extends StatelessWidget {
               ],
             ),
           );
+  }
+}
+
+class _ShowMemberText extends StatelessWidget {
+  const _ShowMemberText({
+    required this.members,
+    required this.title,
+    this.onTap,
+  });
+  final int members;
+  final String title;
+  final VoidCallback? onTap;
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            members.toString(),
+            style: AppTextStyle.display1,
+          ),
+          Text(
+            title,
+            style: AppTextStyle.body1.copyWith(
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

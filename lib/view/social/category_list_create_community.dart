@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:amity_sdk/amity_sdk.dart';
 import 'package:animation_wrappers/animations/faded_slide_animation.dart';
 import 'package:flutter/material.dart';
@@ -59,6 +61,7 @@ class _CategoryListForCreateCommunityState
         _isLoading = false;
         _error = 'Error fetching categories. Please try again.';
       });
+      log(_error ?? '');
       // Handle error
     }
   }
@@ -104,6 +107,7 @@ class _CategoryListForCreateCommunityState
                     final category = _categories[index];
                     final bool isSelected =
                         category.categoryId == widget.selectedCategoryId;
+                    final urlAvatar = category.avatar?.getUrl(AmityImageSize.SMALL) ;
                     return GestureDetector(
                       onTap: () => _onCategoryTap(category),
                       child: Padding(
@@ -112,10 +116,10 @@ class _CategoryListForCreateCommunityState
                           children: [
                             CircleAvatar(
                               radius: 20,
-                              backgroundImage: NetworkImage(
-                                category.avatar?.getUrl(AmityImageSize.SMALL) ??
-                                    'https://images.unsplash.com/photo-1598128558393-70ff21433be0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=978&q=80',
-                              ),
+                              backgroundColor: Colors.grey.withOpacity(0.5),
+                              foregroundImage: urlAvatar != null ? NetworkImage(
+                                urlAvatar,
+                              ):null,
                             ),
                             const SizedBox(width: 8.0),
                             Expanded(
