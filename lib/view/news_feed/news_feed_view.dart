@@ -1,7 +1,7 @@
-
 import 'package:flutter/material.dart';
 import '../social/home_following_screen.dart';
 import 'widgets/my_community_view.dart';
+
 
 class NewsfeedView extends StatelessWidget {
   const NewsfeedView({super.key});
@@ -10,7 +10,7 @@ class NewsfeedView extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Column(
       children: [
-        MyCommunityView(),
+        MyCommunityHorizontalView(),
         Expanded(
           child: GlobalFeedScreen(),
         ),
@@ -18,4 +18,3 @@ class NewsfeedView extends StatelessWidget {
     );
   }
 }
-

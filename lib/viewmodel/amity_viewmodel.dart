@@ -8,6 +8,7 @@ import '../components/alert_dialog.dart';
 class AmityVM extends ChangeNotifier {
   AmityUser? currentamityUser;
   bool isProcessing = false;
+  bool isLogin = false;
   Future<void> login(
       {required String userID, String? displayName, String? authToken}) async {
     if (!isProcessing) {
@@ -28,12 +29,14 @@ class AmityVM extends ChangeNotifier {
         isProcessing = false;
         currentamityUser = value;
         getUserByID(userID);
+        isLogin = true;
         notifyListeners();
       }).catchError((error, stackTrace) async {
         isProcessing = false;
         log('ERROR AmityVM login:$error');
         await AmityDialog()
             .showAlertErrorDialog(title: "Error!", message: error.toString());
+            isLogin = false;
       });
     } else {
       /// processing
@@ -69,5 +72,10 @@ class AmityVM extends ChangeNotifier {
       await AmityDialog()
           .showAlertErrorDialog(title: "Error!", message: error.toString());
     });
+  }
+
+  void logout(){
+    isLogin = false;
+    notifyListeners();
   }
 }

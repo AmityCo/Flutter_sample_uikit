@@ -59,10 +59,13 @@ class CreatePostScreen2State extends State<CreatePostScreen2> {
                     child: SingleChildScrollView(
                       child: Column(
                         children: [
-                          TextField(
+                          TextFormField(
                             controller: vm.textEditingController,
                             scrollPhysics: const NeverScrollableScrollPhysics(),
                             maxLines: null,
+                            onTapOutside: (_){
+                              FocusManager.instance.primaryFocus?.unfocus();
+                            },
                             decoration: const InputDecoration(
                               border: InputBorder.none,
                               hintText: "Write something to post",

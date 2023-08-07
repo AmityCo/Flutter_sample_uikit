@@ -135,10 +135,13 @@ class EditPostScreenState extends State<EditPostScreen> {
                     child: SingleChildScrollView(
                       child: Column(
                         children: [
-                          TextField(
+                          TextFormField(
                             controller: vm.textEditingController,
                             scrollPhysics: const NeverScrollableScrollPhysics(),
                             maxLines: null,
+                            onTapOutside: (_) {
+                              FocusManager.instance.primaryFocus?.unfocus();
+                            },
                             decoration: const InputDecoration(
                               border: InputBorder.none,
                               hintText: "Write something to Post",

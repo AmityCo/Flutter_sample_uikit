@@ -9,8 +9,8 @@ import '../../viewmodel/configuration_viewmodel.dart';
 
 class FollowScreen extends StatefulWidget {
   final AmityUser user;
-  const FollowScreen({super.key, required this.user});
-
+  final int initialIndex;
+  const FollowScreen({super.key, required this.user, this.initialIndex = 0});
   @override
   State<FollowScreen> createState() => _FollowScreenState();
 }
@@ -42,6 +42,7 @@ class _FollowScreenState extends State<FollowScreen> {
         bottom: false,
         child: DefaultTabController(
           length: 2,
+          initialIndex: widget.initialIndex,
           child: Scaffold(
             body: Column(
               children: [

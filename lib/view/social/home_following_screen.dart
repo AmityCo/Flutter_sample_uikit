@@ -252,22 +252,29 @@ class _PostWidgetState extends State<PostWidget>
                   ListTile(
                     contentPadding: const EdgeInsets.all(2),
                     leading: FadeAnimation(
-                        child: GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => ChangeNotifierProvider(
-                                      create: (context) => UserFeedVM(),
-                                      child: UserProfileScreen(
-                                        amityUser: widget.post.postedUser!,
-                                      ))));
-                            },
-                            child: getAvatarImage(
-                                widget.post.postedUser!.userId !=
-                                        AmityCoreClient.getCurrentUser().userId
-                                    ? widget.post.postedUser?.avatarUrl
-                                    : Provider.of<AmityVM>(context)
-                                        .currentamityUser!
-                                        .avatarUrl))),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => ChangeNotifierProvider(
+                                  create: (context) => UserFeedVM(),
+                                  child: UserProfileScreen(
+                                    amityUser: widget.post.postedUser!,
+                                  ))));
+                        },
+                        child: getAvatarImage(
+                          widget.post.postedUser!.userId !=
+                                  AmityCoreClient.getCurrentUser().userId
+                              ? widget.post.postedUser?.avatarUrl
+                              : Provider.of<AmityVM>(context)
+                                          .currentamityUser !=
+                                      null
+                                  ? Provider.of<AmityVM>(context)
+                                      .currentamityUser!
+                                      .avatarUrl
+                                  : null,
+                        ),
+                      ),
+                    ),
                     title: Wrap(
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
@@ -285,10 +292,7 @@ class _PostWidgetState extends State<PostWidget>
                                     AmityCoreClient.getCurrentUser().userId
                                 ? widget.post.postedUser?.displayName ??
                                     "Display name"
-                                : Provider.of<AmityVM>(context)
-                                        .currentamityUser!
-                                        .displayName ??
-                                    "",
+                                : Provider.of<AmityVM>(context).currentamityUser?.displayName ?? "",
                             style: widget.theme.textTheme.bodyLarge!.copyWith(
                                 fontWeight: FontWeight.bold, fontSize: 16),
                           ),
