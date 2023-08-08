@@ -3,6 +3,7 @@ import 'package:amity_uikit_beta_service/constans/app_text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../components/custom_faded_slide_animation.dart';
 import '../../components/custom_list_tile.dart';
 import '../../viewmodel/community_feed_viewmodel.dart';
 import '../../viewmodel/community_viewmodel.dart';
@@ -63,33 +64,35 @@ class _MyCommunityViewState extends State<MyCommunityView> {
       ),
       body: Consumer<CommunityVM>(builder: (_, vm, __) {
         final data = vm.getAmityMyCommunities();
-        return ListView(
-          children: List.generate(
-            data.length,
-            (index) {
-              final community = data[index];
-              return CustomListTitle(
-                title: community.displayName ?? "Community",
-                url: community.avatarImage?.fileUrl,
-                subtitle: Text(
-                  '${community.membersCount ?? 0} member',
-                  style: AppTextStyle.body1,
-                ),
-                onPressed: () async {
-                  await Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => ChangeNotifierProvider<CommuFeedVM>(
-                        create: (context) => CommuFeedVM(),
-                        builder: (context, child) => CommunityScreen(
-                          community: community,
+        return CustomFadedSlideAnimation(
+          child: ListView(
+            children: List.generate(
+              data.length,
+              (index) {
+                final community = data[index];
+                return CustomListTitle(
+                  title: community.displayName ?? "Community",
+                  url: community.avatarImage?.fileUrl,
+                  subtitle: Text(
+                    '${community.membersCount ?? 0} member',
+                    style: AppTextStyle.body1,
+                  ),
+                  onPressed: () async {
+                    await Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => ChangeNotifierProvider<CommuFeedVM>(
+                          create: (context) => CommuFeedVM(),
+                          builder: (context, child) => CommunityScreen(
+                            community: community,
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                  init();
-                },
-              );
-            },
+                    );
+                    init();
+                  },
+                );
+              },
+            ),
           ),
         );
       }),

@@ -10,6 +10,7 @@ class AmityUIConfiguration extends ChangeNotifier {
   MessageRoomConfig messageRoomConfig = MessageRoomConfig();
   ButtonConfig buttonConfig = ButtonConfig();
   AppbarConfig appbarConfig = AppbarConfig();
+  UserProfileConfig userProfileConfig = UserProfileConfig();
   
   void updateUI() {
     notifyListeners();
@@ -48,5 +49,15 @@ class ButtonConfig{
   ButtonConfig({
     this.backgroundColor = Colors.white,
     this.textColor = Colors.black,
+  });
+}
+
+class UserProfileConfig{
+  final bool isOpenTabView;
+  final bool isOpenEditProfile;
+
+  UserProfileConfig({
+    this.isOpenTabView = true,
+    this.isOpenEditProfile = true,
   });
 }

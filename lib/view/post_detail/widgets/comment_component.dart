@@ -1,160 +1,23 @@
 import 'package:amity_sdk/amity_sdk.dart';
-import 'package:amity_uikit_beta_service/components/custom_app_bar.dart';
-import 'package:amity_uikit_beta_service/viewmodel/amity_viewmodel.dart';
-import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import '../../components/custom_user_avatar.dart';
-import '../../viewmodel/configuration_viewmodel.dart';
-import '../../viewmodel/post_viewmodel.dart';
-import '../../viewmodel/user_feed_viewmodel.dart';
-import '../user/user_profile.dart';
-import 'edit_comment.dart';
-
-class ReplyCommentScreen extends StatefulWidget {
-  final String postId;
-  final String commentId;
-
-  const ReplyCommentScreen(
-      {Key? key, required this.postId, required this.commentId})
-      : super(key: key);
-
-  @override
-  ReplyCommentScreenState createState() => ReplyCommentScreenState();
-}
-
-class Comments {
-  String image;
-  String name;
-
-  Comments(this.image, this.name);
-}
-
-class ReplyCommentScreenState extends State<ReplyCommentScreen> {
-  final _commentTextEditController = TextEditingController();
-  @override
-  void initState() {
-    //query comment here
-    Provider.of<PostVM>(context, listen: false)
-        .listenForReplyComments(widget.postId, widget.commentId);
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    var postData =
-        Provider.of<PostVM>(context, listen: false).amityPost.data as TextData;
-    final theme = Theme.of(context);
-
-    return Consumer<PostVM>(builder: (context, vm, _) {
-      return StreamBuilder<AmityPost>(
-          key: Key(postData.postId),
-          stream: vm.amityPost.listen.stream,
-          initialData: vm.amityPost,
-          builder: (context, snapshot) {
-            return Scaffold(
-              appBar: CustomAppBar(
-                context: context,
-                titleText: 'Replies',
-                centerTitle: false,
-              ),
-              body: FadedSlideAnimation(
-                beginOffset: const Offset(0, 0.3),
-                endOffset: const Offset(0, 0),
-                slideCurve: Curves.linearToEaseOut,
-                child: SafeArea(
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: SingleChildScrollView(
-                          controller: vm.scrollcontroller,
-                          child: Column(
-                            children: [
-                              Stack(
-                                children: [
-                                  Container(
-                                    padding: null,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.stretch,
-                                      children: [
-                                        CommentComponent(
-                                            postId: widget.postId,
-                                            commentId: widget.commentId,
-                                            theme: theme),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                      Container(
-                        decoration: const BoxDecoration(
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Color.fromARGB(255, 155, 120, 120),
-                                blurRadius: 0.8,
-                                spreadRadius: 0.5,
-                              ),
-                            ]),
-                        height: 60,
-                        child: ListTile(
-                          leading: getAvatarImage(Provider.of<AmityVM>(context)
-                              .currentamityUser
-                              ?.avatarUrl),
-                          title: TextField(
-                            controller: _commentTextEditController,
-                            decoration: const InputDecoration(
-                              border: InputBorder.none,
-                              hintText: "Write your reply",
-                              hintStyle: TextStyle(fontSize: 14),
-                            ),
-                          ),
-                          trailing: GestureDetector(
-                              onTap: () async {
-                                HapticFeedback.heavyImpact();
-                                await Provider.of<PostVM>(context,
-                                        listen: false)
-                                    .createReplyComment(
-                                        widget.postId,
-                                        widget.commentId,
-                                        _commentTextEditController.text);
-
-                                _commentTextEditController.clear();
-                              },
-                              child: Icon(Icons.send,
-                                  color:
-                                      Provider.of<AmityUIConfiguration>(context)
-                                          .primaryColor)),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          });
-    });
-  }
-}
+import '../../../components/custom_user_avatar.dart';
+import '../../../viewmodel/post_viewmodel.dart';
+import '../../../viewmodel/user_feed_viewmodel.dart';
+import '../../social/comment_reply_list.dart';
+import '../../social/edit_comment.dart';
+import '../../user/user_profile.dart';
 
 class CommentComponent extends StatefulWidget {
   const CommentComponent({
     Key? key,
     required this.postId,
-    required this.commentId,
     required this.theme,
   }) : super(key: key);
 
   final String postId;
-  final String commentId;
   final ThemeData theme;
 
   @override
@@ -164,8 +27,7 @@ class CommentComponent extends StatefulWidget {
 class _CommentComponentState extends State<CommentComponent> {
   @override
   void initState() {
-    Provider.of<PostVM>(context, listen: false)
-        .listenForReplyComments(widget.postId, widget.commentId);
+    getData();
     super.initState();
   }
 
@@ -188,25 +50,23 @@ class _CommentComponentState extends State<CommentComponent> {
     }
   }
 
-  void onShowRepliesClicked(String commentId) {
-    Navigator.of(context).push(
+  Future<void> onShowRepliesClicked(String postId, String commentId) async {
+    await Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => UserProfileScreen(
-          amityUser: AmityCoreClient.getCurrentUser(),
+        builder: (_) => ReplyCommentScreen(
+          postId: postId,
+          commentId: commentId,
         ),
       ),
     );
-    navigatorToUserPorfile(AmityCoreClient.getCurrentUser());
+    if (mounted) {
+      getData();
+    }
   }
 
-  void navigatorToUserPorfile(AmityUser amityUser) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => UserProfileScreen(
-          amityUser: amityUser,
-        ),
-      ),
-    );
+  void getData() {
+    Provider.of<PostVM>(context, listen: false)
+        .listenForComments(widget.postId);
   }
 
   @override
@@ -215,12 +75,12 @@ class _CommentComponentState extends State<CommentComponent> {
       return ListView.builder(
         physics: const NeverScrollableScrollPhysics(),
         shrinkWrap: true,
-        itemCount: vm.amityReplyComments.length,
+        itemCount: vm.amityComments.length,
         itemBuilder: (context, index) {
           return StreamBuilder<AmityComment>(
-              key: Key(vm.amityReplyComments[index].commentId!),
-              stream: vm.amityReplyComments[index].listen.stream,
-              initialData: vm.amityReplyComments[index],
+              key: Key(vm.amityComments[index].commentId!),
+              stream: vm.amityComments[index].listen.stream,
+              initialData: vm.amityComments[index],
               builder: (context, snapshot) {
                 var comments = snapshot.data!;
                 var commentData = snapshot.data!.data as CommentTextData;
@@ -230,19 +90,15 @@ class _CommentComponentState extends State<CommentComponent> {
                   child: ListTile(
                     leading: GestureDetector(
                         onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
+                          Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) => ChangeNotifierProvider(
-                                create: (context) => UserFeedVM(),
-                                child: UserProfileScreen(
-                                  amityUser: vm.amityReplyComments[index].user!,
-                                ),
-                              ),
-                            ),
-                          );
+                                  create: (context) => UserFeedVM(),
+                                  child: UserProfileScreen(
+                                    amityUser: vm.amityComments[index].user!,
+                                  ))));
                         },
                         child: getAvatarImage(
-                            vm.amityReplyComments[index].user?.avatarUrl)),
+                            vm.amityComments[index].user!.avatarUrl)),
                     title: GestureDetector(
                       onTap: () {
                         Navigator.of(context).push(
@@ -250,7 +106,7 @@ class _CommentComponentState extends State<CommentComponent> {
                             builder: (context) => ChangeNotifierProvider(
                               create: (context) => UserFeedVM(),
                               child: UserProfileScreen(
-                                amityUser: vm.amityReplyComments[index].user!,
+                                amityUser: vm.amityComments[index].user!,
                               ),
                             ),
                           ),
@@ -280,23 +136,30 @@ class _CommentComponentState extends State<CommentComponent> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.only(top: 8.0, bottom: 8),
+                          padding:
+                              const EdgeInsets.only(top: 8.0, bottom: 12.0),
                           child: Text(
                             commentData.text!,
                             style:
                                 widget.theme.textTheme.headlineSmall!.copyWith(
-                              fontSize: 12,
+                              fontSize: 14,
                             ),
                           ),
                         ),
-                        if (snapshot.data!.childrenNumber != null)
-                          if (snapshot.data!.childrenNumber! > 0)
-                            TextButton(
-                              onPressed: () {
-                                onShowRepliesClicked(snapshot.data!.commentId!);
+                        if (snapshot.data!.childrenNumber! > 0)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: GestureDetector(
+                              onTap: () {
+                                onShowRepliesClicked(
+                                    widget.postId, snapshot.data!.commentId!);
                               },
-                              child: const Text("Show replies"),
+                              child: const Text("Show replies",
+                                  style: TextStyle(
+                                      color: Colors.blue,
+                                      fontWeight: FontWeight.w600)),
                             ),
+                          ),
                         Row(
                           children: [
                             isLiked(snapshot)
@@ -313,7 +176,27 @@ class _CommentComponentState extends State<CommentComponent> {
                                     onTap: () {
                                       vm.addCommentReaction(comments);
                                     },
-                                    child: const Icon(Icons.favorite_border)),
+                                    child: const Icon(Icons.favorite_border),
+                                  ),
+                            if (snapshot.data!.childrenNumber! == 0)
+                              Padding(
+                                padding: const EdgeInsets.only(left: 8.0),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) => ReplyCommentScreen(
+                                          postId: widget.postId,
+                                          commentId: snapshot.data!.commentId!,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: const Icon(
+                                    Icons.reply,
+                                  ),
+                                ),
+                              ),
                             if (snapshot.data?.userId ==
                                 AmityCoreClient.getCurrentUser().userId)
                               Padding(
@@ -334,7 +217,7 @@ class _CommentComponentState extends State<CommentComponent> {
                               GestureDetector(
                                 onTap: () {
                                   if (snapshot.data != null) {
-                                    vm.deleteReplyComment(snapshot.data!);
+                                    vm.deleteComment(snapshot.data!);
                                   }
                                 },
                                 child: const Icon(
@@ -343,7 +226,7 @@ class _CommentComponentState extends State<CommentComponent> {
                                 ),
                               ),
                           ],
-                        )
+                        ),
                       ],
                     ),
                     // trailing: Column(
