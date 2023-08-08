@@ -5,10 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:provider/provider.dart';
 
+import '../../components/custom_faded_slide_animation.dart';
 import '../../viewmodel/community_feed_viewmodel.dart';
 import '../../viewmodel/community_viewmodel.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
 import '../create_community/create_community.dart';
+import '../member_list_community/member_list_community_view.dart';
 import 'create_post_screen.dart';
 import 'edit_community.dart';
 import 'home_following_screen.dart';
@@ -71,15 +73,25 @@ class CommunityScreenState extends State<CommunityScreen> {
   }
 
   void onCommunityOptionTap(CommunityFeedMenuOption option) {
+    Navigator.of(context).pop();
     switch (option) {
       case CommunityFeedMenuOption.edit:
         Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => EditCommunityScreen(community)));
         break;
       case CommunityFeedMenuOption.members:
+        navigatorToMemberList();
         break;
       default:
     }
+  }
+
+  void navigatorToMemberList() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => MemberListCommunityView(community: community),
+      ),
+    );
   }
 
   Widget communityInfo(CommuFeedVM vm) {
@@ -170,7 +182,10 @@ class CommunityScreenState extends State<CommunityScreen> {
             const SizedBox(
               width: 20,
             ),
-            Text("${community.membersCount} members"),
+            GestureDetector(
+              onTap: navigatorToMemberList,
+              child: Text("${community.membersCount} members"),
+            ),
             const Spacer(),
             ElevatedButton(
               style: ButtonStyle(
@@ -279,10 +294,7 @@ class CommunityScreenState extends State<CommunityScreen> {
             Provider.of<CommuFeedVM>(context, listen: false)
                 .initAmityCommunityFeed(community);
           },
-          child: FadedSlideAnimation(
-            beginOffset: const Offset(0, 0.3),
-            endOffset: const Offset(0, 0),
-            slideCurve: Curves.linearToEaseOut,
+          child: CustomFadedSlideAnimation(
             child: SafeArea(
               child: SingleChildScrollView(
                 controller: vm.scrollcontroller,

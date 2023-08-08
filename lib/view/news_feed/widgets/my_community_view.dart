@@ -1,4 +1,5 @@
 import 'package:amity_sdk/amity_sdk.dart';
+import 'package:amity_uikit_beta_service/components/custom_avatar.dart';
 import 'package:amity_uikit_beta_service/view/my_community/my_community_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -131,20 +132,13 @@ class MyCommunityHorizontalItem extends StatelessWidget {
           height: 62,
           child: Column(
             children: [
-              ClipOval(
-                child: Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: Colors.grey,
-                    image: community.avatarImage != null
-                        ? DecorationImage(
-                            image: NetworkImage(community.avatarImage!.fileUrl),
-                            fit: BoxFit.cover,
-                          )
-                        : null,
+              CustomAvatar(
+                url: community.avatarImage?.fileUrl,
+                radius: 20,
+                imagePlaceholder:  const AssetImage(
+                    AppAssets.accountGroup,
+                    package: AppAssets.package,
                   ),
-                ),
               ),
               const SizedBox(height: 3),
               Row(

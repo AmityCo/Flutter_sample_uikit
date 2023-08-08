@@ -1,6 +1,8 @@
 import 'dart:developer';
 
 import 'package:amity_sdk/amity_sdk.dart';
+import 'package:amity_uikit_beta_service/components/custom_avatar.dart';
+import 'package:amity_uikit_beta_service/constans/app_assets.dart';
 import 'package:animation_wrappers/animations/faded_slide_animation.dart';
 import 'package:flutter/material.dart';
 
@@ -107,19 +109,21 @@ class _CategoryListForCreateCommunityState
                     final category = _categories[index];
                     final bool isSelected =
                         category.categoryId == widget.selectedCategoryId;
-                    final urlAvatar = category.avatar?.getUrl(AmityImageSize.SMALL) ;
+                    final urlAvatar =
+                        category.avatar?.getUrl(AmityImageSize.SMALL);
                     return GestureDetector(
                       onTap: () => _onCategoryTap(category),
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Row(
                           children: [
-                            CircleAvatar(
+                            CustomAvatar(
                               radius: 20,
-                              backgroundColor: Colors.grey.withOpacity(0.5),
-                              foregroundImage: urlAvatar != null ? NetworkImage(
-                                urlAvatar,
-                              ):null,
+                              url: urlAvatar,
+                              imagePlaceholder: const AssetImage(
+                                AppAssets.apps,
+                                package: AppAssets.package,
+                              ),
                             ),
                             const SizedBox(width: 8.0),
                             Expanded(

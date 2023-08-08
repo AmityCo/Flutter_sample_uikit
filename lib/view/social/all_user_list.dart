@@ -7,6 +7,8 @@ import 'package:animation_wrappers/animations/faded_slide_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../components/custom_avatar.dart';
+
 class AllUserListScreen extends StatefulWidget {
   final List<AmityUser>? selectedUsers;
 
@@ -73,19 +75,16 @@ class _AllUserListScreenState extends State<AllUserListScreen> {
 
   void _toggleUserSelection(AmityUser? user) {
     if (user?.userId != null) {
-
       int idx = _selectedUsers.indexWhere(
         (element) => element.userId == user?.userId,
       );
 
       if (idx != -1) {
-         _selectedUsers.removeAt(idx);
-        
+        _selectedUsers.removeAt(idx);
       } else {
         _selectedUsers.add(user!);
       }
-      setState(() {
-      });
+      setState(() {});
     }
   }
 
@@ -104,7 +103,6 @@ class _AllUserListScreenState extends State<AllUserListScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Select User'),
@@ -151,13 +149,9 @@ class _AllUserListScreenState extends State<AllUserListScreen> {
                             horizontal: 16.0, vertical: 8),
                         child: Row(
                           children: [
-                            CircleAvatar(
+                            CustomAvatar(
+                              url: user.avatarUrl,
                               radius: 20,
-                              backgroundColor: Colors.grey.withOpacity(0.5),
-                              foregroundImage: user.avatarUrl != null
-                                    ? NetworkImage(
-                                user.avatarUrl!,
-                              ):null,
                             ),
                             const SizedBox(width: 8.0),
                             Expanded(

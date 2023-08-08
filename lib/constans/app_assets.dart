@@ -3,6 +3,9 @@ abstract class AppAssets {
   static const iconSearch = 'assets/Icons/icon_search.svg';
 
   static const userPlaceholder = 'assets/images/user_placeholder.png';
+  static const accountGroup = 'assets/images/account-group.png';
+  static const account = 'assets/images/account.png';
+  static const apps = 'assets/images/apps.png';
 
   static const package = 'amity_uikit_beta_service';
 }

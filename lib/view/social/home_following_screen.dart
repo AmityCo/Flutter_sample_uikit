@@ -19,7 +19,7 @@ import '../../viewmodel/feed_viewmodel.dart';
 import '../../viewmodel/post_viewmodel.dart';
 import '../../viewmodel/user_feed_viewmodel.dart';
 import '../user/user_profile.dart';
-import 'comments.dart';
+import '../post_detail/comments.dart';
 import 'community_feed.dart';
 import 'edit_post_screen.dart';
 import 'post_content_widget.dart';
@@ -254,12 +254,16 @@ class _PostWidgetState extends State<PostWidget>
                     leading: FadeAnimation(
                       child: GestureDetector(
                         onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
                               builder: (context) => ChangeNotifierProvider(
-                                  create: (context) => UserFeedVM(),
-                                  child: UserProfileScreen(
-                                    amityUser: widget.post.postedUser!,
-                                  ))));
+                                create: (context) => UserFeedVM(),
+                                child: UserProfileScreen(
+                                  amityUser: widget.post.postedUser!,
+                                ),
+                              ),
+                            ),
+                          );
                         },
                         child: getAvatarImage(
                           widget.post.postedUser!.userId !=
@@ -292,7 +296,10 @@ class _PostWidgetState extends State<PostWidget>
                                     AmityCoreClient.getCurrentUser().userId
                                 ? widget.post.postedUser?.displayName ??
                                     "Display name"
-                                : Provider.of<AmityVM>(context).currentamityUser?.displayName ?? "",
+                                : Provider.of<AmityVM>(context)
+                                        .currentamityUser
+                                        ?.displayName ??
+                                    "",
                             style: widget.theme.textTheme.bodyLarge!.copyWith(
                                 fontWeight: FontWeight.bold, fontSize: 16),
                           ),

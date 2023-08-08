@@ -85,6 +85,7 @@ class PostVM extends ChangeNotifier {
       pageFuture: (token) => AmitySocialClient.newCommentRepository()
           .getComments()
           .post(postID)
+          .includeDeleted(false)
           .sortBy(_sortOption)
           .getPagingData(token: token, limit: 20),
       pageSize: 20,
@@ -118,6 +119,16 @@ class PostVM extends ChangeNotifier {
     }
   }
 
+  void updateScrollController() {
+    try {
+      Future.delayed(const Duration(milliseconds: 300)).then((value) {
+        scrollcontroller.jumpTo(scrollcontroller.position.maxScrollExtent);
+      });
+    } catch (e) {
+      log('UpdateScrollController Error:$e');
+    }
+  }
+
   Future<void> createComment(String postId, String text) async {
     await AmitySocialClient.newCommentRepository()
         .createComment()
@@ -129,9 +140,7 @@ class PostVM extends ChangeNotifier {
       _controller.add(comment);
       amityComments.clear();
       amityComments.addAll(_controller.loadedItems);
-      Future.delayed(const Duration(milliseconds: 300)).then((value) {
-        scrollcontroller.jumpTo(scrollcontroller.position.maxScrollExtent);
-      });
+      updateScrollController();
     }).onError((error, stackTrace) async {
       log('ERROR PostVM createComment:$error');
       await AmityDialog()
@@ -139,7 +148,8 @@ class PostVM extends ChangeNotifier {
     });
   }
 
-  Future<void> createReplyComment(String postId,String commentId, String text) async {
+  Future<void> createReplyComment(
+      String postId, String commentId, String text) async {
     await AmitySocialClient.newCommentRepository()
         .createComment()
         .post(postId)
@@ -151,9 +161,7 @@ class PostVM extends ChangeNotifier {
       _controller.add(comment);
       amityReplyComments.clear();
       amityReplyComments.addAll(_controller.loadedItems);
-      Future.delayed(const Duration(milliseconds: 300)).then((value) {
-        scrollcontroller.jumpTo(scrollcontroller.position.maxScrollExtent);
-      });
+       updateScrollController();
     }).onError((error, stackTrace) async {
       log('ERROR PostVM createReplyComment:$error');
       await AmityDialog()
@@ -207,6 +215,15 @@ class PostVM extends ChangeNotifier {
     comment.delete().then((value) => {
           // success
           amityComments
+              .removeWhere((element) => element.commentId == comment.commentId),
+          notifyListeners()
+        });
+  }
+
+  void deleteReplyComment(AmityComment comment) {
+    comment.delete().then((value) => {
+          // success
+          amityReplyComments
               .removeWhere((element) => element.commentId == comment.commentId),
           notifyListeners()
         });

@@ -20,13 +20,11 @@ import 'edit_profile.dart';
 class UserProfileScreen extends StatefulWidget {
   final AmityUser amityUser;
   final bool? isEnableAppbar;
-  final bool openTabView;
   final ValueChanged? logout;
   const UserProfileScreen({
     Key? key,
     required this.amityUser,
     this.isEnableAppbar = true,
-    this.openTabView = true,
     this.logout,
   }) : super(key: key);
   @override
@@ -111,6 +109,9 @@ class UserProfileScreenState extends State<UserProfileScreen>
         myAppBar.preferredSize.height;
 
     return Consumer<UserFeedVM>(builder: (context, vm, _) {
+      final isPrivate =
+          vm.amityMyFollowInfo.status != AmityFollowStatus.ACCEPTED &&
+              vm.amityUser!.userId != AmityCoreClient.getUserId();
       return RefreshIndicator(
         color: Provider.of<AmityUIConfiguration>(context).primaryColor,
         onRefresh: (() async {
@@ -130,78 +131,92 @@ class UserProfileScreenState extends State<UserProfileScreen>
                   currentUser: getAmityUser(),
                   logout: () => moreActionPressed(moreActions[0]),
                 ),
-                if (widget.openTabView)
+                if (context.read<AmityUIConfiguration>().userProfileConfig.isOpenTabView)
                   _TabUserProfile(
                     tabController: tabController,
-                    isPrivate: vm.amityMyFollowInfo.status !=
-                            AmityFollowStatus.ACCEPTED &&
-                        vm.amityUser!.userId != AmityCoreClient.getUserId(),
                     height: bheight * 0.3,
                   ),
-                vm.amityPosts.isEmpty
-                    ? Container(
-                        color: Colors.grey[200],
-                        width: 100,
-                        height: bheight - 400,
-                      )
-                    : _selectedIndex == 0
-                        ? ListView.builder(
-                            physics: const NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            itemCount: vm.amityPosts.length,
-                            itemBuilder: (context, index) {
-                              return StreamBuilder<AmityPost>(
-                                  stream: vm.amityPosts[index].listen.stream,
-                                  initialData: vm.amityPosts[index],
-                                  builder: (context, snapshot) {
-                                    return PostWidget(
-                                      post: snapshot.data!,
-                                      theme: theme,
-                                      postIndex: index,
-                                      onDeleteAction: (_) {
-                                        vm.listenForUserFeed(
-                                            widget.amityUser.userId!);
-                                      },
-                                    );
-                                  });
-                            },
-                          )
-                        : vm.amityMediaPosts.isEmpty
-                            ? Container(
-                                color: Colors.grey[200],
-                                width: 100,
-                                height: bheight - 400,
-                              )
-                            : GridView.builder(
-                                physics: const NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-                                gridDelegate:
-                                    const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 3,
-                                  crossAxisSpacing: 0,
-                                  mainAxisSpacing: 0,
+                if (isPrivate)
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              height: bheight * 0.3,
+                              child: const Center(
+                                  child: Text("This account is Private")),
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                if (!isPrivate)
+                  vm.amityPosts.isEmpty
+                      ? Container(
+                          color: Colors.grey[200],
+                          width: 100,
+                          height: bheight - 400,
+                        )
+                      : _selectedIndex == 0
+                          ? ListView.builder(
+                              physics: const NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: vm.amityPosts.length,
+                              itemBuilder: (context, index) {
+                                return StreamBuilder<AmityPost>(
+                                    stream: vm.amityPosts[index].listen.stream,
+                                    initialData: vm.amityPosts[index],
+                                    builder: (context, snapshot) {
+                                      return PostWidget(
+                                        post: snapshot.data!,
+                                        theme: theme,
+                                        postIndex: index,
+                                        onDeleteAction: (_) {
+                                          vm.listenForUserFeed(
+                                              widget.amityUser.userId!);
+                                        },
+                                      );
+                                    });
+                              },
+                            )
+                          : vm.amityMediaPosts.isEmpty
+                              ? Container(
+                                  color: Colors.grey[200],
+                                  width: 100,
+                                  height: bheight - 400,
+                                )
+                              : GridView.builder(
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  shrinkWrap: true,
+                                  gridDelegate:
+                                      const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 3,
+                                    crossAxisSpacing: 0,
+                                    mainAxisSpacing: 0,
+                                  ),
+                                  itemCount: vm.amityMediaPosts
+                                      .length, // Replace with your gallery items
+                                  itemBuilder: (context, index) {
+                                    log('checking media post list ${vm.amityMediaPosts.length}');
+                                    return StreamBuilder<AmityPost>(
+                                        stream: vm.amityMediaPosts[index].listen
+                                            .stream,
+                                        initialData: vm.amityMediaPosts[index],
+                                        builder: (context, snapshot) {
+                                          return GestureDetector(
+                                            onTap: () {
+                                              // Handle gallery item tap here
+                                            },
+                                            child: Image.network(
+                                              'https://images.unsplash.com/photo-1598128558393-70ff21433be0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=978&q=80', //snapshot.data!.data!.fileInfo.fileUrl, // Replace with the URL of your gallery item
+                                              fit: BoxFit.cover,
+                                            ),
+                                          );
+                                        });
+                                  },
                                 ),
-                                itemCount: vm.amityMediaPosts
-                                    .length, // Replace with your gallery items
-                                itemBuilder: (context, index) {
-                                  log('checking media post list ${vm.amityMediaPosts.length}');
-                                  return StreamBuilder<AmityPost>(
-                                      stream: vm
-                                          .amityMediaPosts[index].listen.stream,
-                                      initialData: vm.amityMediaPosts[index],
-                                      builder: (context, snapshot) {
-                                        return GestureDetector(
-                                          onTap: () {
-                                            // Handle gallery item tap here
-                                          },
-                                          child: Image.network(
-                                            'https://images.unsplash.com/photo-1598128558393-70ff21433be0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=978&q=80', //snapshot.data!.data!.fileInfo.fileUrl, // Replace with the URL of your gallery item
-                                            fit: BoxFit.cover,
-                                          ),
-                                        );
-                                      });
-                                },
-                              ),
               ],
             ),
           ),
@@ -309,7 +324,9 @@ class _HeaderUserProfile extends StatelessWidget {
                 ),
               ),
               isCurrentUser
-                  ? Row(
+                  ? 
+                  context.read<AmityUIConfiguration>().userProfileConfig.isOpenEditProfile ?
+                  Row(
                       children: [
                         Expanded(
                           child: GestureDetector(
@@ -354,7 +371,7 @@ class _HeaderUserProfile extends StatelessWidget {
                           ),
                         ),
                       ],
-                    )
+                    ): const SizedBox()
                   : Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -487,46 +504,26 @@ class _HeaderUserProfile extends StatelessWidget {
 class _TabUserProfile extends StatelessWidget {
   const _TabUserProfile({
     this.tabController,
-    required this.isPrivate,
     required this.height,
   });
   final TabController? tabController;
-  final bool isPrivate;
   final double height;
   @override
   Widget build(BuildContext context) {
-    return isPrivate
-        ? Row(
-            children: [
-              Expanded(
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: height,
-                      child:
-                          const Center(child: Text("This account is Private")),
-                    )
-                  ],
-                ),
-              ),
-            ],
-          )
-        : Container(
-            color: Colors.white,
-            child: TabBar(
-              controller: tabController,
-              indicatorColor:
-                  Provider.of<AmityUIConfiguration>(context).primaryColor,
-              unselectedLabelStyle:
-                  const TextStyle(fontWeight: FontWeight.w400),
-              labelColor: context.watch<AmityUIConfiguration>().primaryColor,
-              labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-              tabs: const [
-                Tab(text: "Feed"),
-                Tab(text: "Gallery"),
-              ],
-            ),
-          );
+    return Container(
+      color: Colors.white,
+      child: TabBar(
+        controller: tabController,
+        indicatorColor: Provider.of<AmityUIConfiguration>(context).primaryColor,
+        unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w400),
+        labelColor: context.watch<AmityUIConfiguration>().primaryColor,
+        labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+        tabs: const [
+          Tab(text: "Feed"),
+          Tab(text: "Gallery"),
+        ],
+      ),
+    );
   }
 }
 
