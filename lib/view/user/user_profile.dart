@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:amity_sdk/amity_sdk.dart';
 import 'package:amity_uikit_beta_service/components/custom_app_bar.dart';
+import 'package:amity_uikit_beta_service/components/custom_avatar.dart';
 import 'package:amity_uikit_beta_service/constans/app_text_style.dart';
 import 'package:amity_uikit_beta_service/view/social/user_follow_screen.dart';
 import 'package:amity_uikit_beta_service/viewmodel/follower_following_viewmodel.dart';
@@ -9,7 +10,6 @@ import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../components/custom_user_avatar.dart';
 import '../../viewmodel/amity_viewmodel.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
 import '../../viewmodel/user_feed_viewmodel.dart';
@@ -273,14 +273,13 @@ class _HeaderUserProfile extends StatelessWidget {
                     ),
                     GestureDetector(
                       onTap: logout,
-                      child: FadedScaleAnimation(
-                        child: getAvatarImage(
-                            isCurrentUser
-                                ? Provider.of<AmityVM>(
-                                    context,
-                                  ).currentamityUser?.avatarUrl
-                                : amityUser.avatarUrl,
-                            radius: 50),
+                      child: CustomAvatar(
+                        radius: 50,
+                        url: isCurrentUser
+                            ? Provider.of<AmityVM>(
+                                context,
+                              ).currentamityUser?.avatarUrl
+                            : amityUser.avatarUrl,
                       ),
                     ),
                     _ShowMemberText(
@@ -341,7 +340,8 @@ class _HeaderUserProfile extends StatelessWidget {
                                   );
                                 },
                                 child: Container(
-                                  margin: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
+                                  margin: const EdgeInsets.symmetric(
+                                      vertical: 20, horizontal: 30),
                                   decoration: BoxDecoration(
                                     border: Border.all(
                                       color: Colors.grey,
