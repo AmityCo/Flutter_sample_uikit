@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:amity_sdk/amity_sdk.dart';
 import 'package:amity_uikit_beta_service/components/custom_app_bar.dart';
+import 'package:amity_uikit_beta_service/components/custom_avatar.dart';
 import 'package:amity_uikit_beta_service/constans/app_text_style.dart';
 import 'package:amity_uikit_beta_service/view/social/user_follow_screen.dart';
 import 'package:amity_uikit_beta_service/viewmodel/follower_following_viewmodel.dart';
@@ -9,8 +10,6 @@ import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../amity_sle_uikit.dart';
-import '../../components/custom_user_avatar.dart';
 import '../../viewmodel/amity_viewmodel.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
 import '../../viewmodel/user_feed_viewmodel.dart';
@@ -20,12 +19,10 @@ import 'edit_profile.dart';
 class UserProfileScreen extends StatefulWidget {
   final AmityUser amityUser;
   final bool? isEnableAppbar;
-  final ValueChanged? logout;
   const UserProfileScreen({
     Key? key,
     required this.amityUser,
     this.isEnableAppbar = true,
-    this.logout,
   }) : super(key: key);
   @override
   UserProfileScreenState createState() => UserProfileScreenState();
@@ -75,7 +72,6 @@ class UserProfileScreenState extends State<UserProfileScreen>
         Future.delayed(const Duration(milliseconds: 500), () {
           amity.logout();
         });
-        AmitySLEUIKit.unRegisterDevice();
         Navigator.pop(context);
       });
     }
@@ -131,7 +127,10 @@ class UserProfileScreenState extends State<UserProfileScreen>
                   currentUser: getAmityUser(),
                   logout: () => moreActionPressed(moreActions[0]),
                 ),
-                if (context.read<AmityUIConfiguration>().userProfileConfig.isOpenTabView)
+                if (context
+                    .read<AmityUIConfiguration>()
+                    .userProfileConfig
+                    .isOpenTabView)
                   _TabUserProfile(
                     tabController: tabController,
                     height: bheight * 0.3,
@@ -274,14 +273,13 @@ class _HeaderUserProfile extends StatelessWidget {
                     ),
                     GestureDetector(
                       onTap: logout,
-                      child: FadedScaleAnimation(
-                        child: getAvatarImage(
-                            isCurrentUser
-                                ? Provider.of<AmityVM>(
-                                    context,
-                                  ).currentamityUser?.avatarUrl
-                                : amityUser.avatarUrl,
-                            radius: 50),
+                      child: CustomAvatar(
+                        radius: 50,
+                        url: isCurrentUser
+                            ? Provider.of<AmityVM>(
+                                context,
+                              ).currentamityUser?.avatarUrl
+                            : amityUser.avatarUrl,
                       ),
                     ),
                     _ShowMemberText(
@@ -324,54 +322,65 @@ class _HeaderUserProfile extends StatelessWidget {
                 ),
               ),
               isCurrentUser
-                  ? 
-                  context.read<AmityUIConfiguration>().userProfileConfig.isOpenEditProfile ?
-                  Row(
-                      children: [
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => ProfileScreen(
-                                    user: vm.amityUser!,
+                  ? context
+                          .read<AmityUIConfiguration>()
+                          .userProfileConfig
+                          .isOpenEditProfile
+                      ? Row(
+                          children: [
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => ProfileScreen(
+                                        user: vm.amityUser!,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  margin: const EdgeInsets.symmetric(
+                                      vertical: 20, horizontal: 30),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: Colors.grey,
+                                      style: BorderStyle.solid,
+                                      width: 1,
+                                    ),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  padding:
+                                      const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.edit,
+                                        color: context
+                                            .watch<AmityUIConfiguration>()
+                                            .buttonConfig
+                                            .backgroundColor,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        "Edit Profile",
+                                        style: AppTextStyle.body1.copyWith(
+                                          color: context
+                                              .watch<AmityUIConfiguration>()
+                                              .buttonConfig
+                                              .textColor,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              );
-                            },
-                            child: Container(
-                              margin: const EdgeInsets.all(20),
-                              decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: Provider.of<AmityUIConfiguration>(
-                                            context)
-                                        .primaryColor,
-                                    style: BorderStyle.solid,
-                                    width: 1,
-                                  ),
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: context
-                                      .watch<AmityUIConfiguration>()
-                                      .buttonConfig
-                                      .backgroundColor),
-                              padding:
-                                  const EdgeInsets.fromLTRB(10, 10, 10, 10),
-                              child: Text(
-                                "Edit Profile",
-                                style: theme.textTheme.titleSmall!.copyWith(
-                                  color: context
-                                      .watch<AmityUIConfiguration>()
-                                      .buttonConfig
-                                      .textColor,
-                                  fontSize: 12,
-                                ),
-                                textAlign: TextAlign.center,
                               ),
                             ),
-                          ),
-                        ),
-                      ],
-                    ): const SizedBox()
+                          ],
+                        )
+                      : const SizedBox()
                   : Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

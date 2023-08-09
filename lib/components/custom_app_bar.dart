@@ -1,3 +1,4 @@
+import 'package:amity_uikit_beta_service/constans/app_text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -52,28 +53,26 @@ class CustomAppBar extends AppBar {
   Widget? get title => (super.title == null && titleText != null)
       ? Text(
           titleText!,
-          style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                fontWeight: FontWeight.w500,
-                color: context
-                    .watch<AmityUIConfiguration>()
-                    .appbarConfig
-                    .textColor,
-              ),
+          style: AppTextStyle.display2.copyWith(
+            fontWeight: FontWeight.w500,
+            color: context.watch<AmityUIConfiguration>().appbarConfig.textColor,
+          ),
         )
       : super.title;
 
   @override
-  Widget? get leading => !disableLeading ? super.leading ??
-      IconButton(
-          icon: Icon(
-            Icons.chevron_left,
-            color: context
-                .watch<AmityUIConfiguration>()
-                .appbarConfig
-                .iconBackColor,
-          ),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ):null;
+  Widget? get leading =>
+      !disableLeading ? super.leading ?? _getLeading() : null;
+
+  Widget _getLeading() {
+    return IconButton(
+      icon: Icon(
+        Icons.chevron_left,
+        color: context.read<AmityUIConfiguration>().appbarConfig.iconBackColor,
+      ),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+  }
 }

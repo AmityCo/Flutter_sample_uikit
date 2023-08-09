@@ -95,7 +95,7 @@ class CategoryWidget extends StatelessWidget {
         await Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => Builder(builder: (context) {
             return CommunityListByCategoryIdScreen(
-              selectedCategoryId: category.categoryId,
+              category: category,
             );
           }),
         ));

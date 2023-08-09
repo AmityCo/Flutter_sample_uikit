@@ -1,7 +1,5 @@
+import 'package:amity_uikit_beta_service/components/custom_avatar_community.dart';
 import 'package:flutter/material.dart';
-
-import '../constans/app_assets.dart';
-import 'custom_avatar.dart';
 
 class CustomListTitle extends StatelessWidget {
   const CustomListTitle({
@@ -21,13 +19,8 @@ class CustomListTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       onTap: onPressed,
-      leading: CustomAvatar(
-        url: url,
-        radius: 20,
-        imagePlaceholder: const AssetImage(
-          AppAssets.accountGroup,
-          package: AppAssets.package,
-        ),
+      leading: CustomAvatarCommunity(
+        url: url
       ),
       title: Text(
         title,
