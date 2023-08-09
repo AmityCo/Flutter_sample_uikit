@@ -74,6 +74,7 @@ class _MemberListCommunityViewState extends State<MemberListCommunityView> {
                       url: user.avatarUrl,
                       radius: 20,
                     ),
+                    const SizedBox(width: 8),
                     Flexible(
                       child: Text(
                         user.displayName ?? '',
