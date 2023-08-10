@@ -144,7 +144,7 @@ class AmitySLEChannelScreenState extends State<AmitySLEChannelScreen> {
                                                   .getChannelList()[index]
                                                   .unreadCount
                                                   .toString(),
-                                              style: theme.textTheme.bodyText1!
+                                              style: theme.textTheme.bodyLarge!
                                                   .copyWith(
                                                       color: Colors.white,
                                                       fontSize: 8),
@@ -170,7 +170,7 @@ class AmitySLEChannelScreenState extends State<AmitySLEChannelScreen> {
                             ),
                             subtitle: Text(
                               vm.getChannelList()[index].latestMessage,
-                              style: theme.textTheme.subtitle2!.copyWith(
+                              style: theme.textTheme.headlineSmall!.copyWith(
                                 color:
                                     Provider.of<AmityUIConfiguration>(context)
                                         .channelListConfig
@@ -183,7 +183,7 @@ class AmitySLEChannelScreenState extends State<AmitySLEChannelScreen> {
                                   ? ""
                                   : getDateTime(
                                       vm.getChannelList()[index].lastActivity!),
-                              style: theme.textTheme.bodyText1!.copyWith(
+                              style: theme.textTheme.bodyLarge!.copyWith(
                                   color:
                                       Provider.of<AmityUIConfiguration>(context)
                                           .channelListConfig

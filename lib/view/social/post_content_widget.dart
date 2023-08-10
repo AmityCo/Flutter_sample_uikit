@@ -10,7 +10,7 @@ import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import '../../components/video_player.dart';
 
-import 'comments.dart';
+import '../post_detail/comments.dart';
 import 'image_viewer.dart';
 
 class AmityPostWidget extends StatefulWidget {
@@ -80,9 +80,10 @@ class AmityPostWidgetState extends State<AmityPostWidget> {
 
     for (var post in widget.posts) {
       final imageData = post.data as ImageData;
-      final largeImageUrl = imageData.getUrl(AmityImageSize.LARGE);
-
-      imageUrlList.add(largeImageUrl);
+      if (imageData.image != null) {
+        final largeImageUrl = imageData.getUrl(AmityImageSize.LARGE);
+        imageUrlList.add(largeImageUrl);
+      }
     }
     if (mounted) {
       setState(() {
@@ -94,7 +95,7 @@ class AmityPostWidgetState extends State<AmityPostWidget> {
 
   bool urlValidation(AmityPost post) {
     final url = extractLink(post); //urlExtraction(post);
-    log("checking url validation ${url}");
+    log("checking url validation $url");
     return AnyLinkPreview.isValidLink(url);
   }
 

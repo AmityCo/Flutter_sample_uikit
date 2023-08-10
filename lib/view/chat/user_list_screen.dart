@@ -200,7 +200,7 @@ class UserWidget extends StatelessWidget {
               leading: FadeAnimation(child: getAvatarImage(user.avatarUrl!)),
               title: Text(
                 user.displayName ?? "Category",
-                style: theme.textTheme.bodyText1!
+                style: theme.textTheme.bodyLarge!
                     .copyWith(fontWeight: FontWeight.bold),
               ),
               trailing: Provider.of<UserVM>(context, listen: true)

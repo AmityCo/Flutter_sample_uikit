@@ -22,9 +22,10 @@ class CommuFeedVM extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> initAmityCommunityFeed(String communityId) async {
+  Future<void> initAmityCommunityFeed(AmityCommunity community) async {
     isCurrentUserIsAdmin = false;
-
+    //AmityCommunity
+    String communityId = community.communityId!;
     //inititate the PagingController
     _controllerCommu = PagingController(
       pageFuture: (token) => AmitySocialClient.newFeedRepository()
@@ -50,7 +51,6 @@ class CommuFeedVM extends ChangeNotifier {
             await AmityDialog().showAlertErrorDialog(
                 title: "Error!", message: _controllerCommu.error.toString());
             //update widgets
-
           }
         },
       );
@@ -61,7 +61,9 @@ class CommuFeedVM extends ChangeNotifier {
 
     scrollcontroller.addListener(loadnextpage);
 
-    //inititate the PagingController
+    try{
+      //inititate the PagingController
+      
     await AmitySocialClient.newFeedRepository()
         .getCommunityFeed(communityId)
         .includeDeleted(false)
@@ -69,8 +71,15 @@ class CommuFeedVM extends ChangeNotifier {
         .then((value) {
       _amityCommunityFeedPosts = value.data;
     });
-    notifyListeners();
-    await checkIsCurrentUserIsAdmin(communityId);
+     notifyListeners();
+    }on AmityException{
+      log('Feed not found!');
+    }
+     
+    if (community.isJoined ?? false) {
+      await checkIsCurrentUserIsAdmin(communityId);
+    }
+    
   }
 
   void loadnextpage() {
@@ -83,17 +92,17 @@ class CommuFeedVM extends ChangeNotifier {
 
   void loadCoomunityMember() {}
 
-  void deletePost(AmityPost post, int postIndex) async {
+  Future<void> deletePost(AmityPost post, int postIndex) async {
     log("deleting post....");
-    AmitySocialClient.newPostRepository()
+    await AmitySocialClient.newPostRepository()
         .deletePost(postId: post.postId!)
-        .then((value) {
-      _amityCommunityFeedPosts.removeAt(postIndex);
-      notifyListeners();
-    }).onError((error, stackTrace) async {
+        .onError((error, stackTrace) async {
       await AmityDialog()
           .showAlertErrorDialog(title: "Error!", message: error.toString());
+      return;
     });
+     _amityCommunityFeedPosts.removeAt(postIndex);
+      notifyListeners();
   }
 
   Future<void> checkIsCurrentUserIsAdmin(String communityId) async {
@@ -101,7 +110,7 @@ class CommuFeedVM extends ChangeNotifier {
     await AmitySocialClient.newCommunityRepository()
         .getCurentUserRoles(communityId)
         .then((value) {
-      log("LOG1" + value.toString());
+      log("LOG1 :$value");
       for (var role in value) {
         if (role == "community-moderator") {
           isCurrentUserIsAdmin = true;
@@ -109,7 +118,7 @@ class CommuFeedVM extends ChangeNotifier {
       }
       notifyListeners();
     }).onError((error, stackTrace) {
-      log("LOG1:$error");
+      log("LOG1 ERROR :$error");
     });
   }
 }
