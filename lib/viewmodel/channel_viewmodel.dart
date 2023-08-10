@@ -151,7 +151,7 @@ class MessageVM extends ChangeNotifier {
       if (data != null) {
         log("sendMessage: success");
       } else {
-        log('ERROR ChannelVM sendMessage:$error');
+        log(error.toString());
         await AmityDialog()
             .showAlertErrorDialog(title: "Error!", message: error!);
       }

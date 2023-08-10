@@ -10,7 +10,6 @@ class PostVM extends ChangeNotifier {
   late AmityPost amityPost;
   late PagingController<AmityComment> _controller;
   final amityComments = <AmityComment>[];
-  final amityReplyComments = <AmityComment>[];
 
   final scrollcontroller = ScrollController();
 
@@ -24,60 +23,10 @@ class PostVM extends ChangeNotifier {
         .then((AmityPost post) {
       amityPost = post;
     }).onError<AmityException>((error, stackTrace) async {
-      log('ERROR PostVM getPost:$error');
+      log(error.toString());
       await AmityDialog()
           .showAlertErrorDialog(title: "Error!", message: error.toString());
     });
-  }
-
-  Future<bool> editComment(AmityComment comment, String text) async {
-    try {
-      await comment.edit().text(text).build().update();
-      // Success, notify listeners and return true
-      int index = _controller.loadedItems
-          .indexWhere((element) => comment.commentId == element.commentId);
-      if (index != -1) {
-        _controller.loadedItems[index] = comment;
-      }
-      notifyListeners(); // Replace 'notifyListener()' with the actual method call to notify listeners
-      return true;
-    } catch (error, _) {
-      // Error occurred, notify listeners and return false
-      notifyListeners(); // Replace 'notifyListener()' with the actual method call to notify listeners
-      return false;
-    }
-  }
-
-  void listenForReplyComments(String postID, String commentID) {
-    _controller = PagingController(
-      pageFuture: (token) => AmitySocialClient.newCommentRepository()
-          .getComments()
-          .post(postID)
-          .includeDeleted(false)
-          .parentId(commentID)
-          .sortBy(_sortOption)
-          .getPagingData(token: token, limit: 20),
-      pageSize: 20,
-    )..addListener(
-        () async {
-          if (_controller.error == null) {
-            amityReplyComments.clear();
-            amityReplyComments.addAll(_controller.loadedItems);
-            notifyListeners();
-          } else {
-            //Error on pagination controller
-            log("error");
-            await AmityDialog().showAlertErrorDialog(
-                title: "Error!", message: _controller.error.toString());
-          }
-        },
-      );
-
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _controller.fetchNextPage();
-    });
-
-    scrollcontroller.addListener(loadnextpage);
   }
 
   void listenForComments(String postID) {
@@ -85,7 +34,6 @@ class PostVM extends ChangeNotifier {
       pageFuture: (token) => AmitySocialClient.newCommentRepository()
           .getComments()
           .post(postID)
-          .includeDeleted(false)
           .sortBy(_sortOption)
           .getPagingData(token: token, limit: 20),
       pageSize: 20,
@@ -94,9 +42,11 @@ class PostVM extends ChangeNotifier {
           if (_controller.error == null) {
             amityComments.clear();
             amityComments.addAll(_controller.loadedItems);
+
             notifyListeners();
           } else {
             //Error on pagination controller
+
             log("error");
             await AmityDialog().showAlertErrorDialog(
                 title: "Error!", message: _controller.error.toString());
@@ -119,16 +69,6 @@ class PostVM extends ChangeNotifier {
     }
   }
 
-  void updateScrollController() {
-    try {
-      Future.delayed(const Duration(milliseconds: 300)).then((value) {
-        scrollcontroller.jumpTo(scrollcontroller.position.maxScrollExtent);
-      });
-    } catch (e) {
-      log('UpdateScrollController Error:$e');
-    }
-  }
-
   Future<void> createComment(String postId, String text) async {
     await AmitySocialClient.newCommentRepository()
         .createComment()
@@ -140,30 +80,11 @@ class PostVM extends ChangeNotifier {
       _controller.add(comment);
       amityComments.clear();
       amityComments.addAll(_controller.loadedItems);
-      updateScrollController();
+      Future.delayed(const Duration(milliseconds: 300)).then((value) {
+        scrollcontroller.jumpTo(scrollcontroller.position.maxScrollExtent);
+      });
     }).onError((error, stackTrace) async {
-      log('ERROR PostVM createComment:$error');
-      await AmityDialog()
-          .showAlertErrorDialog(title: "Error!", message: error.toString());
-    });
-  }
-
-  Future<void> createReplyComment(
-      String postId, String commentId, String text) async {
-    await AmitySocialClient.newCommentRepository()
-        .createComment()
-        .post(postId)
-        .parentId(commentId)
-        .create()
-        .text(text)
-        .send()
-        .then((comment) async {
-      _controller.add(comment);
-      amityReplyComments.clear();
-      amityReplyComments.addAll(_controller.loadedItems);
-       updateScrollController();
-    }).onError((error, stackTrace) async {
-      log('ERROR PostVM createReplyComment:$error');
+      log(error.toString());
       await AmityDialog()
           .showAlertErrorDialog(title: "Error!", message: error.toString());
     });
@@ -208,24 +129,6 @@ class PostVM extends ChangeNotifier {
     HapticFeedback.heavyImpact();
     post.react().removeReaction('like').then((value) => {
           //success
-        });
-  }
-
-  void deleteComment(AmityComment comment) {
-    comment.delete().then((value) => {
-          // success
-          amityComments
-              .removeWhere((element) => element.commentId == comment.commentId),
-          notifyListeners()
-        });
-  }
-
-  void deleteReplyComment(AmityComment comment) {
-    comment.delete().then((value) => {
-          // success
-          amityReplyComments
-              .removeWhere((element) => element.commentId == comment.commentId),
-          notifyListeners()
         });
   }
 

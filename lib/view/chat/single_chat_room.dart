@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/src/widgets/container.dart';
+import 'package:flutter/src/widgets/framework.dart';
 import 'package:provider/provider.dart';
 
 import '../../viewmodel/channel_list_viewmodel.dart';
@@ -31,12 +33,12 @@ class _SingleChatRoomState extends State<SingleChatRoom> {
   @override
   Widget build(BuildContext context) {
     return Provider.of<ChannelVM>(context).amitySingleChannel == null
-        ? const Scaffold(
+        ? Scaffold(
             body: Row(
               children: [
                 Expanded(
                     child: Column(
-                  children: [CircularProgressIndicator()],
+                  children: const [CircularProgressIndicator()],
                 ))
               ],
             ),

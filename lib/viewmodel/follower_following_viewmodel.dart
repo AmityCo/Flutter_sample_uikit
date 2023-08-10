@@ -23,7 +23,8 @@ class FollowerVM extends ChangeNotifier {
       _followingController = PagingController(
         pageFuture: (token) => AmityCoreClient.newUserRepository()
             .relationship()
-            .getMyFollowings()
+            .me()
+            .getFollowings()
             .status(AmityFollowStatusFilter.ACCEPTED)
             .getPagingData(token: token, limit: 20),
         pageSize: 20,
@@ -32,7 +33,8 @@ class FollowerVM extends ChangeNotifier {
       _followingController = PagingController(
         pageFuture: (token) => AmityCoreClient.newUserRepository()
             .relationship()
-            .getFollowings(userId)
+            .user(userId)
+            .getFollowings()
             .status(AmityFollowStatusFilter.ACCEPTED)
             .getPagingData(token: token, limit: 20),
         pageSize: 20,
@@ -56,7 +58,8 @@ class FollowerVM extends ChangeNotifier {
     if (AmityCoreClient.getUserId() == userId) {
       await AmityCoreClient.newUserRepository()
           .relationship()
-          .getMyFollowings()
+          .me()
+          .getFollowings()
           .status(AmityFollowStatusFilter.ACCEPTED)
           .getPagingData()
           .then((value) {
@@ -69,7 +72,8 @@ class FollowerVM extends ChangeNotifier {
     } else {
       await AmityCoreClient.newUserRepository()
           .relationship()
-          .getFollowings(userId)
+          .user(userId)
+          .getFollowings()
           .status(AmityFollowStatusFilter.ACCEPTED)
           .getPagingData()
           .then((value) {
@@ -92,7 +96,8 @@ class FollowerVM extends ChangeNotifier {
       _followerController = PagingController(
         pageFuture: (token) => AmityCoreClient.newUserRepository()
             .relationship()
-            .getMyFollowers()
+            .me()
+            .getFollowers()
             .status(AmityFollowStatusFilter.ACCEPTED)
             .getPagingData(token: token, limit: 20),
         pageSize: 20,
@@ -101,7 +106,8 @@ class FollowerVM extends ChangeNotifier {
       _followerController = PagingController(
         pageFuture: (token) => AmityCoreClient.newUserRepository()
             .relationship()
-            .getFollowers(userId)
+            .user(userId)
+            .getFollowers()
             .status(AmityFollowStatusFilter.ACCEPTED)
             .getPagingData(token: token, limit: 20),
         pageSize: 20,
@@ -125,7 +131,8 @@ class FollowerVM extends ChangeNotifier {
     if (AmityCoreClient.getUserId() == userId) {
       await AmityCoreClient.newUserRepository()
           .relationship()
-          .getMyFollowers()
+          .me()
+          .getFollowers()
           .status(AmityFollowStatusFilter.ACCEPTED)
           .getPagingData()
           .then((value) {
@@ -138,7 +145,8 @@ class FollowerVM extends ChangeNotifier {
     } else {
       await AmityCoreClient.newUserRepository()
           .relationship()
-          .getFollowers(userId)
+          .user(userId)
+          .getFollowers()
           .status(AmityFollowStatusFilter.ACCEPTED)
           .getPagingData()
           .then((value) {
@@ -170,7 +178,8 @@ class FollowerVM extends ChangeNotifier {
   Future<void> sendFollowRequest({required AmityUser user}) async {
     AmityCoreClient.newUserRepository()
         .relationship()
-        .follow(user.userId!)
+        .user(user.userId!)
+        .follow()
         .then((AmityFollowStatus followStatus) {
       //success
       log("Follow Success");
@@ -185,6 +194,7 @@ class FollowerVM extends ChangeNotifier {
   void withdrawFollowRequest(AmityUser user) {
     AmityCoreClient.newUserRepository()
         .relationship()
+        .me()
         .unfollow(user.userId!)
         .then((value) {
       log("with Draw Success");

@@ -19,7 +19,8 @@ class PendingVM extends ChangeNotifier {
     _pendingListController = PagingController(
       pageFuture: (token) => AmityCoreClient.newUserRepository()
           .relationship()
-          .getMyFollowers()
+          .me()
+          .getFollowers()
           .status(AmityFollowStatusFilter.PENDING)
           .getPagingData(token: token, limit: 20),
       pageSize: 20,
@@ -41,7 +42,8 @@ class PendingVM extends ChangeNotifier {
 
     await AmityCoreClient.newUserRepository()
         .relationship()
-        .getMyFollowers()
+        .me()
+        .getFollowers()
         .status(AmityFollowStatusFilter.PENDING)
         .getPagingData()
         .then((value) {
@@ -74,7 +76,8 @@ class PendingVM extends ChangeNotifier {
   void acceptFollowRequest(String userId, int index) {
     AmityCoreClient.newUserRepository()
         .relationship()
-        .acceptMyFollower(userId = userId)
+        .me()
+        .accept(userId = userId)
         .then((value) {
       //success
       log("acceptFollowRequest: Success");
@@ -90,7 +93,8 @@ class PendingVM extends ChangeNotifier {
   void declineFollowRequest(String userId, int index) {
     AmityCoreClient.newUserRepository()
         .relationship()
-        .declineMyFollower(userId = userId)
+        .me()
+        .decline(userId = userId)
         .then((value) {
       //success
       log("declineFollowRequest: Success");

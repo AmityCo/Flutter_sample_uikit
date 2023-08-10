@@ -4,6 +4,7 @@ import 'package:amity_sdk/amity_sdk.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import '../../components/alert_dialog.dart';
+import '../repository/chat_repo_imp.dart';
 import '../utils/env_manager.dart';
 
 class UserVM extends ChangeNotifier {
@@ -48,7 +49,7 @@ class UserVM extends ChangeNotifier {
       log("IsGlobalban: ${user.isGlobalBan}");
       amityUser = user;
     }).onError((error, stackTrace) async {
-      log('ERROR UserVM getUserByID:$error');
+      log(error.toString());
       await AmityDialog()
           .showAlertErrorDialog(title: "Error!", message: error.toString());
     });
@@ -78,7 +79,7 @@ class UserVM extends ChangeNotifier {
       _userList.addAll(users);
       notifyListeners();
     }).catchError((error, stackTrace) async {
-      log('ERROR UserVM getUsers:$error');
+      log(error.toString());
       await AmityDialog()
           .showAlertErrorDialog(title: "Error!", message: error.toString());
       notifyListeners();

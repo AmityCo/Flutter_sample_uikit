@@ -1,16 +1,20 @@
 import 'package:amity_sdk/amity_sdk.dart';
+import 'package:amity_uikit_beta_service/components/custom_user_avatar.dart';
 import 'package:amity_uikit_beta_service/view/social/user_follower_component.dart';
 import 'package:amity_uikit_beta_service/view/social/user_following_component.dart';
 import 'package:amity_uikit_beta_service/viewmodel/follower_following_viewmodel.dart';
+import 'package:animation_wrappers/animations/faded_slide_animation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/src/widgets/container.dart';
+import 'package:flutter/src/widgets/framework.dart';
 import 'package:provider/provider.dart';
 
 import '../../viewmodel/configuration_viewmodel.dart';
 
 class FollowScreen extends StatefulWidget {
   final AmityUser user;
-  final int initialIndex;
-  const FollowScreen({super.key, required this.user, this.initialIndex = 0});
+  const FollowScreen({super.key, required this.user});
+
   @override
   State<FollowScreen> createState() => _FollowScreenState();
 }
@@ -22,27 +26,18 @@ class _FollowScreenState extends State<FollowScreen> {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: context.watch<AmityUIConfiguration>().appbarConfig.backgroundColor,
         title: Text(
           widget.user.displayName ?? "displayname is null",
-          style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                fontSize: 24,
-                color: context
-                    .watch<AmityUIConfiguration>()
-                    .appbarConfig
-                    .textColor,
-              ),
+          style: Theme.of(context).textTheme.headline6!.copyWith(fontSize: 24),
         ),
       ),
-      backgroundColor: context
-          .watch<AmityUIConfiguration>()
+      backgroundColor: Provider.of<AmityUIConfiguration>(context)
           .messageRoomConfig
           .backgroundColor,
       body: SafeArea(
         bottom: false,
         child: DefaultTabController(
           length: 2,
-          initialIndex: widget.initialIndex,
           child: Scaffold(
             body: Column(
               children: [
@@ -54,13 +49,13 @@ class _FollowScreenState extends State<FollowScreen> {
                     Tab(
                       child: Text(
                         "Follower",
-                        style: theme.textTheme.bodyMedium,
+                        style: theme.textTheme.bodyText1,
                       ),
                     ),
                     Tab(
                       child: Text(
                         "Following",
-                        style: theme.textTheme.bodyMedium,
+                        style: theme.textTheme.bodyText1,
                       ),
                     ),
                   ],

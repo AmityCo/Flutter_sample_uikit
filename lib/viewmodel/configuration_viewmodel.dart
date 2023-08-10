@@ -2,16 +2,12 @@ import 'package:flutter/material.dart';
 
 class AmityUIConfiguration extends ChangeNotifier {
   Color primaryColor = Colors.grey;
-  Color secondaryColor = Colors.black;
   IconData placeHolderIcon = Icons.chat;
   Color displaynameColor = Colors.black;
 
   ChannelListConfig channelListConfig = ChannelListConfig();
   MessageRoomConfig messageRoomConfig = MessageRoomConfig();
-  ButtonConfig buttonConfig = ButtonConfig();
-  AppbarConfig appbarConfig = AppbarConfig();
-  UserProfileConfig userProfileConfig = UserProfileConfig();
-  
+
   void updateUI() {
     notifyListeners();
   }
@@ -30,34 +26,4 @@ class MessageRoomConfig {
   Color appbarColor = Colors.white;
   Color textFieldBackGroundColor = Colors.white;
   Color textFieldHintColor = Colors.grey[500]!;
-}
-
-class AppbarConfig{
-  final Color backgroundColor;
-  final Color textColor;
-  final Color iconBackColor;
-  AppbarConfig({
-    this.backgroundColor = Colors.white,
-    this.textColor = Colors.black,
-    this.iconBackColor =Colors.white,
-  });
-}
-
-class ButtonConfig{
-  final Color backgroundColor;
-  final Color textColor;
-  ButtonConfig({
-    this.backgroundColor = Colors.white,
-    this.textColor = Colors.black,
-  });
-}
-
-class UserProfileConfig{
-  final bool isOpenTabView;
-  final bool isOpenEditProfile;
-
-  UserProfileConfig({
-    this.isOpenTabView = true,
-    this.isOpenEditProfile = true,
-  });
 }
