@@ -8,7 +8,7 @@ import '../../components/alert_dialog.dart';
 enum Feedtype { global, commu }
 
 class FeedVM extends ChangeNotifier {
-  final _amityGlobalFeedPosts = <AmityPost>[];
+  var _amityGlobalFeedPosts = <AmityPost>[];
 
   late PagingController<AmityPost> _controllerGlobal;
 
@@ -24,17 +24,16 @@ class FeedVM extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> deletePost(AmityPost post, int postIndex) async {
-    await AmitySocialClient.newPostRepository()
+  void deletePost(AmityPost post, int postIndex) async {
+    AmitySocialClient.newPostRepository()
         .deletePost(postId: post.postId!)
-        .onError((error, stackTrace) async {
+        .then((value) {
+      _amityGlobalFeedPosts.removeAt(postIndex);
+      notifyListeners();
+    }).onError((error, stackTrace) async {
       await AmityDialog()
           .showAlertErrorDialog(title: "Error!", message: error.toString());
-          return;
     });
-
-    _amityGlobalFeedPosts.removeAt(postIndex);
-    notifyListeners();
   }
 
   Future<void> initAmityGlobalfeed() async {

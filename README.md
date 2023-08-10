@@ -16,7 +16,7 @@ import 'package:flutter/material.dart';
 void main() async {
   ///Step 1: Initialize amity SDK with the following function
   WidgetsFlutterBinding.ensureInitialized();
-  AmitySLEUIKit
+  AmitySLEUIKit()
       .initUIKit("b3babb0b3a89f4341d31dc1a01091edcd70f8de7b23d697f", "sg");
 
   runApp(const MyApp());
@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
     return AmitySLEProvider(
       child: Builder(builder: (context2) {
         ///If you want to change color of uikit use the following metgod here
-        AmitySLEUIKit.configAmityThemeColor(context2, (config) {
+        AmitySLEUIKit().configAmityThemeColor(context2, (config) {
           config.primaryColor = Colors.blue;
         });
         return MaterialApp(
@@ -65,7 +65,7 @@ class InitialWidget extends StatelessWidget {
               ElevatedButton(
                 onPressed: () {
                   ///Step 3: login with Amity
-                  AmitySLEUIKit.registerDevice(context, "johnwick2");
+                  AmitySLEUIKit().registerDevice(context, "johnwick2");
                 },
                 child: const Text("Login to Amity"),
               ),

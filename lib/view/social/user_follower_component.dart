@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../components/custom_user_avatar.dart';
+import '../../viewmodel/configuration_viewmodel.dart';
 import '../../viewmodel/follower_following_viewmodel.dart';
 
 class AmityFollowerScreen extends StatefulWidget {
@@ -43,7 +44,22 @@ class _AmityFollowerScreenState extends State<AmityFollowerScreen> {
             await vm.getFollowerListOf(userId: widget.userId);
           },
           child: vm.getFollowerList.isEmpty
-              ? const SizedBox()
+              ? Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          CircularProgressIndicator(
+                            color: Provider.of<AmityUIConfiguration>(context)
+                                .primaryColor,
+                          )
+                        ],
+                      ),
+                    ),
+                  ],
+                )
               : ListView.builder(
                   controller: vm.scrollController,
                   physics: const AlwaysScrollableScrollPhysics(),
@@ -52,7 +68,7 @@ class _AmityFollowerScreenState extends State<AmityFollowerScreen> {
                     return StreamBuilder<AmityFollowRelationship>(
                         // key: Key(vm.getFollowRelationships[index].sourceUserId! +
                         //     vm.getFollowRelationships[index].targetUserId!),
-                        stream: vm.getFollowerList[index].listen.stream,
+                        stream: vm.getFollowerList[index].listen,
                         initialData: vm.getFollowerList[index],
                         builder: (context, snapshot) {
                           return Padding(

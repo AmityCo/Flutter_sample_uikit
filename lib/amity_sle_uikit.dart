@@ -3,8 +3,7 @@
 import 'dart:developer';
 
 import 'package:amity_sdk/amity_sdk.dart';
-import 'package:amity_uikit_beta_service/viewmodel/category_viewmodel.dart';
-import 'package:amity_uikit_beta_service/viewmodel/community_view_model.dart';
+import 'package:amity_uikit_beta_service/utils/navigation_key.dart';
 import 'package:amity_uikit_beta_service/viewmodel/notification_viewmodel.dart';
 import 'package:amity_uikit_beta_service/viewmodel/pending_request_viewmodel.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +23,7 @@ import 'viewmodel/user_viewmodel.dart';
 import 'utils/env_manager.dart';
 
 class AmitySLEUIKit {
-  static Future<void> initUIKit(String apikey, String region) async {
+  Future<void> initUIKit(String apikey, String region) async {
     env = ENV(apikey, region);
     AmityRegionalHttpEndpoint? amityEndpoint;
     if (region.isNotEmpty) {
@@ -62,7 +61,7 @@ class AmitySLEUIKit {
         sycInitialization: true);
   }
 
-  static Future<void> registerDevice(
+  Future<void> registerDevice(
       {required BuildContext context,
       required String userId,
       String? displayName,
@@ -81,7 +80,7 @@ class AmitySLEUIKit {
           }
         } else {
           if (callback != null) {
-            callback(false, "❌ Initialize accesstoken fail...");
+            callback(false, "Initialize accesstoken fail...");
           }
         }
       });
@@ -90,60 +89,46 @@ class AmitySLEUIKit {
     });
   }
 
-  static Future<void> registerNotification(
+  Future<void> registerNotification(
       String fcmToken, Function(bool isSuccess, String? error) callback) async {
     // example of getting token from firebase
     // FirebaseMessaging messaging = FirebaseMessaging.instance;
     // final fcmToken = await messaging.getToken();
     // await AmityCoreClient.unregisterDeviceNotification();
-    // log("unregisterDeviceNotification");\
-    await Future.delayed(Duration.zero);
+    // log("unregisterDeviceNotification");
     await AmityCoreClient.registerDeviceNotification(fcmToken).then((value) {
-      debugPrint("registerNotification succesfully ✅");
+      print("registerNotification succesfully ✅");
       callback(true, null);
     }).onError((error, stackTrace) {
       callback(false, "Initialize push notification fail...❌");
     });
   }
 
-  static void configAmityThemeColor(
+  void configAmityThemeColor(
       BuildContext context, Function(AmityUIConfiguration config) config) {
     var provider = Provider.of<AmityUIConfiguration>(context, listen: false);
     config(provider);
   }
 
-  static AmityUser getCurrentUser() {
+  AmityUser getCurrentUser() {
     return AmityCoreClient.getCurrentUser();
   }
 
-  static void unRegisterDevice() {
+  void unRegisterDevice() {
     AmityCoreClient.unregisterDeviceNotification();
     AmityCoreClient.logout();
   }
 
-  static Future<void> joinInitialCommunity(List<String> communityIds) async {
+  Future<void> joinInitialCommunity(List<String> communityIds) async {
     for (var i = 0; i < communityIds.length; i++) {
       AmitySocialClient.newCommunityRepository()
           .joinCommunity(communityIds[i])
           .then((value) {
         log("join community:${communityIds[i]} success");
       }).onError((error, stackTrace) {
-        log('ERROR AmitySLEUIKit joinInitialCommunity:$error');
+        log(error.toString());
       });
     }
-  }
-
-  static Future<void> updateProfile(
-    BuildContext context, {
-    String? displayName,
-    String? description,
-    String? url,
-  }) async {
-    await context.read<AmityVM>().updateProfile(
-          displayName: displayName,
-          description: description,
-          url: url,
-        );
   }
 }
 
@@ -158,7 +143,6 @@ class AmitySLEProvider extends StatelessWidget {
         ChangeNotifierProvider<UserVM>(create: ((context) => UserVM())),
         ChangeNotifierProvider<AmityVM>(create: ((context) => AmityVM())),
         ChangeNotifierProvider<FeedVM>(create: ((context) => FeedVM())),
-        ChangeNotifierProvider<CategoryVM>(create: ((context) => CategoryVM())),
         ChangeNotifierProvider<CommunityVM>(
             create: ((context) => CommunityVM())),
         ChangeNotifierProvider<PostVM>(create: ((context) => PostVM())),
@@ -173,11 +157,13 @@ class AmitySLEProvider extends StatelessWidget {
         ChangeNotifierProvider<NotificationVM>(
             create: ((context) => NotificationVM())),
         ChangeNotifierProvider<PendingVM>(create: ((context) => PendingVM())),
-        ChangeNotifierProvider<CommunityViewModel>(
-            create: ((context) => CommunityViewModel())),
       ],
       child: Builder(
-        builder: (context) => child,
+        builder: (context) => MaterialApp(
+          debugShowCheckedModeBanner: false,
+          navigatorKey: NavigationService.navigatorKey,
+          home: child,
+        ),
       ),
     );
   }

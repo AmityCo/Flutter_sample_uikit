@@ -17,7 +17,7 @@ class EntryField extends StatelessWidget {
       decoration: InputDecoration(
         hintText: hint,
         prefix: prefix,
-        hintStyle: theme.textTheme.bodyMedium!
+        hintStyle: theme.textTheme.bodyText2!
             .copyWith(color: theme.hintColor, fontSize: 15),
       ),
     );
