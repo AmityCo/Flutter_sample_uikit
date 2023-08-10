@@ -62,6 +62,13 @@ class UserProfileScreenState extends State<UserProfileScreen>
 
   Future<void> moreActionPressed(String name) async {
     if (name == moreActions[0]) {
+      final isOpenEditProfile = context
+          .read<AmityUIConfiguration>()
+          .userProfileConfig
+          .isOpenEditProfile;
+      if (isOpenEditProfile) {
+        return;
+      }
       bool isCurrentUser =
           AmityCoreClient.getCurrentUser().userId == widget.amityUser.userId;
       if (!isCurrentUser) {
@@ -83,10 +90,16 @@ class UserProfileScreenState extends State<UserProfileScreen>
     final mediaQuery = MediaQuery.of(context);
     bool isCurrentUser =
         AmityCoreClient.getCurrentUser().userId == widget.amityUser.userId;
+
+    final isOpenEditProfile = context
+        .read<AmityUIConfiguration>()
+        .userProfileConfig
+        .isOpenEditProfile;
+
     final myAppBar = CustomAppBar(
       context: context,
       actions: [
-        if (isCurrentUser)
+        if (isCurrentUser && isOpenEditProfile)
           PopupMenuButton(itemBuilder: (BuildContext context) {
             return List.generate(moreActions.length, (index) {
               return PopupMenuItem(

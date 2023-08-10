@@ -1,21 +1,11 @@
 import 'dart:developer';
 
 import 'package:amity_sdk/amity_sdk.dart';
-import 'package:amity_uikit_beta_service/viewmodel/community_feed_viewmodel.dart';
-import 'package:animation_wrappers/animations/fade_animation.dart';
 import 'package:animation_wrappers/animations/faded_slide_animation.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
-import '../../components/custom_user_avatar.dart';
-import '../../components/video_player.dart';
-import '../../viewmodel/configuration_viewmodel.dart';
-import '../../viewmodel/edit_post_viewmodel.dart';
 import '../../viewmodel/post_viewmodel.dart';
-import '../../viewmodel/user_feed_viewmodel.dart';
-import '../user/user_profile.dart';
-import 'community_feed.dart';
 
 // ignore: must_be_immutable
 class EditCommentScreen extends StatefulWidget {
@@ -27,48 +17,33 @@ class EditCommentScreen extends StatefulWidget {
 }
 
 class EditCommentScreenState extends State<EditCommentScreen> {
-  TextEditingController _controller = TextEditingController();
+  TextEditingController controller = TextEditingController();
   @override
   void initState() {
     super.initState();
     CommentTextData commentTextData = widget.comment!.data! as CommentTextData;
     setState(() {
-      _controller.text = commentTextData.text!;
+      controller.text = commentTextData.text!;
     });
     log("check edit comment data ${commentTextData.text!}");
   }
 
   @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // final mediaQuery = MediaQuery.of(context);
-    final myAppbar = AppBar(
-      backgroundColor: Colors.white,
-      elevation: 0,
-      title: Text("Edit",
-          style:
-              theme.textTheme.headline6!.copyWith(fontWeight: FontWeight.w500)),
-      leading: IconButton(
-        icon: Icon(
-          Icons.chevron_left,
-          color: theme.indicatorColor,
-        ),
-        onPressed: () {
-          Navigator.of(context).pop();
-        },
-      ),
-      actions: [TextButton(onPressed: () {}, child: Text("Save"))],
-    );
-    // final bheight = mediaQuery.size.height -
-    //     mediaQuery.padding.top -
-    //     myAppbar.preferredSize.height;
     return Consumer<PostVM>(builder: (context, vm, m) {
       return Scaffold(
           appBar: AppBar(
             backgroundColor: Colors.white,
             elevation: 0,
             title: Text("Edit",
-                style: theme.textTheme.headline6!
+                style: theme.textTheme.headlineSmall!
                     .copyWith(fontWeight: FontWeight.w500)),
             leading: IconButton(
               icon: Icon(
@@ -84,9 +59,11 @@ class EditCommentScreenState extends State<EditCommentScreen> {
                   onPressed: () async {
                     if (widget.comment != null) {
                       final result = await vm.editComment(
-                          widget.comment!, _controller.text);
+                          widget.comment!, controller.text);
                       if (result == true) {
-                        Navigator.pop(context);
+                        if(mounted){
+                          Navigator.pop(context);
+                        }
                       }
                     }
                   },
@@ -103,7 +80,7 @@ class EditCommentScreenState extends State<EditCommentScreen> {
                 color: Colors.white,
                 padding: const EdgeInsets.all(15),
                 child: TextField(
-                  controller: _controller,
+                  controller: controller,
                   scrollPhysics: const NeverScrollableScrollPhysics(),
                   maxLines: null,
                   decoration: const InputDecoration(

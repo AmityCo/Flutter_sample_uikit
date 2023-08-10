@@ -81,7 +81,7 @@ class AmitySLEUIKit {
           }
         } else {
           if (callback != null) {
-            callback(false, "Initialize accesstoken fail...");
+            callback(false, "❌ Initialize accesstoken fail...");
           }
         }
       });
@@ -96,7 +96,8 @@ class AmitySLEUIKit {
     // FirebaseMessaging messaging = FirebaseMessaging.instance;
     // final fcmToken = await messaging.getToken();
     // await AmityCoreClient.unregisterDeviceNotification();
-    // log("unregisterDeviceNotification");
+    // log("unregisterDeviceNotification");\
+    await Future.delayed(Duration.zero);
     await AmityCoreClient.registerDeviceNotification(fcmToken).then((value) {
       debugPrint("registerNotification succesfully ✅");
       callback(true, null);
@@ -131,6 +132,19 @@ class AmitySLEUIKit {
       });
     }
   }
+
+  static Future<void> updateProfile(
+    BuildContext context, {
+    String? displayName,
+    String? description,
+    String? url,
+  }) async {
+    await context.read<AmityVM>().updateProfile(
+          displayName: displayName,
+          description: description,
+          url: url,
+        );
+  }
 }
 
 class AmitySLEProvider extends StatelessWidget {
@@ -144,8 +158,7 @@ class AmitySLEProvider extends StatelessWidget {
         ChangeNotifierProvider<UserVM>(create: ((context) => UserVM())),
         ChangeNotifierProvider<AmityVM>(create: ((context) => AmityVM())),
         ChangeNotifierProvider<FeedVM>(create: ((context) => FeedVM())),
-        ChangeNotifierProvider<CategoryVM>(
-            create: ((context) => CategoryVM())),
+        ChangeNotifierProvider<CategoryVM>(create: ((context) => CategoryVM())),
         ChangeNotifierProvider<CommunityVM>(
             create: ((context) => CommunityVM())),
         ChangeNotifierProvider<PostVM>(create: ((context) => PostVM())),
@@ -160,7 +173,8 @@ class AmitySLEProvider extends StatelessWidget {
         ChangeNotifierProvider<NotificationVM>(
             create: ((context) => NotificationVM())),
         ChangeNotifierProvider<PendingVM>(create: ((context) => PendingVM())),
-        ChangeNotifierProvider<CommunityViewModel>(create: ((context) => CommunityViewModel())),
+        ChangeNotifierProvider<CommunityViewModel>(
+            create: ((context) => CommunityViewModel())),
       ],
       child: Builder(
         builder: (context) => child,

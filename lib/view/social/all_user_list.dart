@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:amity_sdk/amity_sdk.dart';
+import 'package:amity_uikit_beta_service/components/custom_app_bar.dart';
 import 'package:amity_uikit_beta_service/constans/app_text_style.dart';
 import 'package:amity_uikit_beta_service/viewmodel/configuration_viewmodel.dart';
 import 'package:animation_wrappers/animations/faded_slide_animation.dart';
@@ -104,8 +105,9 @@ class _AllUserListScreenState extends State<AllUserListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Select User'),
+      appBar: CustomAppBar(
+        context: context,
+        titleText: 'Select User',
         actions: [
           if (_isMultipleSelect)
             TextButton(
@@ -170,7 +172,9 @@ class _AllUserListScreenState extends State<AllUserListScreen> {
                                   if (isSelected)
                                     Icon(
                                       Icons.check,
-                                      color: Theme.of(context).primaryColor,
+                                      color: context
+                                          .watch<AmityUIConfiguration>()
+                                          .primaryColor,
                                     ),
                                 ],
                               ),

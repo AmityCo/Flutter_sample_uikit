@@ -17,23 +17,27 @@ class CustomAvatar extends StatelessWidget {
   final ImageProvider? imagePlaceholder;
   @override
   Widget build(BuildContext context) {
+    ImageProvider image = const AssetImage(
+      AppAssets.account,
+      package: AppAssets.package,
+    );
+    if (url != null) {
+      image = NetworkImage(url!);
+    } else if (imagePlaceholder != null) {
+      image = imagePlaceholder!;
+    }
+    double size = radius*2;
     return FadeAnimation(
-      child: url != null
-          ? CircleAvatar(
-              backgroundColor: backgroundColor.withOpacity(0.5),
-              radius: radius,
-              foregroundImage: NetworkImage(url!),
-            )
-          : CircleAvatar(
-              backgroundColor: backgroundColor.withOpacity(0.5),
-              radius: radius,
-              foregroundImage: imagePlaceholder != null
-                  ? imagePlaceholder!
-                  : const AssetImage(
-                      AppAssets.account,
-                      package: AppAssets.package,
-                    ),
-            ),
+      child: ClipOval(
+        child: Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            image: DecorationImage(image: image, fit: BoxFit.fill),
+            color: backgroundColor.withOpacity(0.5),
+          ),
+        ),
+      ),
     );
   }
 }

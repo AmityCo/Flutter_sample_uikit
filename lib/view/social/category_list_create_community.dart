@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:amity_sdk/amity_sdk.dart';
+import 'package:amity_uikit_beta_service/components/custom_app_bar.dart';
 import 'package:amity_uikit_beta_service/components/custom_avatar.dart';
 import 'package:amity_uikit_beta_service/constans/app_assets.dart';
 import 'package:animation_wrappers/animations/faded_slide_animation.dart';
@@ -85,8 +86,9 @@ class _CategoryListForCreateCommunityState
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Select Category'),
+      appBar: CustomAppBar(
+        context: context,
+        titleText: 'Select Category',
       ),
       body: SafeArea(
         child: FadedSlideAnimation(
