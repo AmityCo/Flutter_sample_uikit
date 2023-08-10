@@ -1,6 +1,7 @@
 import 'package:amity_uikit_beta_service/components/custom_app_bar.dart';
 import 'package:amity_uikit_beta_service/constans/app_text_style.dart';
 import 'package:flutter/material.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 
 import '../../components/custom_faded_slide_animation.dart';
@@ -35,67 +36,69 @@ class _MyCommunityViewState extends State<MyCommunityView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(
-        context: context,
-        titleText: 'My Community',
-        actions: [
-          InkWell(
-            onTap: () async {
-              await Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const CreateCommunityView(),
-                ),
-              );
-              init();
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Icon(
-                Icons.add,
-                color: context
-                    .watch<AmityUIConfiguration>()
-                    .appbarConfig
-                    .iconBackColor,
-              ),
-            ),
-          )
-        ],
-      ),
-      body: Consumer<CommunityVM>(builder: (_, vm, __) {
-        final data = vm.getAmityMyCommunities();
-        return CustomFadedSlideAnimation(
-          child: ListView(
-            children: List.generate(
-              data.length,
-              (index) {
-                final community = data[index];
-                return CustomListTitle(
-                  title: community.displayName ?? "Community",
-                  url: community.avatarImage?.fileUrl,
-                  subtitle: Text(
-                    '${community.membersCount ?? 0} member',
-                    style: AppTextStyle.body1,
+    return CupertinoScaffold(
+      body: Scaffold(
+        appBar: CustomAppBar(
+          context: context,
+          titleText: 'My Community',
+          actions: [
+            InkWell(
+              onTap: () async {
+                await Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const CreateCommunityView(),
                   ),
-                  onPressed: () async {
-                    await Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => ChangeNotifierProvider<CommuFeedVM>(
-                          create: (context) => CommuFeedVM(),
-                          builder: (context, child) => CommunityScreen(
-                            community: community,
+                );
+                init();
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Icon(
+                  Icons.add,
+                  color: context
+                      .watch<AmityUIConfiguration>()
+                      .appbarConfig
+                      .iconBackColor,
+                ),
+              ),
+            )
+          ],
+        ),
+        body: Consumer<CommunityVM>(builder: (_, vm, __) {
+          final data = vm.getAmityMyCommunities();
+          return CustomFadedSlideAnimation(
+            child: ListView(
+              children: List.generate(
+                data.length,
+                (index) {
+                  final community = data[index];
+                  return CustomListTitle(
+                    title: community.displayName ?? "Community",
+                    url: community.avatarImage?.fileUrl,
+                    subtitle: Text(
+                      '${community.membersCount ?? 0} member',
+                      style: AppTextStyle.body1,
+                    ),
+                    onPressed: () async {
+                      await Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => ChangeNotifierProvider<CommuFeedVM>(
+                            create: (context) => CommuFeedVM(),
+                            builder: (context, child) => CommunityScreen(
+                              community: community,
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                    init();
-                  },
-                );
-              },
+                      );
+                      init();
+                    },
+                  );
+                },
+              ),
             ),
-          ),
-        );
-      }),
+          );
+        }),
+      ),
     );
   }
 }

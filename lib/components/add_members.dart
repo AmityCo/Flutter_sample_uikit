@@ -1,8 +1,10 @@
 import 'package:amity_sdk/amity_sdk.dart';
 import 'package:amity_uikit_beta_service/constans/app_text_style.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../view/social/all_user_list.dart';
+import '../viewmodel/configuration_viewmodel.dart';
 import 'custom_avatar.dart';
 import 'header_filed.dart';
 
@@ -104,8 +106,12 @@ class _AddMembersState extends State<AddMembers> {
                           children: [
                             Text(
                               '+$count',
-                              style: AppTextStyle.header1
-                                  .copyWith(fontWeight: FontWeight.normal),
+                              style: AppTextStyle.header1.copyWith(
+                                fontWeight: FontWeight.normal,
+                                color: context
+                                    .watch<AmityUIConfiguration>()
+                                    .primaryColor,
+                              ),
                             ),
                           ],
                         )),
@@ -120,10 +126,13 @@ class _AddMembersState extends State<AddMembers> {
                         color: colorBackground,
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: const Center(
+                      child: Center(
                         child: Icon(
                           Icons.add,
                           size: 30,
+                          color: context
+                              .watch<AmityUIConfiguration>()
+                              .primaryColor,
                         ),
                       ),
                     ),
@@ -162,8 +171,13 @@ class _AddMembersState extends State<AddMembers> {
                       const SizedBox(width: 4),
                       InkWell(
                         onTap: () => removeUser(index),
-                        child: const Center(
-                          child: Icon(Icons.close),
+                        child: Center(
+                          child: Icon(
+                            Icons.close,
+                            color: context
+                                .watch<AmityUIConfiguration>()
+                                .primaryColor,
+                          ),
                         ),
                       )
                     ],

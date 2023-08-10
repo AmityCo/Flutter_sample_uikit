@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:amity_sdk/amity_sdk.dart';
+import 'package:amity_uikit_beta_service/components/custom_app_bar.dart';
 import 'package:amity_uikit_beta_service/view/social/community_feed.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -62,6 +63,7 @@ class _SearchCommunitiesScreenState extends State<SearchCommunitiesScreen> {
         _isLoading = false;
         _error = 'Error fetching communities. Please try again.';
       });
+      debugPrint(_error);
     }
   }
 
@@ -101,14 +103,9 @@ class _SearchCommunitiesScreenState extends State<SearchCommunitiesScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Search Communities'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
+      appBar: CustomAppBar(
+        context: context,
+        titleText: 'Search Communities',
       ),
       body: Column(
         children: [

@@ -59,6 +59,7 @@ class _CommunityUserListScreenState extends State<CommunityUserListScreen> {
         _isLoading = false;
         _error = 'Error fetching users. Please try again.';
       });
+      debugPrint(_error);
       // Handle error
     }
   }

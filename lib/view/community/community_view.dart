@@ -66,9 +66,14 @@ class _CommunityViewState extends State<CommunityView> {
                     navigaatorToUserProfile(amityVM.currentamityUser!);
                   }
                 },
-                child: CustomAvatar(
-                  radius: 14,
-                  url: amityVM.currentamityUser?.avatarUrl,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CustomAvatar(
+                      radius: 15,
+                      url: amityVM.currentamityUser?.avatarUrl,
+                    ),
+                  ],
                 ),
               ),
               GestureDetector(

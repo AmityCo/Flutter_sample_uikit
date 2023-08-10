@@ -21,6 +21,7 @@ class SelectPostDialog {
     return await showDialog(
       context: context,
       barrierColor: Colors.transparent,
+      useSafeArea: false,
       builder: (context) {
         contextDialog = context;
         isOpenDialog = true;

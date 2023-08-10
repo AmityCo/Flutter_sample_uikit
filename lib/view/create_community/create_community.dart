@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import 'package:amity_uikit_beta_service/components/custom_app_bar.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import '../../components/add_members.dart';
 import '../../components/alert_dialog.dart';
 import '../../components/custom_selecter_box.dart';
@@ -31,7 +32,10 @@ class _CreateCommunityViewState extends State<CreateCommunityView> {
 
   String communityName = '';
   String about = '';
+
   List<AmityUser> selectedUsers = [];
+  List<AmityUser> tempUsers = [];
+
   bool isLoadMembers = false;
   AmityCommunityCategory? selectedCategory;
 
@@ -85,6 +89,7 @@ class _CreateCommunityViewState extends State<CreateCommunityView> {
         selectedUsers.add(member.user!);
       }
     }
+    tempUsers = [...selectedUsers];
     isLoadMembers = false;
     updateScreen();
   }
@@ -153,12 +158,7 @@ class _CreateCommunityViewState extends State<CreateCommunityView> {
     if (image != null) {
       create.avatar(image);
     }
-    List<String> userIds = [];
-    for (final s in selectedUsers) {
-      if (s.userId != null) {
-        userIds.add(s.userId!);
-      }
-    }
+    List<String> userIds = getUserIds(selectedUsers);
     create
         .description(about)
         .isPublic(communityType == CommunityType.public)
@@ -187,12 +187,7 @@ class _CreateCommunityViewState extends State<CreateCommunityView> {
     if (image != null) {
       update.avatar(image);
     }
-    List<String> userIds = [];
-    for (final s in selectedUsers) {
-      if (s.userId != null) {
-        userIds.add(s.userId!);
-      }
-    }
+    List<String> userIds = getUserIds(selectedUsers);
     update
         .description(about)
         .isPublic(communityType == CommunityType.public)
@@ -201,19 +196,79 @@ class _CreateCommunityViewState extends State<CreateCommunityView> {
         .update()
         .then((AmityCommunity community) async {
           debugPrint("Successfully updated community $community");
-          _close(
-            title: "Success!",
-            message: "Successfully updated community!",
-          );
+          _fileterUsersAddOrRemove();
         })
         .onError((error, stackTrace) async {
           debugPrint("Error updated a community $error");
-          loadingDialog.close();
+
           _close(
             title: "Error!",
             message: "Unable to updated community, please try again.",
           );
         });
+  }
+
+  List<String> getUserIds(List<AmityUser> users) {
+    List<String> userIds = [];
+    for (final s in users) {
+      if (s.userId != null) {
+        userIds.add(s.userId!);
+      }
+    }
+    return userIds;
+  }
+
+  Future<void> _fileterUsersAddOrRemove() async {
+    List<AmityUser> addUsers = selectedUsers;
+    List<AmityUser> removeUsers = [];
+    for (final temp in tempUsers) {
+      int idx = addUsers.indexWhere((element) => element.userId == temp.userId);
+      if (idx == -1) {
+        removeUsers.add(temp);
+      }
+    }
+
+    _addUsers(addUsers, removeUsers);
+  }
+
+  Future<void> _addUsers(
+    List<AmityUser> addUser,
+    List<AmityUser> removeUsers,
+  ) async {
+    List<String> userIds = getUserIds(addUser);
+    await AmitySocialClient.newCommunityRepository()
+        .membership(widget.community!.communityId!)
+        .addMembers(userIds)
+        .then((_) async {
+      debugPrint("Successfully updated addUsers community ");
+      _removeUsers(removeUsers);
+    }).onError((error, stackTrace) async {
+      debugPrint("Error updated a community addUsers $error");
+      _close(
+        title: "Error!",
+        message: "Unable to updated community, please try again.",
+      );
+    });
+  }
+
+  Future<void> _removeUsers(List<AmityUser> users) async {
+    List<String> userIds = getUserIds(users);
+    await AmitySocialClient.newCommunityRepository()
+        .membership(widget.community!.communityId!)
+        .removeMembers(userIds)
+        .then((_) async {
+      debugPrint("Successfully updated removeUsers community ");
+      _close(
+        title: "Success!",
+        message: "Successfully updated community!",
+      );
+    }).onError((error, stackTrace) async {
+      debugPrint("Error updated a community removeUsers $error");
+      _close(
+        title: "Error!",
+        message: "Unable to updated community, please try again.",
+      );
+    });
   }
 
   Future<void> _close({required String title, required String message}) async {
@@ -249,82 +304,84 @@ class _CreateCommunityViewState extends State<CreateCommunityView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(
-        context: context,
-        titleText:
-            widget.community != null ? 'Edit Community' : 'Create Community',
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            ImageCreateCommunity(
-              image: imageFile,
-              onPressed: _showImagePicker,
-            ),
-            const SizedBox(height: 20),
-            CutomTextFiled(
-              title: 'Community name',
-              hintText: 'Name your community',
-              initialValue: communityName,
-              isRequired: true,
-              maxlength: 30,
-              onChanged: (v) {
-                communityName = v;
-                updateScreen();
-              },
-            ),
-            CutomTextFiled(
-              title: 'About',
-              hintText: 'Enter description',
-              initialValue: about,
-              maxlength: 180,
-              maxLines: 4,
-              onChanged: (v) {
-                about = v;
-                updateScreen();
-              },
-            ),
-            CustomSelecterBox(
-              title: 'Category',
-              hintText: 'Select category',
-              value: selectedCategory?.name,
-              isRequired: true,
-              onPressed: navigateToCategoryList,
-            ),
-            RadioCreateCommunity(
-              current: communityType,
-              onChanged: onChangedRadio,
-            ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              child: Divider(),
-            ),
-            if (!isLoadMembers)
-              AddMembers(
-                title: 'Add members',
+    return CupertinoScaffold(
+      body: Scaffold(
+        appBar: CustomAppBar(
+          context: context,
+          titleText:
+              widget.community != null ? 'Edit Community' : 'Create Community',
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              ImageCreateCommunity(
+                image: imageFile,
+                onPressed: _showImagePicker,
+              ),
+              const SizedBox(height: 20),
+              CutomTextFiled(
+                title: 'Community name',
+                hintText: 'Name your community',
+                initialValue: communityName,
                 isRequired: true,
-                initital: selectedUsers,
+                maxlength: 30,
                 onChanged: (v) {
-                  selectedUsers = v;
+                  communityName = v;
                   updateScreen();
                 },
               ),
-            const Divider(),
-            const SizedBox(height: 10),
-            ButtonCreateCommunity(
-              title: widget.community != null
-                  ? 'Edit community'
-                  : 'Create community',
-              iconData: widget.community != null ? Icons.edit : Icons.add,
-              onPressed: isRequiredPass()
-                  ? () {
-                      onPreesedButton(selectImage);
-                    }
-                  : null,
-            ),
-            const SizedBox(height: 50),
-          ],
+              CutomTextFiled(
+                title: 'About',
+                hintText: 'Enter description',
+                initialValue: about,
+                maxlength: 180,
+                maxLines: 4,
+                onChanged: (v) {
+                  about = v;
+                  updateScreen();
+                },
+              ),
+              CustomSelecterBox(
+                title: 'Category',
+                hintText: 'Select category',
+                value: selectedCategory?.name,
+                isRequired: true,
+                onPressed: navigateToCategoryList,
+              ),
+              RadioCreateCommunity(
+                current: communityType,
+                onChanged: onChangedRadio,
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                child: Divider(),
+              ),
+              if (!isLoadMembers)
+                AddMembers(
+                  title: 'Add members',
+                  isRequired: true,
+                  initital: selectedUsers,
+                  onChanged: (v) {
+                    selectedUsers = v;
+                    updateScreen();
+                  },
+                ),
+              const Divider(),
+              const SizedBox(height: 10),
+              ButtonCreateCommunity(
+                title: widget.community != null
+                    ? 'Edit community'
+                    : 'Create community',
+                iconData: widget.community != null ? Icons.edit : Icons.add,
+                onPressed: isRequiredPass()
+                    ? () {
+                        onPreesedButton(selectImage);
+                      }
+                    : null,
+              ),
+              const SizedBox(height: 50),
+            ],
+          ),
         ),
       ),
     );
