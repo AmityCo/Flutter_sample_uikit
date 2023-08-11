@@ -53,8 +53,8 @@ class NotificationVM extends ChangeNotifier {
 
   Future<void> mapActor(AmityNotificaion notification) async {
     if (actorMapper.containsKey(notification.actors![0].id)) {
-      print(">>>>>>>>${actorMapper[notification.actors![0].id]["avatarUrl"]}");
-      print(">>>>>>>>${actorMapper[notification.actors![0].id]["avatarUrl"]}");
+      debugPrint(">>>>>>>>${actorMapper[notification.actors![0].id]["avatarUrl"]}");
+      debugPrint(">>>>>>>>${actorMapper[notification.actors![0].id]["avatarUrl"]}");
       notification.actors?[0].imageUrl =
           actorMapper[notification.actors![0].id]["avatarUrl"];
       notification.actors?[0].name =
@@ -62,7 +62,7 @@ class NotificationVM extends ChangeNotifier {
     } else {
       if (notification.actors![0].id != "_admin_vodworks-admin") {
         ///Add first actor image
-        ///TODO: Willuse Map to make sure that each user was loaded only 1 time
+        // TODO: Willuse Map to make sure that each user was loaded only 1 time
         await AmityCoreClient.newUserRepository()
             .getUser(notification.actors![0].id!)
             .then((value) {
@@ -106,7 +106,7 @@ class NotificationVM extends ChangeNotifier {
                     "https://api.${env!.region}.amity.co/api/v3/files/${value.avatarFileId}/download";
               }
             }).onError((error, stackTrace) {
-              log(error.toString());
+              log('ERROR NotificationVM addImageNotificationWorkAround getCommunity:$error');
               AmityDialog().showAlertErrorDialog(
                   title: "Error!:getCommunity ", message: error.toString());
             });
@@ -138,7 +138,7 @@ class NotificationVM extends ChangeNotifier {
                 }
               }
             }).onError((error, stackTrace) {
-              log(error.toString());
+              log('ERROR NotificationVM addImageNotificationWorkAround getPost:$error');
               AmityDialog().showAlertErrorDialog(
                   title: "Error! notification.targetType == post",
                   message: error.toString());
@@ -207,7 +207,7 @@ class NotificationVM extends ChangeNotifier {
     return suffix;
   }
 
-  //TODO: create description
+  // TODO: create description
   List<String> extractDescription(AmityNotificaion notificaion) {
     List<String> result = [];
     switch (notificaion.verb) {

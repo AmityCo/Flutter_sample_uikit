@@ -7,13 +7,14 @@ import 'package:provider/provider.dart';
 
 import '../../components/alert_dialog.dart';
 import 'amity_viewmodel.dart';
-import 'follower_following_viewmodel.dart';
 
 class UserFeedVM extends ChangeNotifier {
   late AmityUser? amityUser;
   late AmityUserFollowInfo amityMyFollowInfo = AmityUserFollowInfo();
   late PagingController<AmityPost> _controller;
+  late PagingController<AmityPost> _mediaController;
   final amityPosts = <AmityPost>[];
+  final amityMediaPosts = <AmityPost>[];
 
   final scrollcontroller = ScrollController();
   bool loading = false;
@@ -21,6 +22,11 @@ class UserFeedVM extends ChangeNotifier {
   void initUserFeed(AmityUser user) async {
     getUser(user);
     listenForUserFeed(user.userId!);
+  }
+
+  void initUserGalleryFeed(AmityUser user) async {
+    getUser(user);
+    listenForUserMediaFeed(user.userId!);
   }
 
   void getUser(AmityUser user) {
@@ -35,14 +41,44 @@ class UserFeedVM extends ChangeNotifier {
       log("isNotCurrentUser:${user.id}");
       amityUser = user;
     }
-
-    amityUser!.relationship().getFollowInfo().then((value) {
+    amityUser!.relationship().getFollowInfo(user.userId ?? '').then((value) {
       amityMyFollowInfo = value;
       notifyListeners();
     }).onError((error, stackTrace) {
       AmityDialog()
           .showAlertErrorDialog(title: "Error", message: error.toString());
     });
+  }
+
+  void listenForUserMediaFeed(String userId) {
+    _mediaController = PagingController(
+      pageFuture: (token) => AmitySocialClient.newFeedRepository()
+          .getUserFeed(userId)
+          .includeDeleted(false)
+          .types([AmityDataType.IMAGE, AmityDataType.VIDEO])
+          .getPagingData(
+              token: token, limit: 20),
+      pageSize: 20,
+    )..addListener(
+        () {
+          if (_mediaController.error == null) {
+            amityMediaPosts.clear();
+            amityMediaPosts.addAll(_mediaController.loadedItems);
+            log("successfully query media post ${_mediaController.loadedItems.length}");
+            notifyListeners();
+          } else {
+            //Error on pagination controller
+            log("Error: listenForUserMediaFeed... with userId = $userId");
+            log("ERROR::${_controller.error.toString()}");
+          }
+        },
+      );
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _mediaController.fetchNextPage();
+    });
+
+    scrollcontroller.addListener(loadnextpage);
   }
 
   void listenForUserFeed(String userId) {
@@ -79,6 +115,10 @@ class UserFeedVM extends ChangeNotifier {
             scrollcontroller.position.maxScrollExtent) &&
         _controller.hasMoreItems) {
       _controller.fetchNextPage();
+    } else if ((scrollcontroller.position.pixels ==
+            scrollcontroller.position.maxScrollExtent) &&
+        _mediaController.hasMoreItems) {
+      _mediaController.fetchNextPage();
     }
   }
 
@@ -132,8 +172,7 @@ class UserFeedVM extends ChangeNotifier {
   Future<void> sendFollowRequest({required AmityUser user}) async {
     AmityCoreClient.newUserRepository()
         .relationship()
-        .user(user.userId!)
-        .follow()
+        .follow(user.userId!)
         .then((AmityFollowStatus followStatus) {
       //success
       log("sendFollowRequest: Success");
@@ -148,7 +187,6 @@ class UserFeedVM extends ChangeNotifier {
   void withdrawFollowRequest(AmityUser user) {
     AmityCoreClient.newUserRepository()
         .relationship()
-        .me()
         .unfollow(user.userId!)
         .then((value) {
       log("withdrawFollowRequest: Success");

@@ -9,8 +9,6 @@ import '../components/alert_dialog.dart';
 import '../model/amity_channel_model.dart';
 import '../repository/chat_repo_imp.dart';
 import '../utils/navigation_key.dart';
-import '../view/chat/chat_screen.dart';
-import 'channel_viewmodel.dart';
 import 'user_viewmodel.dart';
 
 class ChannelVM extends ChangeNotifier {
@@ -87,7 +85,7 @@ class ChannelVM extends ChangeNotifier {
           }
         }
       } else {
-        log(error.toString());
+        log('ERROR ChannelVM refreshChannels:$error');
         await AmityDialog()
             .showAlertErrorDialog(title: "Error!", message: error!);
       }
@@ -156,7 +154,7 @@ class ChannelVM extends ChangeNotifier {
         log("createGroupChannel: success");
         callback(data, null);
       } else {
-        log(error.toString());
+        log('ERROR ChannelVM createGroupChannel:$error');
         await AmityDialog()
             .showAlertErrorDialog(title: "Error!", message: error!);
         callback(null, error);
@@ -173,7 +171,7 @@ class ChannelVM extends ChangeNotifier {
 
         callback(data, null);
       } else {
-        log(error.toString());
+        log('ERROR ChannelVM createConversationChannel:$error');
         await AmityDialog()
             .showAlertErrorDialog(title: "Error!", message: error!);
         callback(null, error);
@@ -205,7 +203,7 @@ class ChannelVM extends ChangeNotifier {
     } catch (error) {
       await AmityDialog()
           .showAlertErrorDialog(title: "Error!", message: error.toString());
-      log(error.toString());
+      log('ERROR ChannelVM removeUnreadCount:$error');
     }
   }
 }
