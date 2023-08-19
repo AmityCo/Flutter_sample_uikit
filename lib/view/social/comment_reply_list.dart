@@ -110,6 +110,7 @@ class ReplyCommentScreenState extends State<ReplyCommentScreen> {
                               .currentamityUser
                               ?.avatarUrl),
                           title: TextField(
+                            textCapitalization:TextCapitalization.sentences,
                             controller: _commentTextEditController,
                             decoration: const InputDecoration(
                               border: InputBorder.none,

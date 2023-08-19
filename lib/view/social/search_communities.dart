@@ -114,6 +114,7 @@ class _SearchCommunitiesScreenState extends State<SearchCommunitiesScreen> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextField(
+                  textCapitalization:TextCapitalization.sentences,
                   controller: _searchController,
                   onChanged: _searchCommunities,
                   maxLines: 1,

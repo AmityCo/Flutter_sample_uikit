@@ -42,30 +42,30 @@ class _MyCommunityHorizontalViewState extends State<MyCommunityHorizontalView> {
       children: [
         const SizedBox(height: 17),
         // Header
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Row(
-            children: [
-              const Expanded(
-                child: Text(
-                  'My Community',
-                  style: AppTextStyle.header1,
-                ),
+        GestureDetector(
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const MyCommunityView(),
               ),
-              InkWell(
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => const MyCommunityView(),
-                    ),
-                  );
-                },
-                child: SvgPicture.asset(
+            );
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              children: [
+                const Expanded(
+                  child: Text(
+                    'My Community',
+                    style: AppTextStyle.header1,
+                  ),
+                ),
+                SvgPicture.asset(
                   AppAssets.iconArrowRigth,
                   package: AppAssets.package,
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
 
@@ -135,10 +135,10 @@ class MyCommunityHorizontalItem extends StatelessWidget {
               CustomAvatar(
                 url: community.avatarImage?.fileUrl,
                 radius: 20,
-                imagePlaceholder:  const AssetImage(
-                    AppAssets.accountGroup,
-                    package: AppAssets.package,
-                  ),
+                imagePlaceholder: const AssetImage(
+                  AppAssets.accountGroup,
+                  package: AppAssets.package,
+                ),
               ),
               const SizedBox(height: 3),
               Row(
