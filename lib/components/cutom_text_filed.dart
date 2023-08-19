@@ -56,6 +56,7 @@ class _CutomTextFiledState extends State<CutomTextFiled> {
             maxlength: widget.maxlength,
           ),
           TextFormField(
+            textCapitalization:TextCapitalization.sentences,
             controller: controller,
             minLines: 1,
             maxLines: widget.maxLines,

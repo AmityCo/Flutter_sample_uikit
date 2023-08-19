@@ -62,6 +62,7 @@ class CreatePostScreen2State extends State<CreatePostScreen2> {
                         child: Column(
                           children: [
                             TextFormField(
+                              textCapitalization:TextCapitalization.sentences,
                               controller: vm.textEditingController,
                               scrollPhysics: const NeverScrollableScrollPhysics(),
                               maxLines: null,

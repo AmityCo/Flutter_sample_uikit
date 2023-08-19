@@ -62,22 +62,22 @@ class _CategoriesExploreState extends State<CategoriesExplore> {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             children: [
-              Row(
-                children: [
-                  const Expanded(
-                    child: Text(
-                      'Categories',
-                      style: AppTextStyle.header1,
+              GestureDetector(
+                onTap: onPressedCategories,
+                child: Row(
+                  children: [
+                    const Expanded(
+                      child: Text(
+                        'Categories',
+                        style: AppTextStyle.header1,
+                      ),
                     ),
-                  ),
-                  InkWell(
-                    onTap: onPressedCategories,
-                    child: SvgPicture.asset(
+                    SvgPicture.asset(
                       AppAssets.iconArrowRigth,
                       package: AppAssets.package,
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
 
               const SizedBox(height: 13),
