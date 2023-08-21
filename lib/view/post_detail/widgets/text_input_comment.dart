@@ -26,6 +26,7 @@ class TextInputComment extends StatelessWidget {
           context.watch<AmityVM>().currentamityUser?.avatarUrl,
         ),
         title: TextField(
+          cursorColor: context.watch<AmityUIConfiguration>().secondaryColor,
           textCapitalization:TextCapitalization.sentences,
           controller: controller,
           decoration: const InputDecoration(

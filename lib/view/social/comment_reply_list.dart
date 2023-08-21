@@ -110,6 +110,7 @@ class ReplyCommentScreenState extends State<ReplyCommentScreen> {
                               .currentamityUser
                               ?.avatarUrl),
                           title: TextField(
+                            cursorColor: context.watch<AmityUIConfiguration>().secondaryColor,
                             textCapitalization:TextCapitalization.sentences,
                             controller: _commentTextEditController,
                             decoration: const InputDecoration(

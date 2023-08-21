@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../components/custom_avatar.dart';
+import '../../components/custom_avatar_name.dart';
+import '../../components/search_input.dart';
 
 class AllUserListScreen extends StatefulWidget {
   final List<AmityUser>? selectedUsers;
@@ -22,6 +24,9 @@ class AllUserListScreen extends StatefulWidget {
 class _AllUserListScreenState extends State<AllUserListScreen> {
   final _amityUsers = <AmityUser>[];
   final _scrollController = ScrollController();
+  List<AmityUser> _filterAmityUsers = [];
+  String _filterText = '';
+
   List<AmityUser> _selectedUsers = [];
   bool _isLoading = true;
   String? _error;
@@ -31,7 +36,7 @@ class _AllUserListScreenState extends State<AllUserListScreen> {
   @override
   void initState() {
     super.initState();
-    _selectedUsers = widget.selectedUsers ?? [];
+    _selectedUsers = [...widget.selectedUsers ??[]];
     getUsers(AmityUserSortOption.DISPLAY);
     _scrollController.addListener(_scrollListener);
   }
@@ -102,6 +107,18 @@ class _AllUserListScreenState extends State<AllUserListScreen> {
     }
   }
 
+  Future<void> _onChangedFilterUser(String keyword) async {
+    setState(() {
+      _filterText = keyword;
+    });
+    if (keyword.isNotEmpty) {
+      _filterAmityUsers = await AmityCoreClient.newUserRepository()
+          .searchUserByDisplayName(keyword)
+          .query();
+      setState(() {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -123,6 +140,39 @@ class _AllUserListScreenState extends State<AllUserListScreen> {
               ),
             ),
         ],
+        bottom: CustomAppBar(
+          context: context,
+          centerTitle: false,
+          toolbarHeight: _selectedUsers.isNotEmpty ? 125 : (125 - 64),
+          enableLeading: false,
+          title: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SearchInput(
+                onChanged: _onChangedFilterUser,
+              ),
+              const SizedBox(height: 5),
+              if (_selectedUsers.isNotEmpty)
+                SizedBox(
+                  width: double.infinity,
+                  height: 64,
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: List.generate(_selectedUsers.length, (index) {
+                        final user = _selectedUsers[index];
+                        return CustomAvatarName(
+                          url: user.avatarUrl,
+                          name: user.displayName,
+                          onTapClose: () => _toggleUserSelection(user),
+                        );
+                      }),
+                    ),
+                  ),
+                )
+            ],
+          ),
+        ),
       ),
       body: SafeArea(
         child: FadedSlideAnimation(
@@ -139,11 +189,17 @@ class _AllUserListScreenState extends State<AllUserListScreen> {
                 },
                 child: ListView.builder(
                   controller: _scrollController,
-                  itemCount: _amityUsers.length,
+                  itemCount: _filterText.isEmpty
+                      ? _amityUsers.length
+                      : _filterAmityUsers.length,
                   itemBuilder: (context, index) {
-                    final user = _amityUsers[index];
+                    final user = _filterText.isEmpty
+                        ? _amityUsers[index]
+                        : _filterAmityUsers[index];
+
                     final bool isSelected = _selectedUsers.any(
                         (selectedUser) => selectedUser.userId == user.userId);
+
                     return GestureDetector(
                       onTap: () => _toggleUserSelection(user),
                       child: Padding(
