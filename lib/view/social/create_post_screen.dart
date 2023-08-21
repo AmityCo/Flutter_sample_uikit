@@ -62,6 +62,8 @@ class CreatePostScreen2State extends State<CreatePostScreen2> {
                         child: Column(
                           children: [
                             TextFormField(
+                              cursorColor: context.watch<AmityUIConfiguration>().secondaryColor,
+                              textCapitalization:TextCapitalization.sentences,
                               controller: vm.textEditingController,
                               scrollPhysics: const NeverScrollableScrollPhysics(),
                               maxLines: null,

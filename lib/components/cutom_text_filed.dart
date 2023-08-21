@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
+import '../viewmodel/configuration_viewmodel.dart';
 import 'header_filed.dart';
 
 class CutomTextFiled extends StatefulWidget {
@@ -56,6 +58,8 @@ class _CutomTextFiledState extends State<CutomTextFiled> {
             maxlength: widget.maxlength,
           ),
           TextFormField(
+            cursorColor: context.watch<AmityUIConfiguration>().secondaryColor,
+            textCapitalization:TextCapitalization.sentences,
             controller: controller,
             minLines: 1,
             maxLines: widget.maxLines,

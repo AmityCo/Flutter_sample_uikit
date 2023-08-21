@@ -7,13 +7,14 @@ import '../viewmodel/configuration_viewmodel.dart';
 class CustomAppBar extends AppBar {
   final BuildContext context;
   final String? titleText;
-  final bool disableLeading;
-
+  final bool enableLeading;
+  final VoidCallback? onTapCloseActionLeading;
   CustomAppBar({
     super.key,
     required this.context,
     this.titleText,
-    this.disableLeading = true,
+    this.enableLeading = true,
+    this.onTapCloseActionLeading,
     super.leading,
     super.automaticallyImplyLeading = true,
     super.title,
@@ -61,16 +62,23 @@ class CustomAppBar extends AppBar {
       : super.title;
 
   @override
-  Widget? get leading =>
-      !disableLeading ? super.leading ?? _getLeading() : null;
+  Widget? get leading => !enableLeading ? super.leading : _getLeading();
+
+  @override
+  bool get automaticallyImplyLeading =>
+      enableLeading ? super.automaticallyImplyLeading : enableLeading;
 
   Widget _getLeading() {
-    return IconButton(
-      icon: Icon(
+    return GestureDetector(
+      child: Icon(
         Icons.chevron_left,
         color: context.read<AmityUIConfiguration>().appbarConfig.iconBackColor,
+        size: 35,
       ),
-      onPressed: () {
+      onTap: () {
+        if(onTapCloseActionLeading != null){
+          onTapCloseActionLeading!();
+        }
         Navigator.of(context).pop();
       },
     );
