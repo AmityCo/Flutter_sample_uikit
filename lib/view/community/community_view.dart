@@ -59,6 +59,7 @@ class _CommunityViewState extends State<CommunityView> {
             context: context,
             titleText: 'Community',
             centerTitle: false,
+            enableLeading: false,
             actions: [
               GestureDetector(
                 onTap: () {
@@ -96,6 +97,7 @@ class _CommunityViewState extends State<CommunityView> {
               context: context,
               centerTitle: false,
               toolbarHeight: 48,
+              enableLeading: false,
               title: BottomAppBarCommunityView(
                 names: vm.items,
                 onChanged: vm.selectTab,

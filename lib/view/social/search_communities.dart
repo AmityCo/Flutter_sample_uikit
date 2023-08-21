@@ -6,6 +6,7 @@ import 'package:amity_uikit_beta_service/view/social/community_feed.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../components/search_input.dart';
 import '../../viewmodel/community_feed_viewmodel.dart';
 
 class SearchCommunitiesScreen extends StatefulWidget {
@@ -106,35 +107,19 @@ class _SearchCommunitiesScreenState extends State<SearchCommunitiesScreen> {
       appBar: CustomAppBar(
         context: context,
         titleText: 'Search Communities',
+        bottom: CustomAppBar(
+          context: context,
+          centerTitle: false,
+          toolbarHeight: 48,
+          leading: const SizedBox(),
+          title: SearchInput(
+            controller: _searchController,
+            onChanged: _searchCommunities,
+          ),
+        ),
       ),
       body: Column(
         children: [
-          Stack(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextField(
-                  textCapitalization:TextCapitalization.sentences,
-                  controller: _searchController,
-                  onChanged: _searchCommunities,
-                  maxLines: 1,
-                  decoration: const InputDecoration(
-                    hintText: 'Search...',
-                  ),
-                ),
-              ),
-              if (_isLoading)
-                const Positioned(
-                  right: 12,
-                  top: 20,
-                  child: SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 3.0),
-                  ),
-                ),
-            ],
-          ),
           Expanded(
             child: ListView.builder(
               controller: _scrollController,
