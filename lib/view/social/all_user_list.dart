@@ -143,7 +143,7 @@ class _AllUserListScreenState extends State<AllUserListScreen> {
         bottom: CustomAppBar(
           context: context,
           centerTitle: false,
-          toolbarHeight: _selectedUsers.isNotEmpty ? 125 : (125 - 64),
+          toolbarHeight: _selectedUsers.isNotEmpty ? 127 : (127 - 64),
           enableLeading: false,
           title: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -155,7 +155,7 @@ class _AllUserListScreenState extends State<AllUserListScreen> {
               if (_selectedUsers.isNotEmpty)
                 SizedBox(
                   width: double.infinity,
-                  height: 64,
+                  height: 66,
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
