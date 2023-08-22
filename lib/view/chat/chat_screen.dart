@@ -5,6 +5,7 @@ import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import '../../constans/app_text_style.dart';
 import '../../viewmodel/channel_viewmodel.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
 import '../../components/custom_user_avatar.dart';
@@ -142,9 +143,9 @@ class ChatTextFieldComponent extends StatelessWidget {
             child: TextField(
               controller: Provider.of<MessageVM>(context, listen: false)
                   .textEditingController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: "Write your message",
-                hintStyle: TextStyle(fontSize: 14),
+                hintStyle: AppTextStyle.body1.copyWith(fontSize: 14),
                 border: InputBorder.none,
               ),
             ),

@@ -1,28 +1,28 @@
 import 'package:flutter/material.dart';
 
-abstract class AppTextStyle {
-
-  static const display1 = TextStyle(
+class AppTextStyle {
+  static TextStyle mainStyle = const TextStyle();
+  static TextStyle display1 = mainStyle.copyWith(
     fontSize: 23,
     fontWeight: FontWeight.w600,
   );
 
-  static const display2 = TextStyle(
+  static TextStyle display2 = mainStyle.copyWith(
     fontSize: 20,
     fontWeight: FontWeight.w600,
   );
 
-  static const header1 = TextStyle(
+  static TextStyle header1 = mainStyle.copyWith(
     fontSize: 17,
     fontWeight: FontWeight.w600,
   );
 
-  static const header2 = TextStyle(
+  static TextStyle header2 = mainStyle.copyWith(
     fontSize: 15,
     fontWeight: FontWeight.normal,
   );
 
-  static const body1 = TextStyle(
+  static TextStyle body1 = mainStyle.copyWith(
     fontSize: 13,
     fontWeight: FontWeight.w400,
   );

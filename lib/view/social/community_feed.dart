@@ -1,5 +1,6 @@
 import 'package:amity_sdk/amity_sdk.dart';
 import 'package:amity_uikit_beta_service/components/custom_app_bar.dart';
+import 'package:amity_uikit_beta_service/constans/app_text_style.dart';
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:optimized_cached_image/optimized_cached_image.dart';
@@ -60,9 +61,9 @@ class CommunityScreenState extends State<CommunityScreen> {
       children: [
         community.description == null
             ? Container()
-            : const Text(
+            : Text(
                 "About",
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                style: AppTextStyle.header2.copyWith(fontWeight: FontWeight.w600, fontSize: 16),
               ),
         const SizedBox(
           height: 5.0,
@@ -104,7 +105,7 @@ class CommunityScreenState extends State<CommunityScreen> {
                 community.displayName != null
                     ? community.displayName!
                     : "Community",
-                style: const TextStyle(
+                style: AppTextStyle.header1.copyWith(
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
                 ),
@@ -122,8 +123,7 @@ class CommunityScreenState extends State<CommunityScreen> {
                               children: [
                                 ListTile(
                                   leading: const Icon(Icons.edit),
-                                  title: Text(
-                                      "Edit Community:${AmityCoreClient.getCurrentUser().roles}"),
+                                  title: const Text("Edit Community"),
                                   onTap: () async {
                                     Navigator.of(context).pop();
                                     final result =
@@ -190,7 +190,9 @@ class CommunityScreenState extends State<CommunityScreen> {
             ElevatedButton(
               style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all<Color>(
-                Provider.of<AmityUIConfiguration>(context).primaryColor,
+                Provider.of<AmityUIConfiguration>(context)
+                    .buttonConfig
+                    .backgroundColor,
               )),
               onPressed: () {
                 if (community.isJoined != null) {
@@ -218,9 +220,16 @@ class CommunityScreenState extends State<CommunityScreen> {
                   }
                 }
               },
-              child: Text(community.isJoined != null
-                  ? (community.isJoined! ? "Leave" : "Join")
-                  : "N/A"),
+              child: Text(
+                community.isJoined != null
+                    ? (community.isJoined! ? "Leave" : "Join")
+                    : "N/A",
+                style: AppTextStyle.header2.copyWith(
+                  color: Provider.of<AmityUIConfiguration>(context)
+                      .buttonConfig
+                      .textColor,
+                ),
+              ),
             )
           ],
         )
@@ -282,9 +291,15 @@ class CommunityScreenState extends State<CommunityScreen> {
                             context: context,
                           )));
                 },
-                backgroundColor:
-                    Provider.of<AmityUIConfiguration>(context).primaryColor,
-                child: const Icon(Icons.add),
+                backgroundColor: Provider.of<AmityUIConfiguration>(context)
+                    .buttonConfig
+                    .backgroundColor,
+                child: Icon(
+                  Icons.add,
+                  color: Provider.of<AmityUIConfiguration>(context)
+                      .buttonConfig
+                      .textColor,
+                ),
               )
             : null,
         backgroundColor: Colors.grey[200],

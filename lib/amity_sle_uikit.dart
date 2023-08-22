@@ -3,6 +3,7 @@
 import 'dart:developer';
 
 import 'package:amity_sdk/amity_sdk.dart';
+import 'package:amity_uikit_beta_service/constans/app_text_style.dart';
 import 'package:amity_uikit_beta_service/viewmodel/category_viewmodel.dart';
 import 'package:amity_uikit_beta_service/viewmodel/community_view_model.dart';
 import 'package:amity_uikit_beta_service/viewmodel/notification_viewmodel.dart';
@@ -110,6 +111,7 @@ class AmitySLEUIKit {
       BuildContext context, Function(AmityUIConfiguration config) config) {
     var provider = Provider.of<AmityUIConfiguration>(context, listen: false);
     config(provider);
+    AppTextStyle.mainStyle = provider.textStyle ?? const TextStyle();
   }
 
   static AmityUser getCurrentUser() {

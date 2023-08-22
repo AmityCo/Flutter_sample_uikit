@@ -10,6 +10,7 @@ import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../constans/app_text_style.dart';
 import '../../viewmodel/amity_viewmodel.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
 import '../../viewmodel/user_feed_viewmodel.dart';
@@ -537,9 +538,9 @@ class _TabUserProfile extends StatelessWidget {
       child: TabBar(
         controller: tabController,
         indicatorColor: Provider.of<AmityUIConfiguration>(context).primaryColor,
-        unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w400),
+        unselectedLabelStyle: AppTextStyle.mainStyle.copyWith(fontWeight: FontWeight.w400),
         labelColor: context.watch<AmityUIConfiguration>().primaryColor,
-        labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+        labelStyle: AppTextStyle.mainStyle.copyWith(fontWeight: FontWeight.bold),
         tabs: const [
           Tab(text: "Feed"),
           Tab(text: "Gallery"),

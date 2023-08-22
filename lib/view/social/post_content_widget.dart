@@ -10,6 +10,7 @@ import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import '../../components/video_player.dart';
 
+import '../../constans/app_text_style.dart';
 import '../post_detail/comments.dart';
 import 'image_viewer.dart';
 
@@ -124,7 +125,7 @@ class AmityPostWidgetState extends State<AmityPostWidget> {
   }
 
   Widget generateURLWidget(String url) {
-    const style = TextStyle(
+    final style = AppTextStyle.mainStyle.copyWith(
       color: Colors.black,
       fontSize: 16,
       fontWeight: FontWeight.w500,

@@ -111,7 +111,7 @@ class _SearchCommunitiesScreenState extends State<SearchCommunitiesScreen> {
           context: context,
           centerTitle: false,
           toolbarHeight: 48,
-          leading: const SizedBox(),
+          enableLeading: false,
           title: SearchInput(
             controller: _searchController,
             onChanged: _searchCommunities,
