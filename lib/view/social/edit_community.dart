@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../components/custom_user_avatar.dart';
+import '../../constans/app_text_style.dart';
 import '../../viewmodel/category_viewmodel.dart';
 import '../../viewmodel/community_viewmodel.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
@@ -171,11 +172,11 @@ class EditCommunityScreenState extends State<EditCommunityScreen> {
                         padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
                         child: TextField(
                           controller: _displayNameController,
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             labelText: "Name",
                             alignLabelWithHint: false,
                             border: InputBorder.none,
-                            labelStyle: TextStyle(height: 1),
+                            labelStyle: AppTextStyle.body1.copyWith(height: 1),
                           ),
                         ),
                       ),
@@ -187,11 +188,11 @@ class EditCommunityScreenState extends State<EditCommunityScreen> {
                         padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
                         child: TextField(
                           controller: _descriptionController,
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             labelText: "Description",
                             alignLabelWithHint: false,
                             border: InputBorder.none,
-                            labelStyle: TextStyle(height: 1),
+                            labelStyle: AppTextStyle.body1.copyWith(height: 1),
                           ),
                         ),
                       ),
@@ -209,11 +210,11 @@ class EditCommunityScreenState extends State<EditCommunityScreen> {
                                 builder: (context) => CategoryList(
                                     widget.community, _categoryController)));
                           },
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             labelText: "Category",
                             alignLabelWithHint: false,
                             border: InputBorder.none,
-                            labelStyle: TextStyle(height: 1),
+                            labelStyle: AppTextStyle.body1.copyWith(height: 1),
                           ),
                         ),
                       ),

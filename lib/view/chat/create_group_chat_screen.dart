@@ -5,6 +5,7 @@ import 'package:animation_wrappers/animations/faded_scale_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../constans/app_text_style.dart';
 import '../../viewmodel/channel_list_viewmodel.dart';
 import '../../viewmodel/channel_viewmodel.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
@@ -72,8 +73,8 @@ class CreateChatGroupState extends State<CreateChatGroup> {
     return Consumer<UserVM>(builder: (context, vm, _) {
       return Scaffold(
           appBar: AppBar(
-            title: const Text("Setup group",
-                style: TextStyle(color: Colors.black)),
+            title: Text("Setup group",
+                style: AppTextStyle.body1.copyWith(color: Colors.black)),
             leading: GestureDetector(
               onTap: () {
                 Navigator.of(context).pop();
@@ -149,11 +150,11 @@ class CreateChatGroupState extends State<CreateChatGroup> {
                       displayName = value;
                     });
                   },
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: "Group name",
                     alignLabelWithHint: false,
                     border: InputBorder.none,
-                    labelStyle: TextStyle(height: 1),
+                    labelStyle: AppTextStyle.body1.copyWith(height: 1),
                   ),
                 ),
               ),

@@ -131,7 +131,7 @@ class _AllUserListScreenState extends State<AllUserListScreen> {
               onPressed: _onDoneButtonPressed,
               child: Text(
                 'Done',
-                style: TextStyle(
+                style: AppTextStyle.header2.copyWith(
                   color: context
                       .watch<AmityUIConfiguration>()
                       .appbarConfig

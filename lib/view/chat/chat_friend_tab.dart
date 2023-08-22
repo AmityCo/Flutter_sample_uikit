@@ -1,3 +1,4 @@
+import 'package:amity_uikit_beta_service/constans/app_text_style.dart';
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:get_time_ago/get_time_ago.dart';
@@ -158,7 +159,7 @@ class AmitySLEChannelScreenState extends State<AmitySLEChannelScreen> {
                             title: Text(
                               vm.getChannelList()[index].displayName ??
                                   "Display name",
-                              style: TextStyle(
+                              style: AppTextStyle.body1.copyWith(
                                 color: rand
                                     ? Provider.of<AmityUIConfiguration>(context)
                                         .primaryColor
