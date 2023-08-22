@@ -12,6 +12,7 @@ import 'package:provider/provider.dart';
 import '../../components/custom_user_avatar.dart';
 
 import '../../components/select_post_dialog.dart';
+import '../../constans/app_text_style.dart';
 import '../../viewmodel/community_feed_viewmodel.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
 import '../../viewmodel/edit_post_viewmodel.dart';
@@ -419,7 +420,7 @@ class _PostWidgetState extends State<PostWidget>
                             if (widget.post.commentCount! > 1) {
                               return Text(
                                 '${widget.post.commentCount} comments',
-                                style: TextStyle(
+                                style: AppTextStyle.mainStyle.copyWith(
                                     color: Colors.grey,
                                     fontSize: feedReactionCountSize,
                                     letterSpacing: 0.5),
@@ -431,7 +432,7 @@ class _PostWidgetState extends State<PostWidget>
                             } else {
                               return Text(
                                 '${widget.post.commentCount} comment',
-                                style: TextStyle(
+                                style: AppTextStyle.mainStyle.copyWith(
                                     color: Colors.grey,
                                     fontSize: feedReactionCountSize,
                                     letterSpacing: 0.5),
@@ -512,7 +513,7 @@ class _PostWidgetState extends State<PostWidget>
                                           ),
                                           Text(
                                             ' Like',
-                                            style: TextStyle(
+                                            style: AppTextStyle.mainStyle.copyWith(
                                                 color: Provider.of<
                                                             AmityUIConfiguration>(
                                                         context)
@@ -546,7 +547,7 @@ class _PostWidgetState extends State<PostWidget>
                                           ),
                                           Text(
                                             ' Like',
-                                            style: TextStyle(
+                                            style: AppTextStyle.mainStyle.copyWith(
                                                 color: Colors.grey,
                                                 fontSize: feedReactionCountSize,
                                                 letterSpacing: 1),
@@ -577,7 +578,7 @@ class _PostWidgetState extends State<PostWidget>
                               const SizedBox(width: 5.5),
                               Text(
                                 'Comment',
-                                style: TextStyle(
+                                style: AppTextStyle.mainStyle.copyWith(
                                     color: Colors.grey,
                                     fontSize: feedReactionCountSize,
                                     letterSpacing: 0.5),

@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 
 import '../../components/custom_faded_slide_animation.dart';
 import '../../components/custom_user_avatar.dart';
+import '../../constans/app_text_style.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
 import '../../viewmodel/post_viewmodel.dart';
 
@@ -231,7 +232,7 @@ class HeaderComment extends StatelessWidget {
                       const SizedBox(width: 8.5),
                       Text(
                         amityPost.commentCount.toString(),
-                        style: const TextStyle(
+                        style: AppTextStyle.body1.copyWith(
                             color: Colors.grey,
                             fontSize: 12,
                             letterSpacing: 0.5),

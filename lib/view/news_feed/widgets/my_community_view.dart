@@ -54,7 +54,7 @@ class _MyCommunityHorizontalViewState extends State<MyCommunityHorizontalView> {
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(
               children: [
-                const Expanded(
+                 Expanded(
                   child: Text(
                     'My Community',
                     style: AppTextStyle.header1,

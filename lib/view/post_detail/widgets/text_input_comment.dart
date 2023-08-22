@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../components/custom_user_avatar.dart';
+import '../../../constans/app_text_style.dart';
 import '../../../viewmodel/amity_viewmodel.dart';
 import '../../../viewmodel/configuration_viewmodel.dart';
 
@@ -29,10 +30,10 @@ class TextInputComment extends StatelessWidget {
           cursorColor: context.watch<AmityUIConfiguration>().secondaryColor,
           textCapitalization:TextCapitalization.sentences,
           controller: controller,
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             border: InputBorder.none,
             hintText: "Write your message",
-            hintStyle: TextStyle(fontSize: 14),
+            hintStyle: AppTextStyle.body1.copyWith(fontSize: 14),
           ),
         ),
         trailing: GestureDetector(

@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../components/custom_user_avatar.dart';
+import '../../../constans/app_text_style.dart';
 import '../../../viewmodel/post_viewmodel.dart';
 import '../../../viewmodel/user_feed_viewmodel.dart';
 import '../../social/comment_reply_list.dart';
@@ -125,7 +126,7 @@ class _CommentComponentState extends State<CommentComponent> {
                             TextSpan(
                                 text:
                                     '   ${DateFormat.yMMMMEEEEd().format(comments.createdAt!)}',
-                                style: const TextStyle(
+                                style: AppTextStyle.body1.copyWith(
                                     fontSize: 10, color: Colors.grey)),
                           ],
                         ),
@@ -154,8 +155,8 @@ class _CommentComponentState extends State<CommentComponent> {
                                 onShowRepliesClicked(
                                     widget.postId, snapshot.data!.commentId!);
                               },
-                              child: const Text("Show replies",
-                                  style: TextStyle(
+                              child: Text("Show replies",
+                                  style: AppTextStyle.body1.copyWith(
                                       color: Colors.blue,
                                       fontWeight: FontWeight.w600)),
                             ),

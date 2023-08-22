@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../components/custom_user_avatar.dart';
+import '../../constans/app_text_style.dart';
 import '../../viewmodel/amity_viewmodel.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
 import '../../viewmodel/custom_image_picker.dart';
@@ -255,9 +256,9 @@ class ProfileScreenState extends State<ProfileScreen> {
                           enabled: false,
                           controller:
                               TextEditingController(text: vm.amityUser!.userId),
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             labelText: "User Id",
-                            labelStyle: TextStyle(height: 1),
+                            labelStyle: AppTextStyle.mainStyle.copyWith(height: 1),
                             border: InputBorder.none,
                           ),
                         ),
@@ -270,11 +271,11 @@ class ProfileScreenState extends State<ProfileScreen> {
                         padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
                         child: TextField(
                           controller: _displayNameController,
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             labelText: "Display Name",
                             alignLabelWithHint: false,
                             border: InputBorder.none,
-                            labelStyle: TextStyle(height: 1),
+                            labelStyle: AppTextStyle.mainStyle.copyWith(height: 1),
                           ),
                         ),
                       ),
@@ -286,11 +287,11 @@ class ProfileScreenState extends State<ProfileScreen> {
                         padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
                         child: TextField(
                           controller: _descriptionController,
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             labelText: "Description",
                             alignLabelWithHint: false,
                             border: InputBorder.none,
-                            labelStyle: TextStyle(height: 1),
+                            labelStyle: AppTextStyle.mainStyle.copyWith(height: 1),
                           ),
                         ),
                       ),

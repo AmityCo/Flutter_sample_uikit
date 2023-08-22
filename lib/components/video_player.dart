@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:amity_sdk/amity_sdk.dart';
+import 'package:amity_uikit_beta_service/constans/app_text_style.dart';
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
@@ -67,14 +68,17 @@ class _LocalVideoPlayerState extends State<LocalVideoPlayer> {
               ? Chewie(
                   controller: chewieController!,
                 )
-              : const Column(
+              : Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    CircularProgressIndicator(),
-                    SizedBox(height: 20),
-                    Text('Loading',
-                        style: TextStyle(fontWeight: FontWeight.w500)),
-                    SizedBox(height: 20),
+                    const CircularProgressIndicator(),
+                    const SizedBox(height: 20),
+                    Text(
+                      'Loading',
+                      style: AppTextStyle.header2
+                          .copyWith(fontWeight: FontWeight.w500),
+                    ),
+                    const SizedBox(height: 20),
                   ],
                 ),
         ),
@@ -113,12 +117,12 @@ class _MyVideoPlayer2State extends State<MyVideoPlayer2> {
     if (widget.post.data is VideoData) {
       var postData = widget.post.data as VideoData;
       vData = postData;
-    }else if(widget.videoData != null){
+    } else if (widget.videoData != null) {
       vData = widget.videoData;
     }
 
-    if(vData != null){
-       if (vData.thumbnail != null) {
+    if (vData != null) {
+      if (vData.thumbnail != null) {
         thumbnailURL = vData.thumbnail!.fileUrl;
         log(thumbnailURL.toString());
       }

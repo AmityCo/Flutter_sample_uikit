@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../../components/alert_dialog.dart';
+import '../../constans/app_text_style.dart';
 import 'all_user_list.dart';
 import 'category_list_create_community.dart';
 
@@ -325,11 +326,11 @@ class CreateCommunityScreenState extends State<CreateCommunityScreen> {
                       padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
                       child: TextField(
                         controller: _displayNameController,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           labelText: "Display Name",
                           alignLabelWithHint: false,
                           border: InputBorder.none,
-                          labelStyle: TextStyle(height: 1),
+                          labelStyle: AppTextStyle.body1.copyWith(height: 1),
                         ),
                       ),
                     ),
@@ -341,11 +342,11 @@ class CreateCommunityScreenState extends State<CreateCommunityScreen> {
                       padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
                       child: TextField(
                         controller: _descriptionController,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           labelText: "Description",
                           alignLabelWithHint: false,
                           border: InputBorder.none,
-                          labelStyle: TextStyle(height: 1),
+                          labelStyle: AppTextStyle.body1.copyWith(height: 1),
                         ),
                       ),
                     ),

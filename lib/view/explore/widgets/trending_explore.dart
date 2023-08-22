@@ -19,7 +19,7 @@ class TrendingExplore extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       child: Column(
         children: [
-          const Row(
+           Row(
             children: [
               Text(
                 'Today’s trending',
@@ -39,15 +39,18 @@ class TrendingExplore extends StatelessWidget {
             final subtitleTextStyle =
                 AppTextStyle.body1.copyWith(color: const Color(0xff636878));
             return GestureDetector(
-              onTap: (){
-                if(onPressedCommunity != null){
+              onTap: () {
+                if (onPressedCommunity != null) {
                   onPressedCommunity!(community);
                 }
               },
               child: Container(
+                width: double.infinity,
                 height: 56,
+                color: Colors.transparent,
                 padding: const EdgeInsets.all(8),
                 child: Row(
+                  mainAxisSize: MainAxisSize.max,
                   children: [
                     CustomAvatarCommunity(
                       url: community.avatarImage?.fileUrl,

@@ -66,7 +66,7 @@ class _CategoriesExploreState extends State<CategoriesExplore> {
                 onTap: onPressedCategories,
                 child: Row(
                   children: [
-                    const Expanded(
+                     Expanded(
                       child: Text(
                         'Categories',
                         style: AppTextStyle.header1,
@@ -85,7 +85,14 @@ class _CategoriesExploreState extends State<CategoriesExplore> {
               Wrap(
                 runSpacing: 16,
                 children: List.generate(
-                    (categories.length > 8) ? 8 : categories.length, (index) {
+                    (categories.length > 8)
+                        ? 8
+                        : (categories.length == 1)
+                            ? 2
+                            : categories.length, (index) {
+                  if (categories.length == 1 && index == 1) {
+                    return const SizedBox(width: 170);
+                  }
                   final category = categories[index];
                   return GestureDetector(
                     onTap: () {

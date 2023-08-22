@@ -5,6 +5,7 @@ import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../constans/app_text_style.dart';
 import '../../viewmodel/channel_list_viewmodel.dart';
 import '../../viewmodel/channel_viewmodel.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
@@ -98,7 +99,7 @@ class UserListState extends State<UserList> {
       return Scaffold(
         appBar: AppBar(
           title:
-              const Text("Select Users", style: TextStyle(color: Colors.black)),
+             Text("Select Users", style: AppTextStyle.header1.copyWith(color: Colors.black)),
           leading: GestureDetector(
             onTap: () {
               Navigator.of(context).pop();

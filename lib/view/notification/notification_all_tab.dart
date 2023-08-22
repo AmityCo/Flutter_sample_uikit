@@ -10,6 +10,7 @@ import 'package:get_time_ago/get_time_ago.dart';
 import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:provider/provider.dart';
 
+import '../../constans/app_text_style.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
 
 class NotificationAllTabScreen extends StatefulWidget {
@@ -230,7 +231,7 @@ class _NotificationAllTabScreenState extends State<NotificationAllTabScreen> {
                                                           " ${vm.verbStringBuilder(
                                                         notificationItem.verb!,
                                                       )} ",
-                                                      style: TextStyle(
+                                                      style: AppTextStyle.body1.copyWith(
                                                           color: theme
                                                               .primaryColor,
                                                           fontSize: 12)),

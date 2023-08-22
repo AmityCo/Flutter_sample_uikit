@@ -5,6 +5,7 @@ class AmityUIConfiguration extends ChangeNotifier {
   Color secondaryColor = Colors.black;
   IconData placeHolderIcon = Icons.chat;
   Color displaynameColor = Colors.black;
+  TextStyle? textStyle;
 
   ChannelListConfig channelListConfig = ChannelListConfig();
   MessageRoomConfig messageRoomConfig = MessageRoomConfig();

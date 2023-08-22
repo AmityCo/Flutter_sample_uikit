@@ -23,7 +23,7 @@ class RecommendedExplore extends StatelessWidget {
       child: Column(
         children: [
           // Header
-          const Row(
+           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Text(
