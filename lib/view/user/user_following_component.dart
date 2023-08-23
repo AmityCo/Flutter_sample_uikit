@@ -3,14 +3,16 @@ import 'package:animation_wrappers/animations/faded_slide_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../components/custom_user_avatar.dart';
+import '../../components/custom_avatar_label_name.dart';
 import '../../viewmodel/follower_following_viewmodel.dart';
 
 class AmityFollowingScreen extends StatefulWidget {
   final String userId;
+  final ValueChanged<AmityUser>? onPressedUser;
   const AmityFollowingScreen({
     Key? key,
     required this.userId,
+    this.onPressedUser,
   }) : super(key: key);
 
   @override
@@ -34,7 +36,6 @@ class _AmityFollowingScreenScreenState extends State<AmityFollowingScreen> {
   @override
   Widget build(BuildContext context) {
     return Consumer<FollowerVM>(builder: (context, vm, _) {
-      final theme = Theme.of(context);
       return FadedSlideAnimation(
         beginOffset: const Offset(0, 0.3),
         endOffset: const Offset(0, 0),
@@ -54,36 +55,15 @@ class _AmityFollowingScreenScreenState extends State<AmityFollowingScreen> {
                   stream: vm.getFollowingList[index].listen.stream,
                   initialData: vm.getFollowingList[index],
                   builder: (context, snapshot) {
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        children: [
-                          getAvatarImage(
-                              vm.getFollowingList[index].targetUser!.avatarUrl),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  vm.getFollowingList[index].targetUser!
-                                          .displayName ??
-                                      "displayname not found",
-                                  style: theme.textTheme.bodyMedium,
-                                ),
-                                Text(
-                                  vm.getFollowingList[index].targetUser!
-                                          .userId ??
-                                      "displayname not found",
-                                  style: theme.textTheme.bodySmall,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                    // return Text(snapshot.data!.status.toString());
+                    final user = vm.getFollowingList[index].targetUser!;
+                    return CustomAvatarLabelName(
+                        url: user.avatarUrl,
+                        name: user.displayName,
+                        onTap: () {
+                          if (widget.onPressedUser != null) {
+                            widget.onPressedUser!(user);
+                          }
+                        });
                   });
             },
           ),

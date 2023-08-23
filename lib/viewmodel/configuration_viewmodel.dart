@@ -62,3 +62,13 @@ class UserProfileConfig{
     this.isOpenEditProfile = true,
   });
 }
+
+class ExploreConfig{
+  final bool isOpenTabView;
+  final bool isOpenEditProfile;
+
+  ExploreConfig({
+    this.isOpenTabView = true,
+    this.isOpenEditProfile = true,
+  });
+}

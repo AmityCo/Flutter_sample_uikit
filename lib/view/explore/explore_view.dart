@@ -35,13 +35,12 @@ class _ExploreViewState extends State<ExploreView> {
   }
 
   Future<void> navigationToCommunity(AmityCommunity community) async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => ChangeNotifierProvider<CommuFeedVM>(
-          create: (context) => CommuFeedVM(),
-          builder: (context, child) => CommunityScreen(
-            community: community,
-          ),
+    await showDialog(
+      context: context,
+      builder: (context) => ChangeNotifierProvider<CommuFeedVM>(
+        create: (context) => CommuFeedVM(),
+        builder: (context, child) => CommunityScreen(
+          community: community,
         ),
       ),
     );

@@ -1,6 +1,9 @@
 import 'dart:developer';
 
 import 'package:amity_sdk/amity_sdk.dart';
+import 'package:amity_uikit_beta_service/components/custom_app_bar.dart';
+import 'package:amity_uikit_beta_service/constans/app_text_style.dart';
+import 'package:amity_uikit_beta_service/viewmodel/configuration_viewmodel.dart';
 import 'package:animation_wrappers/animations/faded_slide_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -39,12 +42,9 @@ class EditCommentScreenState extends State<EditCommentScreen> {
     final theme = Theme.of(context);
     return Consumer<PostVM>(builder: (context, vm, m) {
       return Scaffold(
-          appBar: AppBar(
-            backgroundColor: Colors.white,
+          appBar: CustomAppBar(
             elevation: 0,
-            title: Text("Edit",
-                style: theme.textTheme.headlineSmall!
-                    .copyWith(fontWeight: FontWeight.w500)),
+            titleText: 'Edit',
             leading: IconButton(
               icon: Icon(
                 Icons.chevron_left,
@@ -56,19 +56,26 @@ class EditCommentScreenState extends State<EditCommentScreen> {
             ),
             actions: [
               TextButton(
-                  onPressed: () async {
-                    if (widget.comment != null) {
-                      final result = await vm.editComment(
-                          widget.comment!, controller.text);
-                      if (result == true) {
-                        if(mounted){
-                          Navigator.pop(context);
-                        }
+                onPressed: () async {
+                  if (widget.comment != null) {
+                    final result =
+                        await vm.editComment(widget.comment!, controller.text);
+                    if (result == true) {
+                      if (mounted) {
+                        Navigator.pop(context);
                       }
                     }
-                  },
-                  child: const Text("Save"))
+                  }
+                },
+                child: Text(
+                  'Save',
+                  style: AppTextStyle.header1.copyWith(
+                    color: context.watch<AmityUIConfiguration>().secondaryColor,
+                  ),
+                ),
+              )
             ],
+            context: context,
           ),
           body: SafeArea(
             child: FadedSlideAnimation(
@@ -80,6 +87,10 @@ class EditCommentScreenState extends State<EditCommentScreen> {
                 color: Colors.white,
                 padding: const EdgeInsets.all(15),
                 child: TextField(
+                  textCapitalization: TextCapitalization.sentences,
+                  autofocus: true,
+                  cursorColor:
+                      context.watch<AmityUIConfiguration>().secondaryColor,
                   controller: controller,
                   scrollPhysics: const NeverScrollableScrollPhysics(),
                   maxLines: null,

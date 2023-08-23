@@ -44,19 +44,18 @@ class _MyCommunityHorizontalViewState extends State<MyCommunityHorizontalView> {
         // Header
         GestureDetector(
           onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => const MyCommunityView(),
-              ),
+            showDialog(
+              context: context,
+              builder: (_) => const MyCommunityView(),
             );
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(
               children: [
-                 Expanded(
+                Expanded(
                   child: Text(
-                    'My Community',
+                    'My Communities',
                     style: AppTextStyle.header1,
                   ),
                 ),
@@ -87,14 +86,13 @@ class _MyCommunityHorizontalViewState extends State<MyCommunityHorizontalView> {
                     return MyCommunityHorizontalItem(
                       community: community,
                       onTap: () async {
-                        await Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                ChangeNotifierProvider<CommuFeedVM>(
-                              create: (context) => CommuFeedVM(),
-                              builder: (context, child) => CommunityScreen(
-                                community: community,
-                              ),
+                        await showDialog(
+                          context: context,
+                          builder: (context) =>
+                              ChangeNotifierProvider<CommuFeedVM>(
+                            create: (context) => CommuFeedVM(),
+                            builder: (context, child) => CommunityScreen(
+                              community: community,
                             ),
                           ),
                         );
@@ -140,7 +138,7 @@ class MyCommunityHorizontalItem extends StatelessWidget {
                   package: AppAssets.package,
                 ),
               ),
-              const SizedBox(height: 3),
+              const SizedBox(height: 1),
               Row(
                 children: [
                   Flexible(

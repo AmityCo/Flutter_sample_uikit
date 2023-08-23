@@ -40,7 +40,7 @@ class _MyCommunityViewState extends State<MyCommunityView> {
       body: Scaffold(
         appBar: CustomAppBar(
           context: context,
-          titleText: 'My Community',
+          titleText: 'My Communities',
           actions: [
             InkWell(
               onTap: () async {
@@ -77,7 +77,9 @@ class _MyCommunityViewState extends State<MyCommunityView> {
                     url: community.avatarImage?.fileUrl,
                     subtitle: Text(
                       '${community.membersCount ?? 0} member',
-                      style: AppTextStyle.body1,
+                      style: AppTextStyle.body1.copyWith(
+                        height: 1,
+                      ),
                     ),
                     onPressed: () async {
                       await Navigator.of(context).push(
