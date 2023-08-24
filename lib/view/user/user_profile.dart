@@ -4,18 +4,17 @@ import 'package:amity_sdk/amity_sdk.dart';
 import 'package:amity_uikit_beta_service/components/custom_app_bar.dart';
 import 'package:amity_uikit_beta_service/components/custom_avatar.dart';
 import 'package:amity_uikit_beta_service/constans/app_text_style.dart';
-import 'package:amity_uikit_beta_service/view/social/user_follow_screen.dart';
 import 'package:amity_uikit_beta_service/viewmodel/follower_following_viewmodel.dart';
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../constans/app_text_style.dart';
 import '../../viewmodel/amity_viewmodel.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
 import '../../viewmodel/user_feed_viewmodel.dart';
 import '../social/home_following_screen.dart';
 import 'edit_profile.dart';
+import 'user_follow_screen.dart';
 
 class UserProfileScreen extends StatefulWidget {
   final AmityUser amityUser;
@@ -47,6 +46,10 @@ class UserProfileScreenState extends State<UserProfileScreen>
         _selectedIndex = tabController!.index;
       });
     });
+    init();
+  }
+
+  void init() {
     Provider.of<UserFeedVM>(context, listen: false)
         .initUserFeed(widget.amityUser);
     Provider.of<UserFeedVM>(context, listen: false)
@@ -67,7 +70,7 @@ class UserProfileScreenState extends State<UserProfileScreen>
           .read<AmityUIConfiguration>()
           .userProfileConfig
           .isOpenEditProfile;
-      if (isOpenEditProfile) {
+      if (!isOpenEditProfile) {
         return;
       }
       bool isCurrentUser =
@@ -249,6 +252,21 @@ class _HeaderUserProfile extends StatelessWidget {
   final AmityUser currentUser;
   final VoidCallback? logout;
 
+  void navigatorFollowScreen(BuildContext context, int index) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => ChangeNotifierProvider(
+          create: (context) => FollowerVM(),
+          child: FollowScreen(
+            key: UniqueKey(),
+            user: amityUser,
+            initialIndex: index,
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -267,23 +285,14 @@ class _HeaderUserProfile extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _ShowMemberText(
-                      members: vm.amityMyFollowInfo.followerCount ?? 0,
-                      title: 'Followers',
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => ChangeNotifierProvider(
-                              create: (context) => FollowerVM(),
-                              child: FollowScreen(
-                                key: UniqueKey(),
-                                user: amityUser,
-                                initialIndex: 0,
-                              ),
-                            ),
-                          ),
-                        );
-                      },
+                    Expanded(
+                      child: _ShowMemberText(
+                        members: vm.amityMyFollowInfo.followerCount ?? 0,
+                        title: 'Followers',
+                        onTap: () {
+                          navigatorFollowScreen(context, 0);
+                        },
+                      ),
                     ),
                     GestureDetector(
                       onTap: logout,
@@ -296,23 +305,14 @@ class _HeaderUserProfile extends StatelessWidget {
                             : amityUser.avatarUrl,
                       ),
                     ),
-                    _ShowMemberText(
-                      members: vm.amityMyFollowInfo.followingCount ?? 0,
-                      title: 'Following',
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => ChangeNotifierProvider(
-                              create: (context) => FollowerVM(),
-                              child: FollowScreen(
-                                key: UniqueKey(),
-                                user: amityUser,
-                                initialIndex: 1,
-                              ),
-                            ),
-                          ),
-                        );
-                      },
+                    Expanded(
+                      child: _ShowMemberText(
+                        members: vm.amityMyFollowInfo.followingCount ?? 0,
+                        title: 'Following',
+                        onTap: () {
+                          navigatorFollowScreen(context, 1);
+                        },
+                      ),
                     ),
                   ],
                 ),
@@ -538,9 +538,11 @@ class _TabUserProfile extends StatelessWidget {
       child: TabBar(
         controller: tabController,
         indicatorColor: Provider.of<AmityUIConfiguration>(context).primaryColor,
-        unselectedLabelStyle: AppTextStyle.mainStyle.copyWith(fontWeight: FontWeight.w400),
+        unselectedLabelStyle:
+            AppTextStyle.mainStyle.copyWith(fontWeight: FontWeight.w400),
         labelColor: context.watch<AmityUIConfiguration>().primaryColor,
-        labelStyle: AppTextStyle.mainStyle.copyWith(fontWeight: FontWeight.bold),
+        labelStyle:
+            AppTextStyle.mainStyle.copyWith(fontWeight: FontWeight.bold),
         tabs: const [
           Tab(text: "Feed"),
           Tab(text: "Gallery"),
@@ -563,20 +565,23 @@ class _ShowMemberText extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            members.toString(),
-            style: AppTextStyle.display1,
-          ),
-          Text(
-            title,
-            style: AppTextStyle.body1.copyWith(
-              color: Colors.grey,
+      child: Container(
+        color: Colors.transparent,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              members.toString(),
+              style: AppTextStyle.display1,
             ),
-          ),
-        ],
+            Text(
+              title,
+              style: AppTextStyle.body1.copyWith(
+                color: Colors.grey,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

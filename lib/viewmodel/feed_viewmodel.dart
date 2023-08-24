@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:amity_sdk/amity_sdk.dart';
+import 'package:amity_uikit_beta_service/utils/de_bounce.dart';
 import 'package:flutter/material.dart';
 
 import '../../components/alert_dialog.dart';
@@ -13,6 +14,8 @@ class FeedVM extends ChangeNotifier {
   late PagingController<AmityPost> _controllerGlobal;
 
   final scrollcontroller = ScrollController();
+  bool isLoading = false;
+  final debounce = Debounce(duration: const Duration(seconds: 2));
 
   bool loadingNexPage = false;
   List<AmityPost> getAmityPosts() {
@@ -38,6 +41,7 @@ class FeedVM extends ChangeNotifier {
   }
 
   Future<void> initAmityGlobalfeed() async {
+    isLoading = true;
     _controllerGlobal = PagingController(
       pageFuture: (token) => AmitySocialClient.newFeedRepository()
           .getGlobalFeed()
@@ -45,6 +49,7 @@ class FeedVM extends ChangeNotifier {
       pageSize: 5,
     )..addListener(
         () async {
+          
           log("initAmityGlobalfeed listener...");
           if (_controllerGlobal.error == null) {
             _amityGlobalFeedPosts.clear();
@@ -58,6 +63,10 @@ class FeedVM extends ChangeNotifier {
             await AmityDialog().showAlertErrorDialog(
                 title: "Error!", message: _controllerGlobal.error.toString());
           }
+          debounce.run(() {
+            isLoading = false;
+            notifyListeners();
+          });
         },
       );
 

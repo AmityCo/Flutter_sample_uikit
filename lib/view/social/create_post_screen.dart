@@ -64,6 +64,7 @@ class CreatePostScreen2State extends State<CreatePostScreen2> {
                             TextFormField(
                               cursorColor: context.watch<AmityUIConfiguration>().secondaryColor,
                               textCapitalization:TextCapitalization.sentences,
+                              autofocus: true,
                               controller: vm.textEditingController,
                               scrollPhysics: const NeverScrollableScrollPhysics(),
                               maxLines: null,

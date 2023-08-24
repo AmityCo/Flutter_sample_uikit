@@ -212,20 +212,34 @@ class PostVM extends ChangeNotifier {
   }
 
   void deleteComment(AmityComment comment) {
-    comment.delete().then((value) => {
+    comment.delete().then((value){
           // success
           amityComments
-              .removeWhere((element) => element.commentId == comment.commentId),
-          notifyListeners()
+              .removeWhere((element) => element.commentId == comment.commentId);
+          
+          int index = _controller.loadedItems
+          .indexWhere((element) => comment.commentId == element.commentId);
+          if(index != -1){
+            _controller.loadedItems.removeAt(index);
+          }
+          notifyListeners();
         });
   }
 
   void deleteReplyComment(AmityComment comment) {
-    comment.delete().then((value) => {
+    comment.delete().then((value){
           // success
           amityReplyComments
-              .removeWhere((element) => element.commentId == comment.commentId),
-          notifyListeners()
+              .removeWhere((element) => element.commentId == comment.commentId);
+
+          int index = _controller.loadedItems
+          .indexWhere((element) => comment.commentId == element.commentId);
+          if(index != -1){
+            _controller.loadedItems.removeAt(index);
+          }
+          
+          notifyListeners();
+
         });
   }
 

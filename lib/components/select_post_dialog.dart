@@ -92,96 +92,106 @@ class _CustomWidgetState extends State<_CustomWidget> {
     }
   }
 
+   void close() {
+    widget.close(_SelectPostModel.initial());
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor:
-            context.watch<AmityUIConfiguration>().appbarConfig.backgroundColor,
-        title: Text(
-          'Post to',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: context
-                    .watch<AmityUIConfiguration>()
-                    .appbarConfig
-                    .textColor,
-              ),
-        ),
-        leading: IconButton(
-          onPressed: () {
-            widget.close(_SelectPostModel.initial());
-          },
-          icon: Icon(
-            Icons.close,
-            color: context
-                .watch<AmityUIConfiguration>()
-                .appbarConfig
-                .iconBackColor,
-          ),
-        ),
-        elevation: 0,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            Consumer<AmityVM>(builder: (_, vm, __) {
-              return CustomListTitle(
-                title: 'My Timeline',
-                url: vm.currentamityUser?.avatarUrl,
-                iconNoImage: Icon(
-                  Icons.person,
+    return WillPopScope(
+      onWillPop: (){
+        close();
+        return Future.value(true);
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor:
+              context.watch<AmityUIConfiguration>().appbarConfig.backgroundColor,
+          title: Text(
+            'Post to',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   color: context
                       .watch<AmityUIConfiguration>()
-                      .buttonConfig
+                      .appbarConfig
                       .textColor,
                 ),
-                onPressed: () {
-                  widget.close(
-                    const _SelectPostModel(type: _SelectPostType.my),
-                  );
-                },
-              );
-            }),
-            const Divider(),
-            Row(
-              children: [
-                Text(
-                  'My Community',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Colors.grey,
-                      ),
-                ),
-              ],
+          ),
+          leading: IconButton(
+            onPressed: () {
+              close();
+            },
+            icon: Icon(
+              Icons.close,
+              color: context
+                  .watch<AmityUIConfiguration>()
+                  .appbarConfig
+                  .iconBackColor,
             ),
-            const SizedBox(height: 5),
-            Expanded(
-              child: Consumer<CommunityVM>(builder: (_, vm, __) {
-                final data = vm.getAmityMyCommunities();
-                return ListView(
-                  children: List.generate(
-                    data.length,
-                    (index) {
-                      final community = data[index];
-                      return CustomListTitle(
-                        title: community.displayName ?? "Community",
-                        url: community.avatarImage?.fileUrl,
-                        onPressed: () {
-                          widget.close(
-                            _SelectPostModel(
-                              type: _SelectPostType.community,
-                              community: community,
-                            ),
-                          );
-                        },
-                      );
-                    },
+          ),
+          elevation: 0,
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Consumer<AmityVM>(builder: (_, vm, __) {
+                return CustomListTitle(
+                  title: 'My Timeline',
+                  url: vm.currentamityUser?.avatarUrl,
+                  iconNoImage: Icon(
+                    Icons.person,
+                    color: context
+                        .watch<AmityUIConfiguration>()
+                        .buttonConfig
+                        .textColor,
                   ),
+                  onPressed: () {
+                    widget.close(
+                      const _SelectPostModel(type: _SelectPostType.my),
+                    );
+                  },
                 );
               }),
-            ),
-          ],
+              const Divider(),
+              Row(
+                children: [
+                  Text(
+                    'My Community',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: Colors.grey,
+                        ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 5),
+              Expanded(
+                child: Consumer<CommunityVM>(builder: (_, vm, __) {
+                  final data = vm.getAmityMyCommunities();
+                  return ListView(
+                    children: List.generate(
+                      data.length,
+                      (index) {
+                        final community = data[index];
+                        return CustomListTitle(
+                          title: community.displayName ?? "Community",
+                          url: community.avatarImage?.fileUrl,
+                          onPressed: () {
+                            widget.close(
+                              _SelectPostModel(
+                                type: _SelectPostType.community,
+                                community: community,
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  );
+                }),
+              ),
+            ],
+          ),
         ),
       ),
     );
