@@ -46,6 +46,10 @@ class UserProfileScreenState extends State<UserProfileScreen>
         _selectedIndex = tabController!.index;
       });
     });
+    init();
+  }
+
+  void init() {
     Provider.of<UserFeedVM>(context, listen: false)
         .initUserFeed(widget.amityUser);
     Provider.of<UserFeedVM>(context, listen: false)

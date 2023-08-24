@@ -11,6 +11,7 @@ import '../../components/custom_user_avatar.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
 import '../../viewmodel/post_viewmodel.dart';
 import '../../viewmodel/user_feed_viewmodel.dart';
+import '../post_detail/widgets/text_input_comment.dart';
 import '../user/user_profile.dart';
 import 'edit_comment.dart';
 
@@ -94,50 +95,20 @@ class ReplyCommentScreenState extends State<ReplyCommentScreen> {
                           ),
                         ),
                       ),
-                      Container(
-                        decoration: const BoxDecoration(
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Color.fromARGB(255, 155, 120, 120),
-                                blurRadius: 0.8,
-                                spreadRadius: 0.5,
-                              ),
-                            ]),
-                        height: 60,
-                        child: ListTile(
-                          leading: getAvatarImage(Provider.of<AmityVM>(context)
-                              .currentamityUser
-                              ?.avatarUrl),
-                          title: TextField(
-                            cursorColor: context.watch<AmityUIConfiguration>().secondaryColor,
-                            textCapitalization:TextCapitalization.sentences,
-                            controller: _commentTextEditController,
-                            decoration: const InputDecoration(
-                              border: InputBorder.none,
-                              hintText: "Write your reply",
-                              hintStyle: TextStyle(fontSize: 14),
-                            ),
-                          ),
-                          trailing: GestureDetector(
-                              onTap: () async {
-                                HapticFeedback.heavyImpact();
-                                await Provider.of<PostVM>(context,
-                                        listen: false)
-                                    .createReplyComment(
-                                        widget.postId,
-                                        widget.commentId,
-                                        _commentTextEditController.text);
+                      TextInputComment(
+                        controller: _commentTextEditController,
+                        onPressedSend: () async {
+                          HapticFeedback.heavyImpact();
+                          await Provider.of<PostVM>(context, listen: false)
+                              .createReplyComment(
+                                  widget.postId,
+                                  widget.commentId,
+                                  _commentTextEditController.text);
 
-                                _commentTextEditController.clear();
-                              },
-                              child: Icon(Icons.send,
-                                  color:
-                                      Provider.of<AmityUIConfiguration>(context)
-                                          .primaryColor)),
-                        ),
+                          _commentTextEditController.clear();
+                        },
                       ),
-                    ],
+                     ],
                   ),
                 ),
               ),

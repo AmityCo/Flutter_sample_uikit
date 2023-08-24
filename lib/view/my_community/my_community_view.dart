@@ -1,11 +1,13 @@
 import 'package:amity_uikit_beta_service/components/custom_app_bar.dart';
 import 'package:amity_uikit_beta_service/constans/app_text_style.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 
 import '../../components/custom_faded_slide_animation.dart';
 import '../../components/custom_list_tile.dart';
+import '../../constans/app_assets.dart';
 import '../../viewmodel/community_feed_viewmodel.dart';
 import '../../viewmodel/community_viewmodel.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
@@ -75,6 +77,21 @@ class _MyCommunityViewState extends State<MyCommunityView> {
                   return CustomListTitle(
                     title: community.displayName ?? "Community",
                     url: community.avatarImage?.fileUrl,
+                    leading: !(community.isPublic ?? true)
+                        ? const Icon(
+                            Icons.lock_outlined,
+                            color: Colors.black,
+                            size: 12,
+                          )
+                        : null,
+                    trailing: (community.isOfficial ?? false)
+                        ? SvgPicture.asset(
+                            AppAssets.verified,
+                            width: 20,
+                            height: 20,
+                            package: AppAssets.package,
+                          )
+                        : null,
                     subtitle: Text(
                       '${community.membersCount ?? 0} member',
                       style: AppTextStyle.body1.copyWith(
@@ -84,7 +101,8 @@ class _MyCommunityViewState extends State<MyCommunityView> {
                     onPressed: () async {
                       await Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => ChangeNotifierProvider<CommuFeedVM>(
+                          builder: (context) =>
+                              ChangeNotifierProvider<CommuFeedVM>(
                             create: (context) => CommuFeedVM(),
                             builder: (context, child) => CommunityScreen(
                               community: community,

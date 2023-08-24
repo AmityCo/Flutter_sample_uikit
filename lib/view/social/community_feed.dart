@@ -1,8 +1,10 @@
 import 'package:amity_sdk/amity_sdk.dart';
 import 'package:amity_uikit_beta_service/components/custom_app_bar.dart';
+import 'package:amity_uikit_beta_service/constans/app_assets.dart';
 import 'package:amity_uikit_beta_service/constans/app_text_style.dart';
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:provider/provider.dart';
 
@@ -63,7 +65,8 @@ class CommunityScreenState extends State<CommunityScreen> {
             ? Container()
             : Text(
                 "About",
-                style: AppTextStyle.header2.copyWith(fontWeight: FontWeight.w600, fontSize: 16),
+                style: AppTextStyle.header2
+                    .copyWith(fontWeight: FontWeight.w600, fontSize: 16),
               ),
         const SizedBox(
           height: 5.0,
@@ -100,6 +103,13 @@ class CommunityScreenState extends State<CommunityScreen> {
       children: [
         Row(
           children: [
+            if (community.isOfficial ?? false)
+              SvgPicture.asset(
+                AppAssets.verified,
+                width: 25,
+                height: 25,
+                package: AppAssets.package,
+              ),
             Flexible(
               child: Text(
                 community.displayName != null
@@ -172,16 +182,14 @@ class CommunityScreenState extends State<CommunityScreen> {
         ),
         Row(
           children: [
-            const Icon(Icons.public_rounded, color: Colors.black),
-            const SizedBox(
-              width: 5,
-            ),
+            (community.isPublic ?? true)
+                ? const Icon(Icons.public_rounded, color: Colors.black)
+                : const Icon(Icons.lock, color: Colors.black),
+            const SizedBox(width: 5),
             Text(community.isPublic != null
                 ? (community.isPublic! ? "Public" : "Private")
                 : "N/A"),
-            const SizedBox(
-              width: 20,
-            ),
+            const SizedBox(width: 20),
             GestureDetector(
               onTap: navigatorToMemberList,
               child: Text("${community.membersCount} members"),

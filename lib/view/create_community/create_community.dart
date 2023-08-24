@@ -357,6 +357,7 @@ class _CreateCommunityViewState extends State<CreateCommunityView> {
                 child: Divider(),
               ),
               if (!isLoadMembers)
+                if(widget.community != null || (communityType == CommunityType.private))
                 AddMembers(
                   title: 'Add members',
                   isRequired: true,
@@ -389,8 +390,14 @@ class _CreateCommunityViewState extends State<CreateCommunityView> {
 
   bool isRequiredPass() {
     if (selectedCategory != null &&
-        communityName.isNotEmpty &&
-        selectedUsers.isNotEmpty) {
+        communityName.isNotEmpty) {
+
+      if(communityType == CommunityType.private){
+        if(selectedUsers.isEmpty){
+          return false;
+        }
+      }
+
       return true;
     }
     return false;

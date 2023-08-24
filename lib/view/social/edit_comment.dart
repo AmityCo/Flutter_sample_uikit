@@ -86,14 +86,17 @@ class EditCommentScreenState extends State<EditCommentScreen> {
                 // height: bheight,
                 color: Colors.white,
                 padding: const EdgeInsets.all(15),
-                child: TextField(
+                child: TextFormField(
                   textCapitalization: TextCapitalization.sentences,
                   autofocus: true,
                   cursorColor:
                       context.watch<AmityUIConfiguration>().secondaryColor,
                   controller: controller,
-                  scrollPhysics: const NeverScrollableScrollPhysics(),
                   maxLines: null,
+                  onTapOutside: (_) {
+                    FocusManager.instance.primaryFocus?.unfocus();
+                  },
+                  scrollPhysics: const NeverScrollableScrollPhysics(),
                   decoration: const InputDecoration(
                     border: InputBorder.none,
                     hintText: "Write something to Post",

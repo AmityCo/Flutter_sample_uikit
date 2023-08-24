@@ -56,41 +56,56 @@ class GlobalFeedScreenState extends State<GlobalFeedScreen> {
           await vm.initAmityGlobalfeed();
         },
         child: Stack(
+          fit: StackFit.expand,
           children: [
-            Column(
-              children: [
-                Expanded(
-                  child: Container(
-                    color: Colors.grey[200],
-                    child: FadedSlideAnimation(
-                      beginOffset: const Offset(0, 0.3),
-                      endOffset: const Offset(0, 0),
-                      slideCurve: Curves.linearToEaseOut,
-                      child: ListView.builder(
-                        // shrinkWrap: true,
-                        controller: vm.scrollcontroller,
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        itemCount: vm.getAmityPosts().length,
-                        itemBuilder: (context, index) {
-                          return StreamBuilder<AmityPost>(
-                              key: Key(vm.getAmityPosts()[index].postId!),
-                              stream: vm.getAmityPosts()[index].listen.stream,
-                              initialData: vm.getAmityPosts()[index],
-                              builder: (context, snapshot) {
-                                return PostWidget(
-                                  post: snapshot.data!,
-                                  theme: theme,
-                                  postIndex: index,
-                                  isFromFeed: true,
-                                );
-                              });
-                        },
+            if (vm.getAmityPosts().isEmpty && !vm.isLoading)
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Text(
+                    "Welcome, new user! \n Go to the Explore page",
+                    style: AppTextStyle.header1,
+                    textAlign: TextAlign.center,
+                  ),
+                  
+                ],
+              ),
+            if (vm.getAmityPosts().isNotEmpty)
+              Column(
+                children: [
+                  Expanded(
+                    child: Container(
+                      color: Colors.grey[200],
+                      child: FadedSlideAnimation(
+                        beginOffset: const Offset(0, 0.3),
+                        endOffset: const Offset(0, 0),
+                        slideCurve: Curves.linearToEaseOut,
+                        child: ListView.builder(
+                          // shrinkWrap: true,
+                          controller: vm.scrollcontroller,
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          itemCount: vm.getAmityPosts().length,
+                          itemBuilder: (context, index) {
+                            return StreamBuilder<AmityPost>(
+                                key: Key(vm.getAmityPosts()[index].postId!),
+                                stream: vm.getAmityPosts()[index].listen.stream,
+                                initialData: vm.getAmityPosts()[index],
+                                builder: (context, snapshot) {
+                                  return PostWidget(
+                                    post: snapshot.data!,
+                                    theme: theme,
+                                    postIndex: index,
+                                    isFromFeed: true,
+                                  );
+                                });
+                          },
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
             Positioned(
               right: 15,
               bottom: 15,
@@ -262,14 +277,14 @@ class _PostWidgetState extends State<PostWidget>
                       child: GestureDetector(
                         onTap: () {
                           showDialog(
-                              context: context,
-                              builder: (context) => ChangeNotifierProvider(
-                                create: (context) => UserFeedVM(),
-                                child: UserProfileScreen(
-                                  amityUser: widget.post.postedUser!,
-                                ),
+                            context: context,
+                            builder: (context) => ChangeNotifierProvider(
+                              create: (context) => UserFeedVM(),
+                              child: UserProfileScreen(
+                                amityUser: widget.post.postedUser!,
                               ),
-                            );
+                            ),
+                          );
                         },
                         child: getAvatarImage(
                           widget.post.postedUser!.userId !=

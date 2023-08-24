@@ -12,6 +12,7 @@ class AmityUIConfiguration extends ChangeNotifier {
   ButtonConfig buttonConfig = ButtonConfig();
   AppbarConfig appbarConfig = AppbarConfig();
   UserProfileConfig userProfileConfig = UserProfileConfig();
+  ExploreConfig exploreConfig = ExploreConfig();
   
   void updateUI() {
     notifyListeners();
@@ -64,11 +65,13 @@ class UserProfileConfig{
 }
 
 class ExploreConfig{
-  final bool isOpenTabView;
-  final bool isOpenEditProfile;
+  final bool isOpenRecommended;
+  final bool isOpenTrending;
+  final bool isOpenCategories;
 
   ExploreConfig({
-    this.isOpenTabView = true,
-    this.isOpenEditProfile = true,
+    this.isOpenRecommended = true,
+    this.isOpenTrending = true,
+    this.isOpenCategories = true,
   });
 }

@@ -141,13 +141,26 @@ class MyCommunityHorizontalItem extends StatelessWidget {
               const SizedBox(height: 1),
               Row(
                 children: [
+                  if (!(community.isPublic ?? true))
+                    const Icon(
+                      Icons.lock_outlined,
+                      color: Colors.black,
+                      size: 12,
+                    ),
                   Flexible(
                     child: Text(
                       community.displayName ?? 'Community',
                       style: AppTextStyle.body1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                  )
+                  ),
+                  if ((community.isOfficial ?? false))
+                    SvgPicture.asset(
+                      AppAssets.verified,
+                      width: 20,
+                      height: 20,
+                      package: AppAssets.package,
+                    ),
                 ],
               )
             ],
