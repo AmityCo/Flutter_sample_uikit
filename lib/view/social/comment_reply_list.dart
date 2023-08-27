@@ -1,6 +1,6 @@
 import 'package:amity_sdk/amity_sdk.dart';
 import 'package:amity_uikit_beta_service/components/custom_app_bar.dart';
-import 'package:amity_uikit_beta_service/viewmodel/amity_viewmodel.dart';
+import 'package:amity_uikit_beta_service/components/delete_dialog.dart';
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,7 +8,6 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../components/custom_user_avatar.dart';
-import '../../viewmodel/configuration_viewmodel.dart';
 import '../../viewmodel/post_viewmodel.dart';
 import '../../viewmodel/user_feed_viewmodel.dart';
 import '../post_detail/widgets/text_input_comment.dart';
@@ -108,7 +107,7 @@ class ReplyCommentScreenState extends State<ReplyCommentScreen> {
                           _commentTextEditController.clear();
                         },
                       ),
-                     ],
+                    ],
                   ),
                 ),
               ),
@@ -135,11 +134,18 @@ class CommentComponent extends StatefulWidget {
 }
 
 class _CommentComponentState extends State<CommentComponent> {
+  final deleteDialog = DeleteDialog();
   @override
   void initState() {
     Provider.of<PostVM>(context, listen: false)
         .listenForReplyComments(widget.postId, widget.commentId);
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    deleteDialog.close();
+    super.dispose();
   }
 
   void navigateToEditComment(AmityComment comment) {
@@ -306,9 +312,18 @@ class _CommentComponentState extends State<CommentComponent> {
                                 AmityCoreClient.getCurrentUser().userId)
                               GestureDetector(
                                 onTap: () {
-                                  if (snapshot.data != null) {
-                                    vm.deleteReplyComment(snapshot.data!);
-                                  }
+                                  deleteDialog.open(
+                                      context: context,
+                                      title: 'Delete Reply Comment',
+                                      onPressedCancel: () {
+                                        deleteDialog.close();
+                                      },
+                                      onPressedDelete: () {
+                                        if (snapshot.data != null) {
+                                          vm.deleteReplyComment(snapshot.data!);
+                                        }
+                                        deleteDialog.close();
+                                      });
                                 },
                                 child: const Icon(
                                   Icons.delete,

@@ -1,11 +1,14 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
+import '../view/community/community_view.dart';
+
 class CommunityViewModelState extends Equatable {
   final int currentIndex;
-  
+  final BottomAppBarController controller;
   const CommunityViewModelState({
     required this.currentIndex,
+    required this.controller,
   });
 
   @override
@@ -15,16 +18,19 @@ class CommunityViewModelState extends Equatable {
   bool get stringify => true;
 
   factory CommunityViewModelState.initial() {
-    return const CommunityViewModelState(
+    return CommunityViewModelState(
       currentIndex: 0,
+      controller: BottomAppBarController(),
     );
   }
 
   CommunityViewModelState copyWith({
     int? currentIndex,
+    BottomAppBarController? controller,
   }) {
     return CommunityViewModelState(
       currentIndex: currentIndex ?? this.currentIndex,
+      controller: controller ?? this.controller,
     );
   }
 }
@@ -39,6 +45,7 @@ class CommunityViewModel with ChangeNotifier {
     _state = _state.copyWith(
       currentIndex: index,
     );
+    state.controller.selectIndex = index;
     notifyListeners();
   }
 }

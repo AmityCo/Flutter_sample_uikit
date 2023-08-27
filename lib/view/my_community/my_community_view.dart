@@ -44,26 +44,30 @@ class _MyCommunityViewState extends State<MyCommunityView> {
           context: context,
           titleText: 'My Communities',
           actions: [
-            InkWell(
-              onTap: () async {
-                await Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const CreateCommunityView(),
+            if (context
+                .watch<AmityUIConfiguration>()
+                .appbarConfig
+                .isOpenAddCommunity)
+              InkWell(
+                onTap: () async {
+                  await Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const CreateCommunityView(),
+                    ),
+                  );
+                  init();
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Icon(
+                    Icons.add,
+                    color: context
+                        .watch<AmityUIConfiguration>()
+                        .appbarConfig
+                        .iconBackColor,
                   ),
-                );
-                init();
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Icon(
-                  Icons.add,
-                  color: context
-                      .watch<AmityUIConfiguration>()
-                      .appbarConfig
-                      .iconBackColor,
                 ),
-              ),
-            )
+              )
           ],
         ),
         body: Consumer<CommunityVM>(builder: (_, vm, __) {
@@ -93,7 +97,7 @@ class _MyCommunityViewState extends State<MyCommunityView> {
                           )
                         : null,
                     subtitle: Text(
-                      '${community.membersCount ?? 0} member',
+                      '${community.membersCount} ${((community.membersCount ?? 0) > 1) ? 'members' : 'member'}',
                       style: AppTextStyle.body1.copyWith(
                         height: 1,
                       ),

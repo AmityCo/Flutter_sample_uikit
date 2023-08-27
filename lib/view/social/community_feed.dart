@@ -192,7 +192,7 @@ class CommunityScreenState extends State<CommunityScreen> {
             const SizedBox(width: 20),
             GestureDetector(
               onTap: navigatorToMemberList,
-              child: Text("${community.membersCount} members"),
+              child: Text("${community.membersCount} ${((community.membersCount ?? 0) > 1) ? 'members' : 'member'}"),
             ),
             const Spacer(),
             ElevatedButton(

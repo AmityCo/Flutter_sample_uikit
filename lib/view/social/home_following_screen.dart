@@ -11,9 +11,11 @@ import 'package:provider/provider.dart';
 
 import '../../components/custom_user_avatar.dart';
 
+import '../../components/delete_dialog.dart';
 import '../../components/select_post_dialog.dart';
 import '../../constans/app_text_style.dart';
 import '../../viewmodel/community_feed_viewmodel.dart';
+import '../../viewmodel/community_view_model.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
 import '../../viewmodel/edit_post_viewmodel.dart';
 import '../../viewmodel/feed_viewmodel.dart';
@@ -59,18 +61,32 @@ class GlobalFeedScreenState extends State<GlobalFeedScreen> {
           fit: StackFit.expand,
           children: [
             if (vm.getAmityPosts().isEmpty && !vm.isLoading)
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Text(
-                    "Welcome, new user! \n Go to the Explore page",
-                    style: AppTextStyle.header1,
-                    textAlign: TextAlign.center,
+              Consumer<AmityVM>(builder: (context, vm, _) {
+                String msg = "Welcome\n Go to the Explore page";
+                String? displayName = vm.currentamityUser?.displayName;
+                if (displayName != null && displayName.isNotEmpty) {
+                  msg = "Welcome, $displayName! \n Go to the Explore page";
+                }
+                return GestureDetector(
+                  onTap: () {
+                    context.read<CommunityViewModel>().selectTab(1);
+                  },
+                  child: Container(
+                    color: Colors.transparent,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Text(
+                          msg,
+                          style: AppTextStyle.header1,
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
                   ),
-                  
-                ],
-              ),
+                );
+              }),
             if (vm.getAmityPosts().isNotEmpty)
               Column(
                 children: [
@@ -166,6 +182,26 @@ class _PostWidgetState extends State<PostWidget>
 {
   double iconSize = 20;
   double feedReactionCountSize = 14;
+  final deleteDialog = DeleteDialog();
+
+  @override
+  void dispose() {
+    deleteDialog.close();
+    super.dispose();
+  }
+
+  Future<void> onDeletePost() async {
+    if (widget.isCommunity == null || widget.isCommunity == false) {
+      await Provider.of<FeedVM>(context, listen: false)
+          .deletePost(widget.post, widget.postIndex);
+    } else {
+      await Provider.of<CommuFeedVM>(context, listen: false)
+          .deletePost(widget.post, widget.postIndex);
+    }
+    if (widget.onDeleteAction != null) {
+      widget.onDeleteAction!(1);
+    }
+  }
 
   Widget postWidgets() {
     List<Widget> widgets = [];
@@ -214,16 +250,17 @@ class _PostWidgetState extends State<PostWidget>
 
             break;
           case 'Delete Post':
-            if (widget.isCommunity == null || widget.isCommunity == false) {
-              await Provider.of<FeedVM>(context, listen: false)
-                  .deletePost(widget.post, widget.postIndex);
-            } else {
-              await Provider.of<CommuFeedVM>(context, listen: false)
-                  .deletePost(widget.post, widget.postIndex);
-            }
-            if (widget.onDeleteAction != null) {
-              widget.onDeleteAction!(1);
-            }
+            deleteDialog.open(
+              context: context,
+              title: 'Delete Post',
+              onPressedCancel: () {
+                deleteDialog.close();
+              },
+              onPressedDelete: () {
+                onDeletePost();
+                deleteDialog.close();
+              },
+            );
             break;
           default:
         }

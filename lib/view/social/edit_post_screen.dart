@@ -139,6 +139,7 @@ class EditPostScreenState extends State<EditPostScreen> {
                             controller: vm.textEditingController,
                             scrollPhysics: const NeverScrollableScrollPhysics(),
                             maxLines: null,
+                            autofocus: true,
                             onTapOutside: (_) {
                               FocusManager.instance.primaryFocus?.unfocus();
                             },

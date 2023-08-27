@@ -101,6 +101,7 @@ class _CommunityViewState extends State<CommunityView> {
               title: BottomAppBarCommunityView(
                 names: vm.items,
                 onChanged: vm.selectTab,
+                controller: vm.state.controller,
               ),
             ),
           ),
