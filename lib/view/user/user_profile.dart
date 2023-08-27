@@ -161,7 +161,8 @@ class UserProfileScreenState extends State<UserProfileScreen>
                             SizedBox(
                               height: bheight * 0.3,
                               child: const Center(
-                                  child: Text("This account is Private")),
+                                // This account is Private for feature accept follow user.
+                                  child: Text("")),
                             )
                           ],
                         ),

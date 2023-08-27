@@ -68,21 +68,24 @@ class _MemberListCommunityViewState extends State<MemberListCommunityView> {
                 onTap: () {
                   navigatorToUserProfile(user);
                 },
-                child: Row(
-                  children: [
-                    CustomAvatar(
-                      url: user.avatarUrl,
-                      radius: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    Flexible(
-                      child: Text(
-                        user.displayName ?? '',
-                        style: AppTextStyle.header1,
-                        overflow: TextOverflow.ellipsis,
+                child: Container(
+                  color: Colors.transparent,
+                  child: Row(
+                    children: [
+                      CustomAvatar(
+                        url: user.avatarUrl,
+                        radius: 20,
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: Text(
+                          user.displayName ?? '',
+                          style: AppTextStyle.header1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             );

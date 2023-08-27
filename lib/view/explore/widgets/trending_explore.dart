@@ -1,7 +1,9 @@
 import 'package:amity_sdk/amity_sdk.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../components/custom_avatar_community.dart';
+import '../../../constans/app_assets.dart';
 import '../../../constans/app_text_style.dart';
 
 class TrendingExplore extends StatelessWidget {
@@ -19,7 +21,7 @@ class TrendingExplore extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       child: Column(
         children: [
-           Row(
+          Row(
             children: [
               Text(
                 'Today’s trending',
@@ -76,14 +78,31 @@ class TrendingExplore extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Flexible(
-                            child: Text(
-                              community.displayName ?? '',
-                              style: AppTextStyle.header2.copyWith(
-                                fontWeight: FontWeight.w600,
+                          Row(
+                            children: [
+                              if (!(community.isPublic ?? true))
+                                const Icon(
+                                  Icons.lock_outlined,
+                                  color: Colors.black,
+                                  size: 12,
+                                ),
+                              Flexible(
+                                child: Text(
+                                  community.displayName ?? '',
+                                  style: AppTextStyle.header2.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                              if ((community.isOfficial ?? false))
+                                SvgPicture.asset(
+                                  AppAssets.verified,
+                                  width: 20,
+                                  height: 20,
+                                  package: AppAssets.package,
+                                ),
+                            ],
                           ),
                           Row(
                             children: [
@@ -95,7 +114,7 @@ class TrendingExplore extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                ' • ${community.membersCount} members',
+                                ' • ${community.membersCount} ${((community.membersCount ?? 0) > 1) ? 'members' : 'member'}',
                                 style: subtitleTextStyle,
                               ),
                             ],

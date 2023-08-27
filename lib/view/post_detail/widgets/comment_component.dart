@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../components/custom_user_avatar.dart';
+import '../../../components/delete_dialog.dart';
 import '../../../constans/app_text_style.dart';
 import '../../../viewmodel/post_viewmodel.dart';
 import '../../../viewmodel/user_feed_viewmodel.dart';
@@ -26,10 +27,18 @@ class CommentComponent extends StatefulWidget {
 }
 
 class _CommentComponentState extends State<CommentComponent> {
+  final deleteDialog = DeleteDialog();
+
   @override
   void initState() {
     getData();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    deleteDialog.close();
+    super.dispose();
   }
 
   void navigateToEditComment(AmityComment comment) {
@@ -217,9 +226,18 @@ class _CommentComponentState extends State<CommentComponent> {
                                 AmityCoreClient.getCurrentUser().userId)
                               GestureDetector(
                                 onTap: () {
-                                  if (snapshot.data != null) {
-                                    vm.deleteComment(snapshot.data!);
-                                  }
+                                  deleteDialog.open(
+                                      context: context,
+                                      title: 'Delete Comment',
+                                      onPressedCancel: () {
+                                        deleteDialog.close();
+                                      },
+                                      onPressedDelete: () {
+                                        if (snapshot.data != null) {
+                                          vm.deleteComment(snapshot.data!);
+                                        }
+                                        deleteDialog.close();
+                                      });
                                 },
                                 child: const Icon(
                                   Icons.delete,

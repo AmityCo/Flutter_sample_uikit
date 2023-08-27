@@ -60,8 +60,10 @@ class RecommendedExplore extends StatelessWidget {
                     url: community.avatarImage?.fileUrl,
                     title: community.displayName ?? '',
                     subTitle: subTitle,
-                    caption: '${community.membersCount} members',
+                    caption: '${community.membersCount ?? 0} ${(community.membersCount ?? 0) > 1 ?'members':'member'}',
                     description: community.description ?? '',
+                    isOfficial: community.isOfficial ?? false,
+                    isPublic: community.isPublic ?? true,
                   ),
                 );
               }),
