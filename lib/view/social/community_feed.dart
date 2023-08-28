@@ -192,7 +192,8 @@ class CommunityScreenState extends State<CommunityScreen> {
             const SizedBox(width: 20),
             GestureDetector(
               onTap: navigatorToMemberList,
-              child: Text("${community.membersCount} ${((community.membersCount ?? 0) > 1) ? 'members' : 'member'}"),
+              child: Text(
+                  "${community.membersCount} ${((community.membersCount ?? 0) > 1) ? 'members' : 'member'}"),
             ),
             const Spacer(),
             ElevatedButton(
@@ -283,6 +284,11 @@ class CommunityScreenState extends State<CommunityScreen> {
     );
   }
 
+  void onRefreshPage(){
+    Provider.of<CommuFeedVM>(context, listen: false)
+                .initAmityCommunityFeed(community);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -292,12 +298,16 @@ class CommunityScreenState extends State<CommunityScreen> {
         appBar: CustomAppBar(context: context),
         floatingActionButton: (community.isJoined!)
             ? FloatingActionButton(
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
+                onPressed: () async {
+                  await Navigator.of(context).push(
+                    MaterialPageRoute(
                       builder: (context2) => CreatePostScreen2(
-                            communityID: community.communityId,
-                            context: context,
-                          )));
+                        communityID: community.communityId,
+                        context: context,
+                      ),
+                    ),
+                  );
+                  onRefreshPage();
                 },
                 backgroundColor: Provider.of<AmityUIConfiguration>(context)
                     .buttonConfig
@@ -314,8 +324,7 @@ class CommunityScreenState extends State<CommunityScreen> {
         body: RefreshIndicator(
           color: Provider.of<AmityUIConfiguration>(context).primaryColor,
           onRefresh: () async {
-            Provider.of<CommuFeedVM>(context, listen: false)
-                .initAmityCommunityFeed(community);
+            onRefreshPage();
           },
           child: CustomFadedSlideAnimation(
             child: SafeArea(
@@ -323,16 +332,6 @@ class CommunityScreenState extends State<CommunityScreen> {
                 controller: vm.scrollcontroller,
                 child: Column(
                   children: [
-                    // Align(
-                    //   alignment: Alignment.topLeft,
-                    //   child: IconButton(
-                    //     onPressed: () {
-                    //       Navigator.of(context).pop();
-                    //     },
-                    //     icon: const Icon(Icons.chevron_left,
-                    //         color: Colors.black, size: 35),
-                    //   ),
-                    // ),
                     SizedBox(
                         width: double.infinity,
                         // height: (bHeight - 120) * 0.4,

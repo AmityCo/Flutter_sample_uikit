@@ -104,8 +104,9 @@ class _CategoriesExploreState extends State<CategoriesExplore> {
                     onTap: () {
                       onPressedCategory(category);
                     },
-                    child: SizedBox(
+                    child: Container(
                       width: 170,
+                      color: Colors.transparent,
                       child: Row(
                         children: [
                           CustomAvatarCommunity(

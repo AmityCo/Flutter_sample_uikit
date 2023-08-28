@@ -273,16 +273,19 @@ class _PostWidgetState extends State<PostWidget>
       itemBuilder: (context) {
         return List.generate(isPostOwner ? 2 : 1, (index) {
           return PopupMenuItem(
-              value: isPostOwner
+            value: isPostOwner
+                ? postOwnerMenu[index]
+                : isFlaggedByMe
+                    ? 'Unreport Post'
+                    : 'Report Post',
+            child: Text(
+              isPostOwner
                   ? postOwnerMenu[index]
                   : isFlaggedByMe
                       ? 'Unreport Post'
                       : 'Report Post',
-              child: Text(isPostOwner
-                  ? postOwnerMenu[index]
-                  : isFlaggedByMe
-                      ? 'Unreport Post'
-                      : 'Report Post'));
+            ),
+          );
         });
       },
     );
@@ -409,8 +412,9 @@ class _PostWidgetState extends State<PostWidget>
                                       "Community name",
                                   style: widget.theme.textTheme.bodyLarge!
                                       .copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
                                 ),
                               )
                             : Container()
