@@ -117,38 +117,41 @@ class _CategoryListForCreateCommunityState
                       onTap: () => _onCategoryTap(category),
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          children: [
-                            CustomAvatar(
-                              radius: 20,
-                              url: urlAvatar,
-                              imagePlaceholder: const AssetImage(
-                                AppAssets.apps,
-                                package: AppAssets.package,
-                              ),
-                            ),
-                            const SizedBox(width: 8.0),
-                            Expanded(
-                              child: Align(
-                                alignment: Alignment.centerRight,
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      category.name ?? 'displayname not found',
-                                      style: theme.textTheme.bodyMedium,
-                                    ),
-                                    if (isSelected)
-                                      Icon(
-                                        Icons.check,
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                  ],
+                        child: Container(
+                          color: Colors.transparent,
+                          child: Row(
+                            children: [
+                              CustomAvatar(
+                                radius: 20,
+                                url: urlAvatar,
+                                imagePlaceholder: const AssetImage(
+                                  AppAssets.apps,
+                                  package: AppAssets.package,
                                 ),
                               ),
-                            ),
-                          ],
+                              const SizedBox(width: 8.0),
+                              Expanded(
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        category.name ?? 'displayname not found',
+                                        style: theme.textTheme.bodyMedium,
+                                      ),
+                                      if (isSelected)
+                                        Icon(
+                                          Icons.check,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     );

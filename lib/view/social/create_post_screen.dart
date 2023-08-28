@@ -23,10 +23,23 @@ class CreatePostScreen2 extends StatefulWidget {
 }
 
 class CreatePostScreen2State extends State<CreatePostScreen2> {
+  final focusNode = FocusNode(debugLabel: 'Post-Screen');
+
+  Future<void> focuskeyborad() async {
+    await Future.delayed(Duration.zero);
+    focusNode.requestFocus();
+  }
+
   @override
   void initState() {
     Provider.of<CreatePostVM>(context, listen: false).inits();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    focusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -62,13 +75,17 @@ class CreatePostScreen2State extends State<CreatePostScreen2> {
                         child: Column(
                           children: [
                             TextFormField(
-                              cursorColor: context.watch<AmityUIConfiguration>().secondaryColor,
-                              textCapitalization:TextCapitalization.sentences,
+                              cursorColor: context
+                                  .watch<AmityUIConfiguration>()
+                                  .secondaryColor,
+                              textCapitalization: TextCapitalization.sentences,
                               autofocus: true,
+                              focusNode: focusNode,
                               controller: vm.textEditingController,
-                              scrollPhysics: const NeverScrollableScrollPhysics(),
+                              scrollPhysics:
+                                  const NeverScrollableScrollPhysics(),
                               maxLines: null,
-                              onTapOutside: (_){
+                              onTapOutside: (_) {
                                 FocusManager.instance.primaryFocus?.unfocus();
                               },
                               decoration: const InputDecoration(
@@ -123,7 +140,8 @@ class CreatePostScreen2State extends State<CreatePostScreen2> {
                                         child: Container(
                                           color: theme.highlightColor,
                                           child: const Center(
-                                              child: CircularProgressIndicator()),
+                                              child:
+                                                  CircularProgressIndicator()),
                                         ),
                                       );
                               },
@@ -132,14 +150,13 @@ class CreatePostScreen2State extends State<CreatePostScreen2> {
                         ),
                       ),
                     ),
-                    const SizedBox(
-                      height: 10,
-                    ),
+                    const SizedBox(height: 10),
                     Row(
                       children: [
                         GestureDetector(
                           onTap: () async {
                             await vm.addVideo();
+                            focuskeyborad();
                           },
                           child: Container(
                             decoration: BoxDecoration(
@@ -161,6 +178,7 @@ class CreatePostScreen2State extends State<CreatePostScreen2> {
                         GestureDetector(
                           onTap: () async {
                             await vm.addFiles();
+                            focuskeyborad();
                           },
                           child: Container(
                             decoration: BoxDecoration(
@@ -181,6 +199,7 @@ class CreatePostScreen2State extends State<CreatePostScreen2> {
                         GestureDetector(
                           onTap: () async {
                             await vm.addFileFromCamera();
+                            focuskeyborad();
                           },
                           child: Container(
                             decoration: BoxDecoration(
@@ -205,23 +224,28 @@ class CreatePostScreen2State extends State<CreatePostScreen2> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               CircularProgressIndicator(
-                                color: Provider.of<AmityUIConfiguration>(context)
-                                    .primaryColor,
+                                color:
+                                    Provider.of<AmityUIConfiguration>(context)
+                                        .primaryColor,
                               ),
                             ],
                           )
                         : GestureDetector(
                             onTap: () async {
-                              if(vm.isUploading){
+                              if (vm.isUploading) {
                                 return;
                               }
                               await vm.createPost(
                                 context: widget.context,
                                 communityId: widget.communityID,
                               );
-                              if(widget.context == null && widget.communityID == null && vm.lastPost != null){
+                              if (widget.context == null &&
+                                  widget.communityID == null &&
+                                  vm.lastPost != null) {
                                 // ignore: use_build_context_synchronously
-                                context.read<FeedVM>().addPostToFeed(vm.lastPost!);
+                                context
+                                    .read<FeedVM>()
+                                    .addPostToFeed(vm.lastPost!);
                               }
                               if (mounted) {
                                 Navigator.of(context).pop();
@@ -232,10 +256,11 @@ class CreatePostScreen2State extends State<CreatePostScreen2> {
                               alignment: Alignment.center,
                               padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                               decoration: BoxDecoration(
-                                color: !vm.isUploading ? context
-                                    .watch<AmityUIConfiguration>()
-                                    .buttonConfig
-                                    .backgroundColor
+                                color: !vm.isUploading
+                                    ? context
+                                        .watch<AmityUIConfiguration>()
+                                        .buttonConfig
+                                        .backgroundColor
                                     : theme.disabledColor,
                                 borderRadius: BorderRadius.circular(10),
                               ),
