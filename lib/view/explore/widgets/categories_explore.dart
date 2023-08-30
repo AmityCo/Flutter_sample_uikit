@@ -9,7 +9,7 @@ import '../../../constans/app_text_style.dart';
 import '../../../viewmodel/category_viewmodel.dart';
 import '../../categories/categories_view.dart';
 import '../../social/community_list_by_category_id.dart';
-//CategoryVM
+
 
 class CategoriesExplore extends StatefulWidget {
   const CategoriesExplore({super.key});

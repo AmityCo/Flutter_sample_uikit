@@ -16,6 +16,7 @@ class AmityUIConfiguration extends ChangeNotifier {
   AppbarConfig appbarConfig = AppbarConfig();
   UserProfileConfig userProfileConfig = UserProfileConfig();
   ExploreConfig exploreConfig = ExploreConfig();
+  SearchCommunitiesFiflter searchCommunitiesFiflter = SearchCommunitiesFiflter.all;
 
   void updateUI() {
     notifyListeners();
@@ -94,10 +95,20 @@ class ExploreConfig {
   final bool isOpenRecommended;
   final bool isOpenTrending;
   final bool isOpenCategories;
+  final bool isShowCategoryOnRecommended;
+  final bool isShowCategoryOnTrending;
 
   ExploreConfig({
     this.isOpenRecommended = true,
     this.isOpenTrending = true,
     this.isOpenCategories = true,
+    this.isShowCategoryOnRecommended = true,
+    this.isShowCategoryOnTrending = true,
   });
+}
+
+enum SearchCommunitiesFiflter{
+  private,
+  public,
+  all,
 }

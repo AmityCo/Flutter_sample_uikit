@@ -1,10 +1,12 @@
 import 'package:amity_sdk/amity_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
 import '../../../components/custom_avatar_community.dart';
 import '../../../constans/app_assets.dart';
 import '../../../constans/app_text_style.dart';
+import '../../../viewmodel/configuration_viewmodel.dart';
 
 class TrendingExplore extends StatelessWidget {
   const TrendingExplore({
@@ -34,9 +36,16 @@ class TrendingExplore extends StatelessWidget {
           ...List.generate(data.length, (index) {
             final community = data[index];
             String subTitle = '';
+            final showSubTitle = context
+                      .read<AmityUIConfiguration>()
+                      .exploreConfig
+                      .isShowCategoryOnRecommended;
             if (community.categories != null &&
                 community.categories!.isNotEmpty) {
-              subTitle = community.categories?[0]?.name ?? '';
+              
+                  if (showSubTitle) {
+                    subTitle = community.categories?[0]?.name ?? '';
+                  }
             }
             final subtitleTextStyle =
                 AppTextStyle.body1.copyWith(color: const Color(0xff636878));
@@ -114,7 +123,7 @@ class TrendingExplore extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                ' • ${community.membersCount} ${((community.membersCount ?? 0) > 1) ? 'members' : 'member'}',
+                                '${showSubTitle ? ' • ':''}${community.membersCount} ${((community.membersCount ?? 0) > 1) ? 'members' : 'member'}',
                                 style: subtitleTextStyle,
                               ),
                             ],

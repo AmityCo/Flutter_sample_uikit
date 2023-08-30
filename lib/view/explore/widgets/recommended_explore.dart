@@ -1,6 +1,8 @@
 import 'package:amity_sdk/amity_sdk.dart';
 import 'package:amity_uikit_beta_service/constans/app_text_style.dart';
+import 'package:amity_uikit_beta_service/viewmodel/configuration_viewmodel.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../../components/recommended_card.dart';
 
@@ -23,7 +25,7 @@ class RecommendedExplore extends StatelessWidget {
       child: Column(
         children: [
           // Header
-           Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Text(
@@ -48,7 +50,13 @@ class RecommendedExplore extends StatelessWidget {
                 String subTitle = '';
                 if (community.categories != null &&
                     community.categories!.isNotEmpty) {
-                  subTitle = community.categories?[0]?.name ?? '';
+                  final show = context
+                      .read<AmityUIConfiguration>()
+                      .exploreConfig
+                      .isShowCategoryOnRecommended;
+                  if (show) {
+                    subTitle = community.categories?[0]?.name ?? '';
+                  }
                 }
                 return GestureDetector(
                   onTap: () {
@@ -60,7 +68,8 @@ class RecommendedExplore extends StatelessWidget {
                     url: community.avatarImage?.fileUrl,
                     title: community.displayName ?? '',
                     subTitle: subTitle,
-                    caption: '${community.membersCount ?? 0} ${(community.membersCount ?? 0) > 1 ?'members':'member'}',
+                    caption:
+                        '${community.membersCount ?? 0} ${(community.membersCount ?? 0) > 1 ? 'members' : 'member'}',
                     description: community.description ?? '',
                     isOfficial: community.isOfficial ?? false,
                     isPublic: community.isPublic ?? true,
