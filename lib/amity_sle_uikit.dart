@@ -147,6 +147,22 @@ class AmitySLEUIKit {
           url: url,
         );
   }
+
+  static Future<void> joinCommunity(String communityId) async {
+    final community = await AmitySocialClient.newCommunityRepository()
+        .getCommunity(communityId);
+    final isJoined = community.isJoined ?? false;
+    
+    log('joinCommunity community:$community');
+    if(!isJoined){
+      await AmitySocialClient.newCommunityRepository()
+                        .joinCommunity(communityId).then((value) {
+        log("join community:$communityId success");
+      }).onError((error, stackTrace) {
+        log('ERROR AmitySLEUIKit joinInitialCommunity:$error');
+      });
+    }
+  }
 }
 
 class AmitySLEProvider extends StatelessWidget {
