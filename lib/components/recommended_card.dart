@@ -52,10 +52,11 @@ class RecommendedCard extends StatelessWidget {
             isOfficial: isOfficial,
             isPublic: isPublic,
           ),
-          RecommendedText(
-            text: subTitle,
-            style: AppTextStyle.body1,
-          ),
+          if (subTitle.isNotEmpty)
+            RecommendedText(
+              text: subTitle,
+              style: AppTextStyle.body1,
+            ),
           RecommendedText(
             text: caption,
             style: AppTextStyle.body1.copyWith(color: Colors.grey),
