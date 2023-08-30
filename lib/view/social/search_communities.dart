@@ -141,13 +141,13 @@ class _SearchCommunitiesScreenState extends State<SearchCommunitiesScreen> {
 
   List<AmityCommunity> filterData(List<AmityCommunity> items) {
     final fiflter =
-        context.read<AmityUIConfiguration>().searchCommunitiesFiflter;
+        context.read<AmityUIConfiguration>().searchCommunitiesFilter;
     switch (fiflter) {
-      case SearchCommunitiesFiflter.private:
+      case SearchCommunitiesFilter.private:
         return items.where((element) => !(element.isPublic ?? false)).toList();
-      case SearchCommunitiesFiflter.public:
+      case SearchCommunitiesFilter.public:
         return items.where((element) => (element.isPublic ?? false)).toList();
-      case SearchCommunitiesFiflter.all:
+      case SearchCommunitiesFilter.all:
         return items;
     }
   }

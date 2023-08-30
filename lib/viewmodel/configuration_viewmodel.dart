@@ -16,7 +16,7 @@ class AmityUIConfiguration extends ChangeNotifier {
   AppbarConfig appbarConfig = AppbarConfig();
   UserProfileConfig userProfileConfig = UserProfileConfig();
   ExploreConfig exploreConfig = ExploreConfig();
-  SearchCommunitiesFiflter searchCommunitiesFiflter = SearchCommunitiesFiflter.all;
+  SearchCommunitiesFilter searchCommunitiesFilter = SearchCommunitiesFilter.all;
 
   void updateUI() {
     notifyListeners();
@@ -107,7 +107,7 @@ class ExploreConfig {
   });
 }
 
-enum SearchCommunitiesFiflter{
+enum SearchCommunitiesFilter{
   private,
   public,
   all,
