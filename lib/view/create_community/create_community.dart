@@ -371,7 +371,7 @@ class _CreateCommunityViewState extends State<CreateCommunityView> {
               const SizedBox(height: 10),
               ButtonCreateCommunity(
                 title: widget.community != null
-                    ? 'Edit community'
+                    ? 'Update community'
                     : 'Create community',
                 iconData: widget.community != null ? Icons.edit : Icons.add,
                 onPressed: isRequiredPass()

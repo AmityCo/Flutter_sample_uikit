@@ -46,6 +46,7 @@ class ButtonCreateCommunity extends StatelessWidget {
                 Text(
                   title,
                   style: AppTextStyle.header1.copyWith(
+                    fontWeight: FontWeight.w400,
                     color: context
                         .watch<AmityUIConfiguration>()
                         .buttonConfig

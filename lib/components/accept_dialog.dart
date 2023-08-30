@@ -1,3 +1,4 @@
+import 'package:amity_uikit_beta_service/constans/app_string.dart';
 import 'package:amity_uikit_beta_service/viewmodel/configuration_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -5,15 +6,20 @@ import 'package:provider/provider.dart';
 import '../constans/app_text_style.dart';
 import '../viewmodel/community_viewmodel.dart';
 
-class DeleteDialog {
+class AcceptDialog {
   bool isOpenDialog = false;
   BuildContext? contextDialog;
 
   Future<void> open({
     required BuildContext context,
     VoidCallback? onPressedCancel,
-    VoidCallback? onPressedDelete,
+    VoidCallback? onPressedAccept,
+    required ButtonConfig acceptButtonConfig,
+    ButtonConfig? cancelButtonConfig,
     required String title,
+    required String message,
+    String? acceptText,
+    String? cancelText,
   }) async {
     if (isOpenDialog) {
       return;
@@ -27,8 +33,13 @@ class DeleteDialog {
         isOpenDialog = true;
         return _CustomWidget(
           title: title,
+          message: message,
           onPressedCancel: onPressedCancel,
-          onPressedDelete: onPressedDelete,
+          onPressedAccept: onPressedAccept,
+          acceptButtonConfig: acceptButtonConfig,
+          cancelButtonConfig: cancelButtonConfig,
+          acceptText: acceptText,
+          cancelText: cancelText,
           close: () {
             _close();
           },
@@ -42,7 +53,7 @@ class DeleteDialog {
   }
 
   void _close() async {
-    if (contextDialog != null) {
+    if (contextDialog != null && isOpenDialog) {
       isOpenDialog = false;
       Navigator.pop(contextDialog!);
     }
@@ -53,14 +64,25 @@ class _CustomWidget extends StatefulWidget {
   const _CustomWidget({
     required this.close,
     this.onPressedCancel,
-    this.onPressedDelete, 
+    this.onPressedAccept,
     required this.title,
+    required this.acceptButtonConfig,
+    this.cancelButtonConfig,
+    required this.message,
+    this.acceptText,
+    this.cancelText,
   });
 
   final Function() close;
-  final VoidCallback? onPressedCancel;
-  final VoidCallback? onPressedDelete;
+
   final String title;
+  final String message;
+  final String? acceptText;
+  final String? cancelText;
+  final VoidCallback? onPressedCancel;
+  final VoidCallback? onPressedAccept;
+  final ButtonConfig acceptButtonConfig;
+  final ButtonConfig? cancelButtonConfig;
 
   @override
   State<_CustomWidget> createState() => _CustomWidgetState();
@@ -100,10 +122,17 @@ class _CustomWidgetState extends State<_CustomWidget> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _Card(
-                  title: widget.title,
-                  onPressedCancel: widget.onPressedCancel,
-                  onPressedDelete: widget.onPressedDelete,
+                Center(
+                  child: _Card(
+                    title: widget.title,
+                    message: widget.message,
+                    onPressedCancel: widget.onPressedCancel,
+                    onPressedAccept: widget.onPressedAccept,
+                    acceptButtonConfig: widget.acceptButtonConfig,
+                    cancelButtonConfig: widget.cancelButtonConfig,
+                    acceptText: widget.acceptText,
+                    cancelText: widget.cancelText,
+                  ),
                 )
               ],
             ),
@@ -117,15 +146,29 @@ class _CustomWidgetState extends State<_CustomWidget> {
 class _Card extends StatelessWidget {
   const _Card({
     this.onPressedCancel,
-    this.onPressedDelete, 
+    this.onPressedAccept,
     required this.title,
+    required this.acceptButtonConfig,
+    this.cancelButtonConfig,
+    required this.message,
+    this.acceptText,
+    this.cancelText,
   });
   final String title;
+  final String message;
+  final String? acceptText;
+  final String? cancelText;
   final VoidCallback? onPressedCancel;
-  final VoidCallback? onPressedDelete;
+  final VoidCallback? onPressedAccept;
+  final ButtonConfig acceptButtonConfig;
+  final ButtonConfig? cancelButtonConfig;
+
   @override
   Widget build(BuildContext context) {
+    final cancelConfig = cancelButtonConfig ??
+        context.watch<AmityUIConfiguration>().cancelButtonConfig;
     return Container(
+      constraints: const BoxConstraints(maxWidth: 320),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
@@ -134,16 +177,16 @@ class _Card extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-         Flexible(
+          Flexible(
             child: Text(
               title,
               style: AppTextStyle.header1,
             ),
           ),
           const SizedBox(height: 15),
-          const Flexible(
+          Flexible(
             child: Text(
-              'Are you sure you want to delete it? This cannot be undone and your data cannot be restored.',
+              message,
             ),
           ),
           const SizedBox(height: 15),
@@ -152,21 +195,19 @@ class _Card extends StatelessWidget {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  onPressed: onPressedCancel,
+                  onPressed: (){
+                    if(onPressedCancel!=null){
+                       onPressedCancel!();
+                    }
+                  },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: context
-                        .watch<AmityUIConfiguration>()
-                        .cancelButtonConfig
-                        .backgroundColor,
+                    backgroundColor: cancelConfig.backgroundColor,
                   ),
                   child: Text(
-                    'CANCEL',
+                    cancelText ?? AppString.cancelButton,
                     style: AppTextStyle.header2.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: context
-                          .watch<AmityUIConfiguration>()
-                          .cancelButtonConfig
-                          .textColor,
+                      color: cancelConfig.textColor,
                     ),
                   ),
                 ),
@@ -174,21 +215,19 @@ class _Card extends StatelessWidget {
               const SizedBox(width: 20),
               Expanded(
                 child: ElevatedButton(
-                  onPressed: onPressedDelete,
+                  onPressed: (){
+                    if(onPressedAccept!=null){
+                       onPressedAccept!();
+                    }
+                  },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: context
-                        .watch<AmityUIConfiguration>()
-                        .deleteButtonConfig
-                        .backgroundColor,
+                    backgroundColor: acceptButtonConfig.backgroundColor,
                   ),
                   child: Text(
-                    'DELETE',
+                    acceptText ?? AppString.acceptButton,
                     style: AppTextStyle.header2.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: context
-                          .watch<AmityUIConfiguration>()
-                          .deleteButtonConfig
-                          .textColor,
+                      color: acceptButtonConfig.textColor,
                     ),
                   ),
                 ),

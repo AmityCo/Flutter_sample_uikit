@@ -41,6 +41,7 @@ class _CommunityViewState extends State<CommunityView> {
   void navigaatorToUserProfile(AmityUser user) {
     showDialog(
       context: context,
+      useSafeArea: false,
       builder: (context) => UserProfileScreen(
         amityUser: user,
       ),
@@ -80,6 +81,7 @@ class _CommunityViewState extends State<CommunityView> {
                 onTap: () {
                   showDialog(
                     context: context,
+                    useSafeArea: false,
                     builder: (context) => const SearchCommunitiesScreen(),
                   );
                 },

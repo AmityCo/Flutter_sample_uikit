@@ -36,6 +36,14 @@ class _MyCommunityHorizontalViewState extends State<MyCommunityHorizontalView> {
     context.read<CommunityVM>().initAmityMyCommunityList();
   }
 
+  void onPressedTabCommunities() {
+    showDialog(
+      context: context,
+      useSafeArea: false,
+      builder: (_) => const MyCommunityView(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -44,10 +52,7 @@ class _MyCommunityHorizontalViewState extends State<MyCommunityHorizontalView> {
         // Header
         GestureDetector(
           onTap: () {
-            showDialog(
-              context: context,
-              builder: (_) => const MyCommunityView(),
-            );
+            onPressedTabCommunities();
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -68,12 +73,13 @@ class _MyCommunityHorizontalViewState extends State<MyCommunityHorizontalView> {
           ),
         ),
 
-        const SizedBox(height: 5),
         Consumer<CommunityVM>(builder: (_, vm, __) {
           final communities = vm.getAmityMyCommunities();
-
+          if(communities.isEmpty){
+            return const SizedBox();
+          }
           return Padding(
-            padding: const EdgeInsets.only(left: 16.0),
+            padding: const EdgeInsets.only(left: 16.0, top: 5),
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Container(
@@ -88,6 +94,7 @@ class _MyCommunityHorizontalViewState extends State<MyCommunityHorizontalView> {
                       onTap: () async {
                         await showDialog(
                           context: context,
+                          useSafeArea: false,
                           builder: (context) =>
                               ChangeNotifierProvider<CommuFeedVM>(
                             create: (context) => CommuFeedVM(),
@@ -105,7 +112,7 @@ class _MyCommunityHorizontalViewState extends State<MyCommunityHorizontalView> {
             ),
           );
         }),
-        const Divider()
+        const Divider(),
       ],
     );
   }

@@ -11,6 +11,7 @@ class AmityUIConfiguration extends ChangeNotifier {
   MessageRoomConfig messageRoomConfig = MessageRoomConfig();
   ButtonConfig buttonConfig = ButtonConfig();
   DeleteButtonConfig deleteButtonConfig = DeleteButtonConfig();
+  AcceptButtonConfig acceptButtonConfig = AcceptButtonConfig();
   CancelButtonConfig cancelButtonConfig = CancelButtonConfig();
   AppbarConfig appbarConfig = AppbarConfig();
   UserProfileConfig userProfileConfig = UserProfileConfig();
@@ -55,6 +56,13 @@ class ButtonConfig {
   ButtonConfig({
     this.backgroundColor = Colors.white,
     this.textColor = Colors.black,
+  });
+}
+
+class AcceptButtonConfig extends ButtonConfig {
+  AcceptButtonConfig({
+    super.backgroundColor = Colors.blue,
+    super.textColor = Colors.white,
   });
 }
 

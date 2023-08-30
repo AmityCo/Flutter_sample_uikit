@@ -38,6 +38,7 @@ class _ExploreViewState extends State<ExploreView> {
   Future<void> navigationToCommunity(AmityCommunity community) async {
     await showDialog(
       context: context,
+      useSafeArea: false,
       builder: (context) => ChangeNotifierProvider<CommuFeedVM>(
         create: (context) => CommuFeedVM(),
         builder: (context, child) => CommunityScreen(
