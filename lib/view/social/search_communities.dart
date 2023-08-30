@@ -130,21 +130,26 @@ class _SearchCommunitiesScreenState extends State<SearchCommunitiesScreen> {
                   onTap: () => _navigateToCommunityDetails(community),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 20,
-                          backgroundImage: NetworkImage(
-                            community.avatarImage?.fileUrl ??
-                                'https://images.unsplash.com/photo-1598128558393-70ff21433be0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=978&q=80',
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.transparent
+                      ),
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 20,
+                            backgroundImage: NetworkImage(
+                              community.avatarImage?.fileUrl ??
+                                  'https://images.unsplash.com/photo-1598128558393-70ff21433be0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=978&q=80',
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 8.0),
-                        Text(
-                          community.displayName ?? 'displayname not found',
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                      ],
+                          const SizedBox(width: 8.0),
+                          Text(
+                            community.displayName ?? 'displayname not found',
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );

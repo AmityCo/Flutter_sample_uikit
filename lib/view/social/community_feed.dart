@@ -1,6 +1,8 @@
 import 'package:amity_sdk/amity_sdk.dart';
+import 'package:amity_uikit_beta_service/components/accept_dialog.dart';
 import 'package:amity_uikit_beta_service/components/custom_app_bar.dart';
 import 'package:amity_uikit_beta_service/constans/app_assets.dart';
+import 'package:amity_uikit_beta_service/constans/app_string.dart';
 import 'package:amity_uikit_beta_service/constans/app_text_style.dart';
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
@@ -96,6 +98,19 @@ class CommunityScreenState extends State<CommunityScreen> {
         builder: (context) => MemberListCommunityView(community: community),
       ),
     );
+  }
+
+  void onPressedLeave() {
+    AmitySocialClient.newCommunityRepository()
+        .leaveCommunity(community.communityId!)
+        .then((value) {
+      setState(() {
+        community.isJoined = !(community.isJoined!);
+      });
+    }).onError((error, stackTrace) {
+      //handle error
+      log('ERROR CommunityScreen leaveCommunity:$error');
+    });
   }
 
   Widget communityInfo(CommuFeedVM vm) {
@@ -206,16 +221,22 @@ class CommunityScreenState extends State<CommunityScreen> {
               onPressed: () {
                 if (community.isJoined != null) {
                   if (community.isJoined!) {
-                    AmitySocialClient.newCommunityRepository()
-                        .leaveCommunity(community.communityId!)
-                        .then((value) {
-                      setState(() {
-                        community.isJoined = !(community.isJoined!);
-                      });
-                    }).onError((error, stackTrace) {
-                      //handle error
-                      log('ERROR CommunityScreen leaveCommunity:$error');
-                    });
+                    final acceptDialog = AcceptDialog();
+                    acceptDialog.open(
+                        context: context,
+                        acceptButtonConfig: context
+                            .read<AmityUIConfiguration>()
+                            .acceptButtonConfig,
+                        title: 'Leave community',
+                        message: AppString.messageConfrimLeave,
+                        acceptText: AppString.leaveButton,
+                        onPressedCancel: () {
+                          acceptDialog.close();
+                        },
+                        onPressedAccept: () {
+                          onPressedLeave();
+                          acceptDialog.close();
+                        });
                   } else {
                     AmitySocialClient.newCommunityRepository()
                         .joinCommunity(community.communityId!)
@@ -284,9 +305,9 @@ class CommunityScreenState extends State<CommunityScreen> {
     );
   }
 
-  void onRefreshPage(){
+  void onRefreshPage() {
     Provider.of<CommuFeedVM>(context, listen: false)
-                .initAmityCommunityFeed(community);
+        .initAmityCommunityFeed(community);
   }
 
   @override

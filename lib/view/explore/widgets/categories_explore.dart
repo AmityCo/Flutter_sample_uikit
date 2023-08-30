@@ -36,6 +36,7 @@ class _CategoriesExploreState extends State<CategoriesExplore> {
   Future<void> onPressedCategories() async {
     await showDialog(
       context: context,
+      useSafeArea: false,
       builder: (context) => Builder(
         builder: (context) {
           return const CategoriesView();
@@ -47,6 +48,7 @@ class _CategoriesExploreState extends State<CategoriesExplore> {
   Future<void> onPressedCategory(AmityCommunityCategory category) async {
     await showDialog(
       context: context,
+      useSafeArea: false,
       builder: (context) => Builder(
         builder: (context) {
           return CommunityListByCategoryIdScreen(

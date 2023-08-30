@@ -11,8 +11,9 @@ import 'package:provider/provider.dart';
 
 import '../../components/custom_user_avatar.dart';
 
-import '../../components/delete_dialog.dart';
+import '../../components/accept_dialog.dart';
 import '../../components/select_post_dialog.dart';
+import '../../constans/app_string.dart';
 import '../../constans/app_text_style.dart';
 import '../../viewmodel/community_feed_viewmodel.dart';
 import '../../viewmodel/community_view_model.dart';
@@ -182,12 +183,25 @@ class _PostWidgetState extends State<PostWidget>
 {
   double iconSize = 20;
   double feedReactionCountSize = 14;
-  final deleteDialog = DeleteDialog();
+  final deleteDialog = AcceptDialog();
 
   @override
   void dispose() {
     deleteDialog.close();
     super.dispose();
+  }
+
+  Future<void> navigatorToCommentScreen() async {
+    await showDialog(
+      context: context,
+      useSafeArea: false,
+      builder: (context) => CommentScreen(
+        amityPost: widget.post,
+      ),
+    );
+    if (mounted) {
+      Provider.of<FeedVM>(context, listen: false).initAmityGlobalfeed();
+    }
   }
 
   Future<void> onDeletePost() async {
@@ -242,6 +256,7 @@ class _PostWidgetState extends State<PostWidget>
           case 'Edit Post':
             showDialog(
               context: context,
+              useSafeArea: false,
               builder: (context) => ChangeNotifierProvider<EditPostVM>(
                 create: (context) => EditPostVM(),
                 child: EditPostScreen(post: widget.post),
@@ -253,10 +268,14 @@ class _PostWidgetState extends State<PostWidget>
             deleteDialog.open(
               context: context,
               title: 'Delete Post',
+              message: AppString.messageConfrimDelete,
+              acceptText: AppString.deleteButton,
+              acceptButtonConfig:
+                  context.read<AmityUIConfiguration>().deleteButtonConfig,
               onPressedCancel: () {
                 deleteDialog.close();
               },
-              onPressedDelete: () {
+              onPressedAccept: () {
                 onDeletePost();
                 deleteDialog.close();
               },
@@ -296,12 +315,7 @@ class _PostWidgetState extends State<PostWidget>
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: () {
-          showDialog(
-            context: context,
-            builder: (context) => CommentScreen(
-              amityPost: widget.post,
-            ),
-          );
+          navigatorToCommentScreen();
         },
         child: Container(
           margin: const EdgeInsets.only(top: 10),
@@ -318,6 +332,7 @@ class _PostWidgetState extends State<PostWidget>
                         onTap: () {
                           showDialog(
                             context: context,
+                            useSafeArea: false,
                             builder: (context) => ChangeNotifierProvider(
                               create: (context) => UserFeedVM(),
                               child: UserProfileScreen(
@@ -347,6 +362,7 @@ class _PostWidgetState extends State<PostWidget>
                           onTap: () {
                             showDialog(
                               context: context,
+                              useSafeArea: false,
                               builder: (context) => ChangeNotifierProvider(
                                 create: (context) => UserFeedVM(),
                                 child: UserProfileScreen(
@@ -393,6 +409,7 @@ class _PostWidgetState extends State<PostWidget>
                                 onTap: () {
                                   showDialog(
                                     context: context,
+                                    useSafeArea: false,
                                     builder: (context) =>
                                         ChangeNotifierProvider(
                                       create: (context) => CommuFeedVM(),
@@ -630,12 +647,7 @@ class _PostWidgetState extends State<PostWidget>
                       Expanded(
                         child: GestureDetector(
                           onTap: () {
-                            showDialog(
-                              context: context,
-                              builder: (context) => CommentScreen(
-                                amityPost: widget.post,
-                              ),
-                            );
+                            navigatorToCommentScreen();
                           },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
