@@ -76,7 +76,21 @@ class InitialWidget extends StatelessWidget {
             children: [
               ElevatedButton(
                 onPressed: () {
-                  ///Step 4: Navigate To channel List page
+                  ///Step 4: Navigate To Community page
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const CommunityView(),
+                  ));
+                },
+                child: const Text("Navigate to UIKIT: Community page"),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  ///Step 5: Navigate To channel List page
                   Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => const AmitySLEChannelScreen(),
                   ));
@@ -90,7 +104,7 @@ class InitialWidget extends StatelessWidget {
             children: [
               ElevatedButton(
                 onPressed: () async {
-                  ///4.1: Navigate To channel chat screen page with ChannelId
+                  ///5.1: Navigate To channel chat screen page with ChannelId
 
                   await Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => const SingleChatRoom(
@@ -107,7 +121,7 @@ class InitialWidget extends StatelessWidget {
             children: [
               ElevatedButton(
                 onPressed: () {
-                  ///4.e: Navigate To Global Feed Screen
+                  ///5.e: Navigate To Global Feed Screen
                   Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) =>
                         const Scaffold(body: GlobalFeedScreen()),
