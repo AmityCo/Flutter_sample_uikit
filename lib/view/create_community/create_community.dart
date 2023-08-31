@@ -357,6 +357,7 @@ class _CreateCommunityViewState extends State<CreateCommunityView> {
                 child: Divider(),
               ),
               if (!isLoadMembers)
+                if(widget.community != null || (communityType == CommunityType.private))
                 AddMembers(
                   title: 'Add members',
                   isRequired: true,
@@ -370,7 +371,7 @@ class _CreateCommunityViewState extends State<CreateCommunityView> {
               const SizedBox(height: 10),
               ButtonCreateCommunity(
                 title: widget.community != null
-                    ? 'Edit community'
+                    ? 'Update community'
                     : 'Create community',
                 iconData: widget.community != null ? Icons.edit : Icons.add,
                 onPressed: isRequiredPass()
@@ -389,8 +390,14 @@ class _CreateCommunityViewState extends State<CreateCommunityView> {
 
   bool isRequiredPass() {
     if (selectedCategory != null &&
-        communityName.isNotEmpty &&
-        selectedUsers.isNotEmpty) {
+        communityName.isNotEmpty) {
+
+      if(communityType == CommunityType.private){
+        if(selectedUsers.isEmpty){
+          return false;
+        }
+      }
+
       return true;
     }
     return false;

@@ -1,8 +1,12 @@
 import 'package:amity_sdk/amity_sdk.dart';
+import 'package:amity_uikit_beta_service/components/accept_dialog.dart';
 import 'package:amity_uikit_beta_service/components/custom_app_bar.dart';
+import 'package:amity_uikit_beta_service/constans/app_assets.dart';
+import 'package:amity_uikit_beta_service/constans/app_string.dart';
 import 'package:amity_uikit_beta_service/constans/app_text_style.dart';
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:provider/provider.dart';
 
@@ -63,7 +67,8 @@ class CommunityScreenState extends State<CommunityScreen> {
             ? Container()
             : Text(
                 "About",
-                style: AppTextStyle.header2.copyWith(fontWeight: FontWeight.w600, fontSize: 16),
+                style: AppTextStyle.header2
+                    .copyWith(fontWeight: FontWeight.w600, fontSize: 16),
               ),
         const SizedBox(
           height: 5.0,
@@ -95,11 +100,31 @@ class CommunityScreenState extends State<CommunityScreen> {
     );
   }
 
+  void onPressedLeave() {
+    AmitySocialClient.newCommunityRepository()
+        .leaveCommunity(community.communityId!)
+        .then((value) {
+      setState(() {
+        community.isJoined = !(community.isJoined!);
+      });
+    }).onError((error, stackTrace) {
+      //handle error
+      log('ERROR CommunityScreen leaveCommunity:$error');
+    });
+  }
+
   Widget communityInfo(CommuFeedVM vm) {
     return Column(
       children: [
         Row(
           children: [
+            if (community.isOfficial ?? false)
+              SvgPicture.asset(
+                AppAssets.verified,
+                width: 25,
+                height: 25,
+                package: AppAssets.package,
+              ),
             Flexible(
               child: Text(
                 community.displayName != null
@@ -172,19 +197,18 @@ class CommunityScreenState extends State<CommunityScreen> {
         ),
         Row(
           children: [
-            const Icon(Icons.public_rounded, color: Colors.black),
-            const SizedBox(
-              width: 5,
-            ),
+            (community.isPublic ?? true)
+                ? const Icon(Icons.public_rounded, color: Colors.black)
+                : const Icon(Icons.lock, color: Colors.black),
+            const SizedBox(width: 5),
             Text(community.isPublic != null
                 ? (community.isPublic! ? "Public" : "Private")
                 : "N/A"),
-            const SizedBox(
-              width: 20,
-            ),
+            const SizedBox(width: 20),
             GestureDetector(
               onTap: navigatorToMemberList,
-              child: Text("${community.membersCount} members"),
+              child: Text(
+                  "${community.membersCount} ${((community.membersCount ?? 0) > 1) ? 'members' : 'member'}"),
             ),
             const Spacer(),
             ElevatedButton(
@@ -197,16 +221,22 @@ class CommunityScreenState extends State<CommunityScreen> {
               onPressed: () {
                 if (community.isJoined != null) {
                   if (community.isJoined!) {
-                    AmitySocialClient.newCommunityRepository()
-                        .leaveCommunity(community.communityId!)
-                        .then((value) {
-                      setState(() {
-                        community.isJoined = !(community.isJoined!);
-                      });
-                    }).onError((error, stackTrace) {
-                      //handle error
-                      log('ERROR CommunityScreen leaveCommunity:$error');
-                    });
+                    final acceptDialog = AcceptDialog();
+                    acceptDialog.open(
+                        context: context,
+                        acceptButtonConfig: context
+                            .read<AmityUIConfiguration>()
+                            .acceptButtonConfig,
+                        title: 'Leave community',
+                        message: AppString.messageConfrimLeave,
+                        acceptText: AppString.leaveButton,
+                        onPressedCancel: () {
+                          acceptDialog.close();
+                        },
+                        onPressedAccept: () {
+                          onPressedLeave();
+                          acceptDialog.close();
+                        });
                   } else {
                     AmitySocialClient.newCommunityRepository()
                         .joinCommunity(community.communityId!)
@@ -275,6 +305,11 @@ class CommunityScreenState extends State<CommunityScreen> {
     );
   }
 
+  void onRefreshPage() {
+    Provider.of<CommuFeedVM>(context, listen: false)
+        .initAmityCommunityFeed(community);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -284,12 +319,16 @@ class CommunityScreenState extends State<CommunityScreen> {
         appBar: CustomAppBar(context: context),
         floatingActionButton: (community.isJoined!)
             ? FloatingActionButton(
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
+                onPressed: () async {
+                  await Navigator.of(context).push(
+                    MaterialPageRoute(
                       builder: (context2) => CreatePostScreen2(
-                            communityID: community.communityId,
-                            context: context,
-                          )));
+                        communityID: community.communityId,
+                        context: context,
+                      ),
+                    ),
+                  );
+                  onRefreshPage();
                 },
                 backgroundColor: Provider.of<AmityUIConfiguration>(context)
                     .buttonConfig
@@ -306,8 +345,7 @@ class CommunityScreenState extends State<CommunityScreen> {
         body: RefreshIndicator(
           color: Provider.of<AmityUIConfiguration>(context).primaryColor,
           onRefresh: () async {
-            Provider.of<CommuFeedVM>(context, listen: false)
-                .initAmityCommunityFeed(community);
+            onRefreshPage();
           },
           child: CustomFadedSlideAnimation(
             child: SafeArea(
@@ -315,16 +353,6 @@ class CommunityScreenState extends State<CommunityScreen> {
                 controller: vm.scrollcontroller,
                 child: Column(
                   children: [
-                    // Align(
-                    //   alignment: Alignment.topLeft,
-                    //   child: IconButton(
-                    //     onPressed: () {
-                    //       Navigator.of(context).pop();
-                    //     },
-                    //     icon: const Icon(Icons.chevron_left,
-                    //         color: Colors.black, size: 35),
-                    //   ),
-                    // ),
                     SizedBox(
                         width: double.infinity,
                         // height: (bHeight - 120) * 0.4,

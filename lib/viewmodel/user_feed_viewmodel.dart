@@ -155,18 +155,21 @@ class UserFeedVM extends ChangeNotifier {
     }
   }
 
-  void followButtonAction(AmityUser user, AmityFollowStatus amityFollowStatus) {
+  Future<void> followButtonAction(AmityUser user, AmityFollowStatus amityFollowStatus) async {
     if (amityFollowStatus == AmityFollowStatus.NONE) {
-      sendFollowRequest(user: user);
+      await sendFollowRequest(user: user);
     } else if (amityFollowStatus == AmityFollowStatus.PENDING) {
-      withdrawFollowRequest(user);
+      await withdrawFollowRequest(user);
     } else if (amityFollowStatus == AmityFollowStatus.ACCEPTED) {
-      withdrawFollowRequest(user);
+      await withdrawFollowRequest(user);
     } else {
       AmityDialog().showAlertErrorDialog(
           title: "Error!",
           message: "followButtonAction: cant handle amityFollowStatus");
     }
+    await Future.delayed(const Duration(milliseconds: 700));
+    initUserFeed(user);
+    initUserGalleryFeed(user);
   }
 
   Future<void> sendFollowRequest({required AmityUser user}) async {
@@ -184,8 +187,8 @@ class UserFeedVM extends ChangeNotifier {
     });
   }
 
-  void withdrawFollowRequest(AmityUser user) {
-    AmityCoreClient.newUserRepository()
+  Future<void> withdrawFollowRequest(AmityUser user) async {
+   await AmityCoreClient.newUserRepository()
         .relationship()
         .unfollow(user.userId!)
         .then((value) {

@@ -21,15 +21,19 @@ class TextInputComment extends StatelessWidget {
           spreadRadius: 0.5,
         ),
       ]),
-      height: 60,
+      constraints: const BoxConstraints(minHeight: 60, maxHeight: 120),
       child: ListTile(
         leading: getAvatarImage(
           context.watch<AmityVM>().currentamityUser?.avatarUrl,
         ),
-        title: TextField(
+        title: TextFormField(
           cursorColor: context.watch<AmityUIConfiguration>().secondaryColor,
-          textCapitalization:TextCapitalization.sentences,
+          textCapitalization: TextCapitalization.sentences,
           controller: controller,
+          maxLines: null,
+          onTapOutside: (_) {
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
           decoration: InputDecoration(
             border: InputBorder.none,
             hintText: "Write your message",

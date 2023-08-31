@@ -11,9 +11,12 @@ import 'package:provider/provider.dart';
 
 import '../../components/custom_user_avatar.dart';
 
+import '../../components/accept_dialog.dart';
 import '../../components/select_post_dialog.dart';
+import '../../constans/app_string.dart';
 import '../../constans/app_text_style.dart';
 import '../../viewmodel/community_feed_viewmodel.dart';
+import '../../viewmodel/community_view_model.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
 import '../../viewmodel/edit_post_viewmodel.dart';
 import '../../viewmodel/feed_viewmodel.dart';
@@ -56,41 +59,70 @@ class GlobalFeedScreenState extends State<GlobalFeedScreen> {
           await vm.initAmityGlobalfeed();
         },
         child: Stack(
+          fit: StackFit.expand,
           children: [
-            Column(
-              children: [
-                Expanded(
+            if (vm.getAmityPosts().isEmpty && !vm.isLoading)
+              Consumer<AmityVM>(builder: (context, vm, _) {
+                String msg = "Welcome\n Go to the Explore page";
+                String? displayName = vm.currentamityUser?.displayName;
+                if (displayName != null && displayName.isNotEmpty) {
+                  msg = "Welcome, $displayName! \n Go to the Explore page";
+                }
+                return GestureDetector(
+                  onTap: () {
+                    context.read<CommunityViewModel>().selectTab(1);
+                  },
                   child: Container(
-                    color: Colors.grey[200],
-                    child: FadedSlideAnimation(
-                      beginOffset: const Offset(0, 0.3),
-                      endOffset: const Offset(0, 0),
-                      slideCurve: Curves.linearToEaseOut,
-                      child: ListView.builder(
-                        // shrinkWrap: true,
-                        controller: vm.scrollcontroller,
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        itemCount: vm.getAmityPosts().length,
-                        itemBuilder: (context, index) {
-                          return StreamBuilder<AmityPost>(
-                              key: Key(vm.getAmityPosts()[index].postId!),
-                              stream: vm.getAmityPosts()[index].listen.stream,
-                              initialData: vm.getAmityPosts()[index],
-                              builder: (context, snapshot) {
-                                return PostWidget(
-                                  post: snapshot.data!,
-                                  theme: theme,
-                                  postIndex: index,
-                                  isFromFeed: true,
-                                );
-                              });
-                        },
+                    color: Colors.transparent,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Text(
+                          msg,
+                          style: AppTextStyle.header1,
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }),
+            if (vm.getAmityPosts().isNotEmpty)
+              Column(
+                children: [
+                  Expanded(
+                    child: Container(
+                      color: Colors.grey[200],
+                      child: FadedSlideAnimation(
+                        beginOffset: const Offset(0, 0.3),
+                        endOffset: const Offset(0, 0),
+                        slideCurve: Curves.linearToEaseOut,
+                        child: ListView.builder(
+                          // shrinkWrap: true,
+                          controller: vm.scrollcontroller,
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          itemCount: vm.getAmityPosts().length,
+                          itemBuilder: (context, index) {
+                            return StreamBuilder<AmityPost>(
+                                key: Key(vm.getAmityPosts()[index].postId!),
+                                stream: vm.getAmityPosts()[index].listen.stream,
+                                initialData: vm.getAmityPosts()[index],
+                                builder: (context, snapshot) {
+                                  return PostWidget(
+                                    post: snapshot.data!,
+                                    theme: theme,
+                                    postIndex: index,
+                                    isFromFeed: true,
+                                  );
+                                });
+                          },
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
             Positioned(
               right: 15,
               bottom: 15,
@@ -151,6 +183,39 @@ class _PostWidgetState extends State<PostWidget>
 {
   double iconSize = 20;
   double feedReactionCountSize = 14;
+  final deleteDialog = AcceptDialog();
+
+  @override
+  void dispose() {
+    deleteDialog.close();
+    super.dispose();
+  }
+
+  Future<void> navigatorToCommentScreen() async {
+    await showDialog(
+      context: context,
+      useSafeArea: false,
+      builder: (context) => CommentScreen(
+        amityPost: widget.post,
+      ),
+    );
+    if (mounted) {
+      Provider.of<FeedVM>(context, listen: false).initAmityGlobalfeed();
+    }
+  }
+
+  Future<void> onDeletePost() async {
+    if (widget.isCommunity == null || widget.isCommunity == false) {
+      await Provider.of<FeedVM>(context, listen: false)
+          .deletePost(widget.post, widget.postIndex);
+    } else {
+      await Provider.of<CommuFeedVM>(context, listen: false)
+          .deletePost(widget.post, widget.postIndex);
+    }
+    if (widget.onDeleteAction != null) {
+      widget.onDeleteAction!(1);
+    }
+  }
 
   Widget postWidgets() {
     List<Widget> widgets = [];
@@ -189,22 +254,32 @@ class _PostWidgetState extends State<PostWidget>
 
             break;
           case 'Edit Post':
-            Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => ChangeNotifierProvider<EditPostVM>(
-                    create: (context) => EditPostVM(),
-                    child: EditPostScreen(post: widget.post))));
+            showDialog(
+              context: context,
+              useSafeArea: false,
+              builder: (context) => ChangeNotifierProvider<EditPostVM>(
+                create: (context) => EditPostVM(),
+                child: EditPostScreen(post: widget.post),
+              ),
+            );
+
             break;
           case 'Delete Post':
-            if (widget.isCommunity == null || widget.isCommunity == false) {
-              await Provider.of<FeedVM>(context, listen: false)
-                  .deletePost(widget.post, widget.postIndex);
-            } else {
-              await Provider.of<CommuFeedVM>(context, listen: false)
-                  .deletePost(widget.post, widget.postIndex);
-            }
-            if (widget.onDeleteAction != null) {
-              widget.onDeleteAction!(1);
-            }
+            deleteDialog.open(
+              context: context,
+              title: 'Delete Post',
+              message: AppString.messageConfrimDelete,
+              acceptText: AppString.deleteButton,
+              acceptButtonConfig:
+                  context.read<AmityUIConfiguration>().deleteButtonConfig,
+              onPressedCancel: () {
+                deleteDialog.close();
+              },
+              onPressedAccept: () {
+                onDeletePost();
+                deleteDialog.close();
+              },
+            );
             break;
           default:
         }
@@ -217,16 +292,19 @@ class _PostWidgetState extends State<PostWidget>
       itemBuilder: (context) {
         return List.generate(isPostOwner ? 2 : 1, (index) {
           return PopupMenuItem(
-              value: isPostOwner
+            value: isPostOwner
+                ? postOwnerMenu[index]
+                : isFlaggedByMe
+                    ? 'Unreport Post'
+                    : 'Report Post',
+            child: Text(
+              isPostOwner
                   ? postOwnerMenu[index]
                   : isFlaggedByMe
                       ? 'Unreport Post'
                       : 'Report Post',
-              child: Text(isPostOwner
-                  ? postOwnerMenu[index]
-                  : isFlaggedByMe
-                      ? 'Unreport Post'
-                      : 'Report Post'));
+            ),
+          );
         });
       },
     );
@@ -237,10 +315,7 @@ class _PostWidgetState extends State<PostWidget>
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: () {
-          Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => CommentScreen(
-                    amityPost: widget.post,
-                  )));
+          navigatorToCommentScreen();
         },
         child: Container(
           margin: const EdgeInsets.only(top: 10),
@@ -255,13 +330,13 @@ class _PostWidgetState extends State<PostWidget>
                     leading: FadeAnimation(
                       child: GestureDetector(
                         onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => ChangeNotifierProvider(
-                                create: (context) => UserFeedVM(),
-                                child: UserProfileScreen(
-                                  amityUser: widget.post.postedUser!,
-                                ),
+                          showDialog(
+                            context: context,
+                            useSafeArea: false,
+                            builder: (context) => ChangeNotifierProvider(
+                              create: (context) => UserFeedVM(),
+                              child: UserProfileScreen(
+                                amityUser: widget.post.postedUser!,
                               ),
                             ),
                           );
@@ -285,12 +360,16 @@ class _PostWidgetState extends State<PostWidget>
                       children: [
                         GestureDetector(
                           onTap: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => ChangeNotifierProvider(
-                                    create: (context) => UserFeedVM(),
-                                    child: UserProfileScreen(
-                                      amityUser: widget.post.postedUser!,
-                                    ))));
+                            showDialog(
+                              context: context,
+                              useSafeArea: false,
+                              builder: (context) => ChangeNotifierProvider(
+                                create: (context) => UserFeedVM(),
+                                child: UserProfileScreen(
+                                  amityUser: widget.post.postedUser!,
+                                ),
+                              ),
+                            );
                           },
                           child: Text(
                             widget.post.postedUser!.userId !=
@@ -328,17 +407,20 @@ class _PostWidgetState extends State<PostWidget>
                                 widget.isFromFeed
                             ? GestureDetector(
                                 onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) =>
-                                          ChangeNotifierProvider(
-                                            create: (context) => CommuFeedVM(),
-                                            child: CommunityScreen(
-                                              isFromFeed: true,
-                                              community: (widget.post.target
-                                                      as CommunityTarget)
-                                                  .targetCommunity!,
-                                            ),
-                                          )));
+                                  showDialog(
+                                    context: context,
+                                    useSafeArea: false,
+                                    builder: (context) =>
+                                        ChangeNotifierProvider(
+                                      create: (context) => CommuFeedVM(),
+                                      child: CommunityScreen(
+                                        isFromFeed: true,
+                                        community: (widget.post.target
+                                                as CommunityTarget)
+                                            .targetCommunity!,
+                                      ),
+                                    ),
+                                  );
                                 },
                                 child: Text(
                                   (widget.post.target as CommunityTarget)
@@ -347,8 +429,9 @@ class _PostWidgetState extends State<PostWidget>
                                       "Community name",
                                   style: widget.theme.textTheme.bodyLarge!
                                       .copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
                                 ),
                               )
                             : Container()
@@ -547,10 +630,12 @@ class _PostWidgetState extends State<PostWidget>
                                           ),
                                           Text(
                                             ' Like',
-                                            style: AppTextStyle.mainStyle.copyWith(
-                                                color: Colors.grey,
-                                                fontSize: feedReactionCountSize,
-                                                letterSpacing: 1),
+                                            style: AppTextStyle.mainStyle
+                                                .copyWith(
+                                                    color: Colors.grey,
+                                                    fontSize:
+                                                        feedReactionCountSize,
+                                                    letterSpacing: 1),
                                           ),
                                         ],
                                       ),
@@ -562,10 +647,7 @@ class _PostWidgetState extends State<PostWidget>
                       Expanded(
                         child: GestureDetector(
                           onTap: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => CommentScreen(
-                                      amityPost: widget.post,
-                                    )));
+                            navigatorToCommentScreen();
                           },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,

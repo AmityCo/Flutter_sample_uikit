@@ -1,6 +1,6 @@
 import 'package:amity_sdk/amity_sdk.dart';
 import 'package:amity_uikit_beta_service/components/custom_app_bar.dart';
-import 'package:amity_uikit_beta_service/viewmodel/amity_viewmodel.dart';
+import 'package:amity_uikit_beta_service/components/accept_dialog.dart';
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,9 +8,11 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../components/custom_user_avatar.dart';
+import '../../constans/app_string.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
 import '../../viewmodel/post_viewmodel.dart';
 import '../../viewmodel/user_feed_viewmodel.dart';
+import '../post_detail/widgets/text_input_comment.dart';
 import '../user/user_profile.dart';
 import 'edit_comment.dart';
 
@@ -94,48 +96,18 @@ class ReplyCommentScreenState extends State<ReplyCommentScreen> {
                           ),
                         ),
                       ),
-                      Container(
-                        decoration: const BoxDecoration(
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Color.fromARGB(255, 155, 120, 120),
-                                blurRadius: 0.8,
-                                spreadRadius: 0.5,
-                              ),
-                            ]),
-                        height: 60,
-                        child: ListTile(
-                          leading: getAvatarImage(Provider.of<AmityVM>(context)
-                              .currentamityUser
-                              ?.avatarUrl),
-                          title: TextField(
-                            cursorColor: context.watch<AmityUIConfiguration>().secondaryColor,
-                            textCapitalization:TextCapitalization.sentences,
-                            controller: _commentTextEditController,
-                            decoration: const InputDecoration(
-                              border: InputBorder.none,
-                              hintText: "Write your reply",
-                              hintStyle: TextStyle(fontSize: 14),
-                            ),
-                          ),
-                          trailing: GestureDetector(
-                              onTap: () async {
-                                HapticFeedback.heavyImpact();
-                                await Provider.of<PostVM>(context,
-                                        listen: false)
-                                    .createReplyComment(
-                                        widget.postId,
-                                        widget.commentId,
-                                        _commentTextEditController.text);
+                      TextInputComment(
+                        controller: _commentTextEditController,
+                        onPressedSend: () async {
+                          HapticFeedback.heavyImpact();
+                          await Provider.of<PostVM>(context, listen: false)
+                              .createReplyComment(
+                                  widget.postId,
+                                  widget.commentId,
+                                  _commentTextEditController.text);
 
-                                _commentTextEditController.clear();
-                              },
-                              child: Icon(Icons.send,
-                                  color:
-                                      Provider.of<AmityUIConfiguration>(context)
-                                          .primaryColor)),
-                        ),
+                          _commentTextEditController.clear();
+                        },
                       ),
                     ],
                   ),
@@ -164,11 +136,18 @@ class CommentComponent extends StatefulWidget {
 }
 
 class _CommentComponentState extends State<CommentComponent> {
+  final deleteDialog = AcceptDialog();
   @override
   void initState() {
     Provider.of<PostVM>(context, listen: false)
         .listenForReplyComments(widget.postId, widget.commentId);
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    deleteDialog.close();
+    super.dispose();
   }
 
   void navigateToEditComment(AmityComment comment) {
@@ -302,47 +281,50 @@ class _CommentComponentState extends State<CommentComponent> {
                         Row(
                           children: [
                             isLiked(snapshot)
-                                ? GestureDetector(
-                                    onTap: () {
+                                ? _IconButton(
+                                    onPressed: () {
                                       vm.removeCommentReaction(comments);
                                     },
-                                    child: const Icon(
-                                      Icons.favorite,
-                                      color: Colors.red,
-                                    ),
+                                    icon: Icons.favorite,
+                                    colorIcon: Colors.red,
                                   )
-                                : GestureDetector(
-                                    onTap: () {
+                                : _IconButton(
+                                    onPressed: () {
                                       vm.addCommentReaction(comments);
                                     },
-                                    child: const Icon(Icons.favorite_border)),
+                                    icon: Icons.favorite_border,
+                                  ),
                             if (snapshot.data?.userId ==
                                 AmityCoreClient.getCurrentUser().userId)
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 8.0, right: 8.0),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    navigateToEditComment(snapshot.data!);
-                                  },
-                                  child: const Icon(
-                                    Icons.edit_outlined,
-                                    color: Colors.grey,
-                                  ),
-                                ),
+                              _IconButton(
+                                onPressed: () {
+                                  navigateToEditComment(snapshot.data!);
+                                },
+                                icon: Icons.edit_outlined,
                               ),
                             if (snapshot.data?.userId ==
                                 AmityCoreClient.getCurrentUser().userId)
-                              GestureDetector(
-                                onTap: () {
-                                  if (snapshot.data != null) {
-                                    vm.deleteReplyComment(snapshot.data!);
-                                  }
+                              _IconButton(
+                                onPressed: () {
+                                  deleteDialog.open(
+                                      context: context,
+                                      title: 'Delete Reply Comment',
+                                      message: AppString.messageConfrimDelete,
+                                      acceptText: AppString.deleteButton,
+                                      acceptButtonConfig: context
+                                          .read<AmityUIConfiguration>()
+                                          .deleteButtonConfig,
+                                      onPressedCancel: () {
+                                        deleteDialog.close();
+                                      },
+                                      onPressedAccept: () {
+                                        if (snapshot.data != null) {
+                                          vm.deleteReplyComment(snapshot.data!);
+                                        }
+                                        deleteDialog.close();
+                                      });
                                 },
-                                child: const Icon(
-                                  Icons.delete,
-                                  color: Colors.grey,
-                                ),
+                                icon: Icons.delete,
                               ),
                           ],
                         )
@@ -397,5 +379,35 @@ class _CommentComponentState extends State<CommentComponent> {
         },
       );
     });
+  }
+}
+
+class _IconButton extends StatelessWidget {
+  const _IconButton({
+    required this.icon,
+    this.onPressed,
+    this.colorIcon = Colors.grey,
+  });
+
+  final IconData icon;
+  final Color colorIcon;
+  final VoidCallback? onPressed;
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        width: 30,
+        height: 25,
+        margin: const EdgeInsets.only(right: 5),
+        child: Center(
+          child: Icon(
+            icon,
+            color: colorIcon,
+            size: 25,
+          ),
+        ),
+      ),
+    );
   }
 }

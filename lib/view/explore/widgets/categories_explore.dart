@@ -9,7 +9,7 @@ import '../../../constans/app_text_style.dart';
 import '../../../viewmodel/category_viewmodel.dart';
 import '../../categories/categories_view.dart';
 import '../../social/community_list_by_category_id.dart';
-//CategoryVM
+
 
 class CategoriesExplore extends StatefulWidget {
   const CategoriesExplore({super.key});
@@ -34,21 +34,29 @@ class _CategoriesExploreState extends State<CategoriesExplore> {
   }
 
   Future<void> onPressedCategories() async {
-    await Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => Builder(builder: (context) {
-        return const CategoriesView();
-      }),
-    ));
+    await showDialog(
+      context: context,
+      useSafeArea: false,
+      builder: (context) => Builder(
+        builder: (context) {
+          return const CategoriesView();
+        },
+      ),
+    );
   }
 
   Future<void> onPressedCategory(AmityCommunityCategory category) async {
-    await Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => Builder(builder: (context) {
-        return CommunityListByCategoryIdScreen(
-          category: category,
-        );
-      }),
-    ));
+    await showDialog(
+      context: context,
+      useSafeArea: false,
+      builder: (context) => Builder(
+        builder: (context) {
+          return CommunityListByCategoryIdScreen(
+            category: category,
+          );
+        },
+      ),
+    );
   }
 
   @override
@@ -66,7 +74,7 @@ class _CategoriesExploreState extends State<CategoriesExplore> {
                 onTap: onPressedCategories,
                 child: Row(
                   children: [
-                     Expanded(
+                    Expanded(
                       child: Text(
                         'Categories',
                         style: AppTextStyle.header1,
@@ -98,8 +106,9 @@ class _CategoriesExploreState extends State<CategoriesExplore> {
                     onTap: () {
                       onPressedCategory(category);
                     },
-                    child: SizedBox(
+                    child: Container(
                       width: 170,
+                      color: Colors.transparent,
                       child: Row(
                         children: [
                           CustomAvatarCommunity(

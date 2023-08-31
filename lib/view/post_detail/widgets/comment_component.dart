@@ -1,9 +1,12 @@
 import 'package:amity_sdk/amity_sdk.dart';
+import 'package:amity_uikit_beta_service/viewmodel/configuration_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../components/custom_user_avatar.dart';
+import '../../../components/accept_dialog.dart';
+import '../../../constans/app_string.dart';
 import '../../../constans/app_text_style.dart';
 import '../../../viewmodel/post_viewmodel.dart';
 import '../../../viewmodel/user_feed_viewmodel.dart';
@@ -26,10 +29,18 @@ class CommentComponent extends StatefulWidget {
 }
 
 class _CommentComponentState extends State<CommentComponent> {
+  final deleteDialog = AcceptDialog();
+
   @override
   void initState() {
     getData();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    deleteDialog.close();
+    super.dispose();
   }
 
   void navigateToEditComment(AmityComment comment) {
@@ -148,83 +159,92 @@ class _CommentComponentState extends State<CommentComponent> {
                           ),
                         ),
                         if (snapshot.data!.childrenNumber! > 0)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 8.0),
-                            child: GestureDetector(
-                              onTap: () {
-                                onShowRepliesClicked(
-                                    widget.postId, snapshot.data!.commentId!);
-                              },
-                              child: Text("Show replies",
-                                  style: AppTextStyle.body1.copyWith(
-                                      color: Colors.blue,
-                                      fontWeight: FontWeight.w600)),
+                          GestureDetector(
+                            onTap: () {
+                              onShowRepliesClicked(
+                                  widget.postId, snapshot.data!.commentId!);
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: Container(
+                                constraints:
+                                    const BoxConstraints(minHeight: 25),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "Show replies",
+                                      style: AppTextStyle.body1.copyWith(
+                                        color: Colors.blue,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
                         Row(
                           children: [
                             isLiked(snapshot)
-                                ? GestureDetector(
-                                    onTap: () {
+                                ? _IconButton(
+                                    onPressed: () {
                                       vm.removeCommentReaction(comments);
                                     },
-                                    child: const Icon(
-                                      Icons.favorite,
-                                      color: Colors.red,
-                                    ),
+                                    icon: Icons.favorite,
+                                    colorIcon: Colors.red,
                                   )
-                                : GestureDetector(
-                                    onTap: () {
+                                : _IconButton(
+                                    onPressed: () {
                                       vm.addCommentReaction(comments);
                                     },
-                                    child: const Icon(Icons.favorite_border),
+                                    icon: Icons.favorite_border,
                                   ),
                             if (snapshot.data!.childrenNumber! == 0)
-                              Padding(
-                                padding: const EdgeInsets.only(left: 8.0),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (_) => ReplyCommentScreen(
-                                          postId: widget.postId,
-                                          commentId: snapshot.data!.commentId!,
-                                        ),
+                              _IconButton(
+                                onPressed: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => ReplyCommentScreen(
+                                        postId: widget.postId,
+                                        commentId: snapshot.data!.commentId!,
                                       ),
-                                    );
-                                  },
-                                  child: const Icon(
-                                    Icons.reply,
-                                  ),
-                                ),
-                              ),
-                            if (snapshot.data?.userId ==
-                                AmityCoreClient.getCurrentUser().userId)
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 8.0, right: 8.0),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    navigateToEditComment(snapshot.data!);
-                                  },
-                                  child: const Icon(
-                                    Icons.edit_outlined,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ),
-                            if (snapshot.data?.userId ==
-                                AmityCoreClient.getCurrentUser().userId)
-                              GestureDetector(
-                                onTap: () {
-                                  if (snapshot.data != null) {
-                                    vm.deleteComment(snapshot.data!);
-                                  }
+                                    ),
+                                  );
                                 },
-                                child: const Icon(
-                                  Icons.delete,
-                                  color: Colors.grey,
-                                ),
+                                icon: Icons.reply,
+                              ),
+                            if (snapshot.data?.userId ==
+                                AmityCoreClient.getCurrentUser().userId)
+                              _IconButton(
+                                onPressed: () {
+                                  navigateToEditComment(snapshot.data!);
+                                },
+                                icon: Icons.edit_outlined,
+                              ),
+                            if (snapshot.data?.userId ==
+                                AmityCoreClient.getCurrentUser().userId)
+                              _IconButton(
+                                onPressed: () {
+                                  deleteDialog.open(
+                                      context: context,
+                                      title: 'Delete Comment',
+                                      message: AppString.messageConfrimDelete,
+                                      acceptText: AppString.deleteButton,
+                                      acceptButtonConfig: context
+                                          .read<AmityUIConfiguration>()
+                                          .deleteButtonConfig,
+                                      onPressedCancel: () {
+                                        deleteDialog.close();
+                                      },
+                                      onPressedAccept: () {
+                                        if (snapshot.data != null) {
+                                          vm.deleteComment(snapshot.data!);
+                                        }
+                                        deleteDialog.close();
+                                      });
+                                },
+                                icon: Icons.delete,
                               ),
                           ],
                         ),
@@ -279,5 +299,35 @@ class _CommentComponentState extends State<CommentComponent> {
         },
       );
     });
+  }
+}
+
+class _IconButton extends StatelessWidget {
+  const _IconButton({
+    required this.icon,
+    this.onPressed,
+    this.colorIcon = Colors.grey,
+  });
+
+  final IconData icon;
+  final Color colorIcon;
+  final VoidCallback? onPressed;
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        width: 30,
+        height: 25,
+        margin: const EdgeInsets.only(right: 5),
+        child: Center(
+          child: Icon(
+            icon,
+            color: colorIcon,
+            size: 25,
+          ),
+        ),
+      ),
+    );
   }
 }

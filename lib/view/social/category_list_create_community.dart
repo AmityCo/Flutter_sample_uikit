@@ -6,6 +6,10 @@ import 'package:amity_uikit_beta_service/components/custom_avatar.dart';
 import 'package:amity_uikit_beta_service/constans/app_assets.dart';
 import 'package:animation_wrappers/animations/faded_slide_animation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../constans/app_text_style.dart';
+import '../../viewmodel/configuration_viewmodel.dart';
 
 class CategoryListForCreateCommunity extends StatefulWidget {
   final String? selectedCategoryId;
@@ -25,12 +29,15 @@ class _CategoryListForCreateCommunityState
   bool _isLoading = true;
   String? _pageToken;
   String? _error;
+  AmityCommunityCategory? selectCategory;
+  String selectCategoryId = '';
 
   @override
   void initState() {
     super.initState();
     getCategories(AmityCommunityCategorySortOption.NAME);
     _scrollController.addListener(_scrollListener);
+    selectCategoryId = widget.selectedCategoryId ?? '';
   }
 
   @override
@@ -79,7 +86,15 @@ class _CategoryListForCreateCommunityState
   }
 
   void _onCategoryTap(AmityCommunityCategory category) {
-    Navigator.pop(context, category);
+    selectCategory = category;
+    selectCategoryId = category.categoryId!;
+    setState(() {
+      
+    });
+  }
+
+  void _onDoneButtonPressed() {
+    Navigator.pop(context, selectCategory);
   }
 
   @override
@@ -89,6 +104,21 @@ class _CategoryListForCreateCommunityState
       appBar: CustomAppBar(
         context: context,
         titleText: 'Select Category',
+        actions: [
+          if (selectCategoryId.isNotEmpty)
+            TextButton(
+              onPressed: _onDoneButtonPressed,
+              child: Text(
+                'Done',
+                style: AppTextStyle.header2.copyWith(
+                  color: context
+                      .watch<AmityUIConfiguration>()
+                      .appbarConfig
+                      .iconBackColor,
+                ),
+              ),
+            ),
+        ],
       ),
       body: SafeArea(
         child: FadedSlideAnimation(
@@ -110,45 +140,48 @@ class _CategoryListForCreateCommunityState
                   itemBuilder: (context, index) {
                     final category = _categories[index];
                     final bool isSelected =
-                        category.categoryId == widget.selectedCategoryId;
+                        category.categoryId == selectCategoryId;
                     final urlAvatar =
                         category.avatar?.getUrl(AmityImageSize.SMALL);
                     return GestureDetector(
                       onTap: () => _onCategoryTap(category),
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          children: [
-                            CustomAvatar(
-                              radius: 20,
-                              url: urlAvatar,
-                              imagePlaceholder: const AssetImage(
-                                AppAssets.apps,
-                                package: AppAssets.package,
-                              ),
-                            ),
-                            const SizedBox(width: 8.0),
-                            Expanded(
-                              child: Align(
-                                alignment: Alignment.centerRight,
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      category.name ?? 'displayname not found',
-                                      style: theme.textTheme.bodyMedium,
-                                    ),
-                                    if (isSelected)
-                                      Icon(
-                                        Icons.check,
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                  ],
+                        child: Container(
+                          color: Colors.transparent,
+                          child: Row(
+                            children: [
+                              CustomAvatar(
+                                radius: 20,
+                                url: urlAvatar,
+                                imagePlaceholder: const AssetImage(
+                                  AppAssets.apps,
+                                  package: AppAssets.package,
                                 ),
                               ),
-                            ),
-                          ],
+                              const SizedBox(width: 8.0),
+                              Expanded(
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        category.name ?? 'displayname not found',
+                                        style: theme.textTheme.bodyMedium,
+                                      ),
+                                      if (isSelected)
+                                        Icon(
+                                          Icons.check,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     );

@@ -39,11 +39,11 @@ class _CommunityViewState extends State<CommunityView> {
   }
 
   void navigaatorToUserProfile(AmityUser user) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => UserProfileScreen(
-          amityUser: user,
-        ),
+    showDialog(
+      context: context,
+      useSafeArea: false,
+      builder: (context) => UserProfileScreen(
+        amityUser: user,
       ),
     );
   }
@@ -78,11 +78,13 @@ class _CommunityViewState extends State<CommunityView> {
                 ),
               ),
               GestureDetector(
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    useSafeArea: false,
                     builder: (context) => const SearchCommunitiesScreen(),
-                  ),
-                ),
+                  );
+                },
                 child: Padding(
                   padding:
                       const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
@@ -101,6 +103,7 @@ class _CommunityViewState extends State<CommunityView> {
               title: BottomAppBarCommunityView(
                 names: vm.items,
                 onChanged: vm.selectTab,
+                controller: vm.state.controller,
               ),
             ),
           ),

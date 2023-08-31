@@ -1,16 +1,13 @@
 import 'package:amity_uikit_beta_service/components/custom_app_bar.dart';
-import 'package:amity_uikit_beta_service/constans/app_text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 
 import '../../components/custom_faded_slide_animation.dart';
-import '../../components/custom_list_tile.dart';
-import '../../viewmodel/community_feed_viewmodel.dart';
+import '../../components/show_community_horizontal.dart';
 import '../../viewmodel/community_viewmodel.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
 import '../create_community/create_community.dart';
-import '../social/community_feed.dart';
 
 class MyCommunityView extends StatefulWidget {
   const MyCommunityView({super.key});
@@ -40,28 +37,32 @@ class _MyCommunityViewState extends State<MyCommunityView> {
       body: Scaffold(
         appBar: CustomAppBar(
           context: context,
-          titleText: 'My Community',
+          titleText: 'My Communities',
           actions: [
-            InkWell(
-              onTap: () async {
-                await Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const CreateCommunityView(),
+            if (context
+                .watch<AmityUIConfiguration>()
+                .appbarConfig
+                .isOpenAddCommunity)
+              InkWell(
+                onTap: () async {
+                  await Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const CreateCommunityView(),
+                    ),
+                  );
+                  init();
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Icon(
+                    Icons.add,
+                    color: context
+                        .watch<AmityUIConfiguration>()
+                        .appbarConfig
+                        .iconBackColor,
                   ),
-                );
-                init();
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Icon(
-                  Icons.add,
-                  color: context
-                      .watch<AmityUIConfiguration>()
-                      .appbarConfig
-                      .iconBackColor,
                 ),
-              ),
-            )
+              )
           ],
         ),
         body: Consumer<CommunityVM>(builder: (_, vm, __) {
@@ -72,24 +73,9 @@ class _MyCommunityViewState extends State<MyCommunityView> {
                 data.length,
                 (index) {
                   final community = data[index];
-                  return CustomListTitle(
-                    title: community.displayName ?? "Community",
-                    url: community.avatarImage?.fileUrl,
-                    subtitle: Text(
-                      '${community.membersCount ?? 0} member',
-                      style: AppTextStyle.body1,
-                    ),
-                    onPressed: () async {
-                      await Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => ChangeNotifierProvider<CommuFeedVM>(
-                            create: (context) => CommuFeedVM(),
-                            builder: (context, child) => CommunityScreen(
-                              community: community,
-                            ),
-                          ),
-                        ),
-                      );
+                  return ShowCommunityHorizontal(
+                    community: community,
+                    onComebackScreen: (){
                       init();
                     },
                   );

@@ -47,6 +47,7 @@ class _SearchInputState extends State<SearchInput> {
             cursorColor: appColors.secondaryColor,
             style: AppTextStyle.header1.copyWith(
               color: Colors.black,
+              fontWeight: FontWeight.w500,
             ),
             decoration: InputDecoration(
               prefixIconColor: const Color(0xFF898E9E),
@@ -55,6 +56,7 @@ class _SearchInputState extends State<SearchInput> {
               hintText: 'Search',
               hintStyle: AppTextStyle.header1.copyWith(
                 color: const Color(0xFF898E9E),
+                fontWeight: FontWeight.w500,
               ),
               contentPadding: EdgeInsets.zero,
               focusedBorder: OutlineInputBorder(

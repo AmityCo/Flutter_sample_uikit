@@ -1,12 +1,16 @@
 part of '../community_view.dart';
 
 class BottomAppBarCommunityView extends StatefulWidget {
-  BottomAppBarCommunityView({super.key, required this.names, this.onChanged})
-      : assert(names.isNotEmpty);
+  BottomAppBarCommunityView({
+    super.key,
+    required this.names,
+    this.onChanged,
+    this.controller,
+  }) : assert(names.isNotEmpty);
 
   final List<String> names;
   final ValueChanged<int>? onChanged;
-
+  final BottomAppBarController? controller;
   @override
   State<BottomAppBarCommunityView> createState() =>
       _BottomAppBarCommunityViewState();
@@ -22,6 +26,12 @@ class _BottomAppBarCommunityViewState extends State<BottomAppBarCommunityView> {
     }
     Future.delayed(const Duration(milliseconds: 300), () {
       updateScreen();
+    });
+    widget.controller?.addListener(() {
+      int index = widget.controller!.selectIndex;
+      if (index != _selectIndex) {
+        updateIndexTab(index);
+      }
     });
     super.initState();
   }
@@ -51,11 +61,7 @@ class _BottomAppBarCommunityViewState extends State<BottomAppBarCommunityView> {
                 String title = widget.names[index];
                 return GestureDetector(
                   onTap: () {
-                    _selectIndex = index;
-                    if (widget.onChanged != null) {
-                      widget.onChanged!(index);
-                    }
-                    updateScreen();
+                    updateIndexTab(index);
                   },
                   child: Container(
                     key: globalKeys[title],
@@ -64,10 +70,10 @@ class _BottomAppBarCommunityViewState extends State<BottomAppBarCommunityView> {
                     child: Text(
                       title,
                       style: AppTextStyle.header1.copyWith(
-                            color: _selectIndex == index
-                                ? appColors.secondaryColor
-                                : Colors.grey,
-                          ),
+                        color: _selectIndex == index
+                            ? appColors.secondaryColor
+                            : Colors.grey,
+                      ),
                       textAlign: TextAlign.left,
                     ),
                   ),
@@ -78,6 +84,14 @@ class _BottomAppBarCommunityViewState extends State<BottomAppBarCommunityView> {
         ],
       ),
     );
+  }
+
+  void updateIndexTab(int index) {
+    _selectIndex = index;
+    if (widget.onChanged != null) {
+      widget.onChanged!(index);
+    }
+    updateScreen();
   }
 
   double checkPosition(int index) {
@@ -107,5 +121,14 @@ class _BottomAppBarCommunityViewState extends State<BottomAppBarCommunityView> {
     if (mounted) {
       setState(() {});
     }
+  }
+}
+
+class BottomAppBarController extends ChangeNotifier {
+  int _selectIndex = 0;
+  int get selectIndex => _selectIndex;
+  set selectIndex(newValue) {
+    _selectIndex = newValue;
+    notifyListeners();
   }
 }

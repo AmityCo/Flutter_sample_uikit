@@ -10,9 +10,14 @@ class AmityUIConfiguration extends ChangeNotifier {
   ChannelListConfig channelListConfig = ChannelListConfig();
   MessageRoomConfig messageRoomConfig = MessageRoomConfig();
   ButtonConfig buttonConfig = ButtonConfig();
+  DeleteButtonConfig deleteButtonConfig = DeleteButtonConfig();
+  AcceptButtonConfig acceptButtonConfig = AcceptButtonConfig();
+  CancelButtonConfig cancelButtonConfig = CancelButtonConfig();
   AppbarConfig appbarConfig = AppbarConfig();
   UserProfileConfig userProfileConfig = UserProfileConfig();
-  
+  ExploreConfig exploreConfig = ExploreConfig();
+  SearchCommunitiesFilter searchCommunitiesFilter = SearchCommunitiesFilter.all;
+
   void updateUI() {
     notifyListeners();
   }
@@ -33,18 +38,20 @@ class MessageRoomConfig {
   Color textFieldHintColor = Colors.grey[500]!;
 }
 
-class AppbarConfig{
+class AppbarConfig {
   final Color backgroundColor;
   final Color textColor;
   final Color iconBackColor;
+  final bool isOpenAddCommunity;
   AppbarConfig({
     this.backgroundColor = Colors.white,
     this.textColor = Colors.black,
-    this.iconBackColor =Colors.white,
+    this.iconBackColor = Colors.white,
+    this.isOpenAddCommunity = true,
   });
 }
 
-class ButtonConfig{
+class ButtonConfig {
   final Color backgroundColor;
   final Color textColor;
   ButtonConfig({
@@ -53,7 +60,28 @@ class ButtonConfig{
   });
 }
 
-class UserProfileConfig{
+class AcceptButtonConfig extends ButtonConfig {
+  AcceptButtonConfig({
+    super.backgroundColor = Colors.blue,
+    super.textColor = Colors.white,
+  });
+}
+
+class DeleteButtonConfig extends ButtonConfig {
+  DeleteButtonConfig({
+    super.backgroundColor = Colors.red,
+    super.textColor = Colors.white,
+  });
+}
+
+class CancelButtonConfig extends ButtonConfig {
+  CancelButtonConfig({
+    super.backgroundColor = Colors.grey,
+    super.textColor = Colors.white,
+  });
+}
+
+class UserProfileConfig {
   final bool isOpenTabView;
   final bool isOpenEditProfile;
 
@@ -61,4 +89,26 @@ class UserProfileConfig{
     this.isOpenTabView = true,
     this.isOpenEditProfile = true,
   });
+}
+
+class ExploreConfig {
+  final bool isOpenRecommended;
+  final bool isOpenTrending;
+  final bool isOpenCategories;
+  final bool isShowCategoryOnRecommended;
+  final bool isShowCategoryOnTrending;
+
+  ExploreConfig({
+    this.isOpenRecommended = true,
+    this.isOpenTrending = true,
+    this.isOpenCategories = true,
+    this.isShowCategoryOnRecommended = true,
+    this.isShowCategoryOnTrending = true,
+  });
+}
+
+enum SearchCommunitiesFilter{
+  private,
+  public,
+  all,
 }

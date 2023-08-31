@@ -36,6 +36,14 @@ class _MyCommunityHorizontalViewState extends State<MyCommunityHorizontalView> {
     context.read<CommunityVM>().initAmityMyCommunityList();
   }
 
+  void onPressedTabCommunities() {
+    showDialog(
+      context: context,
+      useSafeArea: false,
+      builder: (_) => const MyCommunityView(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -44,19 +52,15 @@ class _MyCommunityHorizontalViewState extends State<MyCommunityHorizontalView> {
         // Header
         GestureDetector(
           onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => const MyCommunityView(),
-              ),
-            );
+            onPressedTabCommunities();
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(
               children: [
-                 Expanded(
+                Expanded(
                   child: Text(
-                    'My Community',
+                    'My Communities',
                     style: AppTextStyle.header1,
                   ),
                 ),
@@ -69,12 +73,13 @@ class _MyCommunityHorizontalViewState extends State<MyCommunityHorizontalView> {
           ),
         ),
 
-        const SizedBox(height: 5),
         Consumer<CommunityVM>(builder: (_, vm, __) {
           final communities = vm.getAmityMyCommunities();
-
+          if(communities.isEmpty){
+            return const SizedBox();
+          }
           return Padding(
-            padding: const EdgeInsets.only(left: 16.0),
+            padding: const EdgeInsets.only(left: 16.0, top: 5),
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Container(
@@ -87,14 +92,14 @@ class _MyCommunityHorizontalViewState extends State<MyCommunityHorizontalView> {
                     return MyCommunityHorizontalItem(
                       community: community,
                       onTap: () async {
-                        await Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                ChangeNotifierProvider<CommuFeedVM>(
-                              create: (context) => CommuFeedVM(),
-                              builder: (context, child) => CommunityScreen(
-                                community: community,
-                              ),
+                        await showDialog(
+                          context: context,
+                          useSafeArea: false,
+                          builder: (context) =>
+                              ChangeNotifierProvider<CommuFeedVM>(
+                            create: (context) => CommuFeedVM(),
+                            builder: (context, child) => CommunityScreen(
+                              community: community,
                             ),
                           ),
                         );
@@ -107,7 +112,7 @@ class _MyCommunityHorizontalViewState extends State<MyCommunityHorizontalView> {
             ),
           );
         }),
-        const Divider()
+        const Divider(),
       ],
     );
   }
@@ -140,16 +145,29 @@ class MyCommunityHorizontalItem extends StatelessWidget {
                   package: AppAssets.package,
                 ),
               ),
-              const SizedBox(height: 3),
+              const SizedBox(height: 1),
               Row(
                 children: [
+                  if (!(community.isPublic ?? true))
+                    const Icon(
+                      Icons.lock_outlined,
+                      color: Colors.black,
+                      size: 12,
+                    ),
                   Flexible(
                     child: Text(
                       community.displayName ?? 'Community',
                       style: AppTextStyle.body1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                  )
+                  ),
+                  if ((community.isOfficial ?? false))
+                    SvgPicture.asset(
+                      AppAssets.verified,
+                      width: 20,
+                      height: 20,
+                      package: AppAssets.package,
+                    ),
                 ],
               )
             ],
