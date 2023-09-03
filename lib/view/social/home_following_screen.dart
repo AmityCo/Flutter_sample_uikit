@@ -17,6 +17,7 @@ import '../../constans/app_string.dart';
 import '../../constans/app_text_style.dart';
 import '../../viewmodel/community_feed_viewmodel.dart';
 import '../../viewmodel/community_view_model.dart';
+import '../../viewmodel/community_viewmodel.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
 import '../../viewmodel/edit_post_viewmodel.dart';
 import '../../viewmodel/feed_viewmodel.dart';
@@ -46,7 +47,12 @@ class GlobalFeedScreenState extends State<GlobalFeedScreen> {
   @override
   void initState() {
     super.initState();
-    Provider.of<FeedVM>(context, listen: false).initAmityGlobalfeed();
+    onRefresh();
+  }
+
+  Future<void> onRefresh() async {
+    context.read<CommunityVM>().initAmityMyCommunityList();
+    await Provider.of<FeedVM>(context, listen: false).initAmityGlobalfeed();
   }
 
   @override
@@ -56,7 +62,7 @@ class GlobalFeedScreenState extends State<GlobalFeedScreen> {
       return RefreshIndicator(
         color: Provider.of<AmityUIConfiguration>(context).primaryColor,
         onRefresh: () async {
-          await vm.initAmityGlobalfeed();
+          await onRefresh();
         },
         child: Stack(
           fit: StackFit.expand,
@@ -191,6 +197,13 @@ class _PostWidgetState extends State<PostWidget>
     super.dispose();
   }
 
+  Future<void> onRefresh() async {
+    if (mounted) {
+      context.read<CommunityVM>().initAmityMyCommunityList();
+      await Provider.of<FeedVM>(context, listen: false).initAmityGlobalfeed();
+    }
+  }
+
   Future<void> navigatorToCommentScreen() async {
     await showDialog(
       context: context,
@@ -199,9 +212,7 @@ class _PostWidgetState extends State<PostWidget>
         amityPost: widget.post,
       ),
     );
-    if (mounted) {
-      Provider.of<FeedVM>(context, listen: false).initAmityGlobalfeed();
-    }
+    onRefresh();
   }
 
   Future<void> onDeletePost() async {
@@ -254,7 +265,7 @@ class _PostWidgetState extends State<PostWidget>
 
             break;
           case 'Edit Post':
-            showDialog(
+            await showDialog(
               context: context,
               useSafeArea: false,
               builder: (context) => ChangeNotifierProvider<EditPostVM>(
@@ -262,7 +273,7 @@ class _PostWidgetState extends State<PostWidget>
                 child: EditPostScreen(post: widget.post),
               ),
             );
-
+            onRefresh();
             break;
           case 'Delete Post':
             deleteDialog.open(
@@ -329,8 +340,8 @@ class _PostWidgetState extends State<PostWidget>
                     contentPadding: const EdgeInsets.all(2),
                     leading: FadeAnimation(
                       child: GestureDetector(
-                        onTap: () {
-                          showDialog(
+                        onTap: () async {
+                          await showDialog(
                             context: context,
                             useSafeArea: false,
                             builder: (context) => ChangeNotifierProvider(
@@ -340,6 +351,7 @@ class _PostWidgetState extends State<PostWidget>
                               ),
                             ),
                           );
+                          onRefresh();
                         },
                         child: getAvatarImage(
                           widget.post.postedUser!.userId !=
@@ -359,8 +371,8 @@ class _PostWidgetState extends State<PostWidget>
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
                         GestureDetector(
-                          onTap: () {
-                            showDialog(
+                          onTap: () async {
+                            await showDialog(
                               context: context,
                               useSafeArea: false,
                               builder: (context) => ChangeNotifierProvider(
@@ -370,6 +382,7 @@ class _PostWidgetState extends State<PostWidget>
                                 ),
                               ),
                             );
+                            onRefresh();
                           },
                           child: Text(
                             widget.post.postedUser!.userId !=
@@ -406,8 +419,8 @@ class _PostWidgetState extends State<PostWidget>
                                     AmityPostTargetType.COMMUNITY &&
                                 widget.isFromFeed
                             ? GestureDetector(
-                                onTap: () {
-                                  showDialog(
+                                onTap: () async {
+                                  await showDialog(
                                     context: context,
                                     useSafeArea: false,
                                     builder: (context) =>
@@ -421,6 +434,7 @@ class _PostWidgetState extends State<PostWidget>
                                       ),
                                     ),
                                   );
+                                  onRefresh();
                                 },
                                 child: Text(
                                   (widget.post.target as CommunityTarget)

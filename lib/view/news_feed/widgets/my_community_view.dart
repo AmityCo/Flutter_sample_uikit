@@ -9,6 +9,7 @@ import '../../../constans/app_assets.dart';
 import '../../../constans/app_text_style.dart';
 import '../../../viewmodel/community_feed_viewmodel.dart';
 import '../../../viewmodel/community_viewmodel.dart';
+import '../../../viewmodel/feed_viewmodel.dart';
 import '../../social/community_feed.dart';
 
 class MyCommunityHorizontalView extends StatefulWidget {
@@ -33,15 +34,21 @@ class _MyCommunityHorizontalViewState extends State<MyCommunityHorizontalView> {
     if (!mounted) {
       return;
     }
-    context.read<CommunityVM>().initAmityMyCommunityList();
+    onRefresh();
   }
 
-  void onPressedTabCommunities() {
-    showDialog(
+  Future<void> onPressedTabCommunities() async {
+    await showDialog(
       context: context,
       useSafeArea: false,
       builder: (_) => const MyCommunityView(),
     );
+    init();
+  }
+
+  void onRefresh(){
+    Provider.of<FeedVM>(context, listen: false).initAmityGlobalfeed();
+    context.read<CommunityVM>().initAmityMyCommunityList();
   }
 
   @override
