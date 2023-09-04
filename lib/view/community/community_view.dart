@@ -11,7 +11,9 @@ import 'package:provider/provider.dart';
 import '../../components/custom_app_bar.dart';
 import '../../constans/app_text_style.dart';
 import '../../viewmodel/amity_viewmodel.dart';
+import '../../viewmodel/community_viewmodel.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
+import '../../viewmodel/feed_viewmodel.dart';
 import '../social/search_communities.dart';
 import '../user/user_profile.dart';
 
@@ -38,14 +40,20 @@ class _CommunityViewState extends State<CommunityView> {
     }
   }
 
-  void navigaatorToUserProfile(AmityUser user) {
-    showDialog(
+  Future<void> navigaatorToUserProfile(AmityUser user) async {
+    await showDialog(
       context: context,
       useSafeArea: false,
       builder: (context) => UserProfileScreen(
         amityUser: user,
       ),
     );
+    onRefresh();
+  }
+
+  void onRefresh(){
+    Provider.of<FeedVM>(context, listen: false).initAmityGlobalfeed();
+    context.read<CommunityVM>().initAmityMyCommunityList();
   }
 
   @override
@@ -78,12 +86,13 @@ class _CommunityViewState extends State<CommunityView> {
                 ),
               ),
               GestureDetector(
-                onTap: () {
-                  showDialog(
+                onTap: () async {
+                  await showDialog(
                     context: context,
                     useSafeArea: false,
                     builder: (context) => const SearchCommunitiesScreen(),
                   );
+                  onRefresh();
                 },
                 child: Padding(
                   padding:
