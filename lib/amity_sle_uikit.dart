@@ -114,6 +114,22 @@ class AmitySLEUIKit {
     AppTextStyle.mainStyle = provider.textStyle ?? const TextStyle();
   }
 
+  static void updatUserMetaData({required Map<String, dynamic> metaData}) {
+    final user = getCurrentUser();
+    if (user.id == null) {
+      return;
+    }
+    AmityCoreClient.newUserRepository()
+        .updateUser(user.id!)
+        .metadata(metaData)
+        .update()
+        .then((AmityUser user) {
+      log("AmitySLEUIKit updatUserMetaData success");
+    }).onError<AmityException>((error, stackTrace) {
+      log('ERROR AmitySLEUIKit updatUserMetaData:$error');
+    });
+  }
+
   static AmityUser getCurrentUser() {
     return AmityCoreClient.getCurrentUser();
   }
@@ -152,11 +168,12 @@ class AmitySLEUIKit {
     final community = await AmitySocialClient.newCommunityRepository()
         .getCommunity(communityId);
     final isJoined = community.isJoined ?? false;
-    
+
     log('joinCommunity community:$community');
-    if(!isJoined){
+    if (!isJoined) {
       await AmitySocialClient.newCommunityRepository()
-                        .joinCommunity(communityId).then((value) {
+          .joinCommunity(communityId)
+          .then((value) {
         log("join community:$communityId success");
       }).onError((error, stackTrace) {
         log('ERROR AmitySLEUIKit joinInitialCommunity:$error');
