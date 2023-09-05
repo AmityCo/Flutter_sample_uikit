@@ -12,17 +12,20 @@ import '../../constans/app_string.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
 import '../../viewmodel/post_viewmodel.dart';
 import '../../viewmodel/user_feed_viewmodel.dart';
+import '../post_detail/comments.dart';
 import '../post_detail/widgets/text_input_comment.dart';
 import '../user/user_profile.dart';
 import 'edit_comment.dart';
 
 class ReplyCommentScreen extends StatefulWidget {
   final String postId;
-  final String commentId;
+  final AmityComment comment;
 
-  const ReplyCommentScreen(
-      {Key? key, required this.postId, required this.commentId})
-      : super(key: key);
+  const ReplyCommentScreen({
+    Key? key,
+    required this.postId,
+    required this.comment,
+  }) : super(key: key);
 
   @override
   ReplyCommentScreenState createState() => ReplyCommentScreenState();
@@ -41,7 +44,7 @@ class ReplyCommentScreenState extends State<ReplyCommentScreen> {
   void initState() {
     //query comment here
     Provider.of<PostVM>(context, listen: false)
-        .listenForReplyComments(widget.postId, widget.commentId);
+        .listenForReplyComments(widget.postId, widget.comment.commentId!);
     super.initState();
   }
 
@@ -50,70 +53,113 @@ class ReplyCommentScreenState extends State<ReplyCommentScreen> {
     var postData =
         Provider.of<PostVM>(context, listen: false).amityPost.data as TextData;
     final theme = Theme.of(context);
-
+    final appBar = CustomAppBar(
+            context: context,
+            titleText: 'Replies',
+            centerTitle: false,
+          );
     return Consumer<PostVM>(builder: (context, vm, _) {
-      return StreamBuilder<AmityPost>(
-          key: Key(postData.postId),
-          stream: vm.amityPost.listen.stream,
-          initialData: vm.amityPost,
-          builder: (context, snapshot) {
-            return Scaffold(
-              appBar: CustomAppBar(
-                context: context,
-                titleText: 'Replies',
-                centerTitle: false,
-              ),
-              body: FadedSlideAnimation(
-                beginOffset: const Offset(0, 0.3),
-                endOffset: const Offset(0, 0),
-                slideCurve: Curves.linearToEaseOut,
-                child: SafeArea(
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: SingleChildScrollView(
-                          controller: vm.scrollcontroller,
-                          child: Column(
-                            children: [
-                              Stack(
-                                children: [
-                                  Container(
-                                    padding: null,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.stretch,
+      final comments = vm.amityComments
+          .where(
+            (element) => element.commentId == widget.comment.commentId,
+          )
+          .toList();
+      final comment = comments.isNotEmpty ? comments.first : null;
+      if (comment == null) {
+        return Scaffold(
+          appBar: appBar,
+        );
+      }
+      return StreamBuilder<AmityComment>(
+          key: Key(comment.commentId ?? ''),
+          stream: comment.listen.stream,
+          initialData: widget.comment,
+          builder: (context, amityComment) {
+            return StreamBuilder<AmityPost>(
+                key: Key(postData.postId),
+                stream: vm.amityPost.listen.stream,
+                initialData: vm.amityPost,
+                builder: (context, snapshot) {
+                  return Scaffold(
+                    appBar: appBar,
+                    body: FadedSlideAnimation(
+                      beginOffset: const Offset(0, 0.3),
+                      endOffset: const Offset(0, 0),
+                      slideCurve: Curves.linearToEaseOut,
+                      child: SafeArea(
+                        child: Column(
+                          children: [
+                            if (comments.isNotEmpty)
+                              HeaderComment(
+                                avatarUrl: amityComment.data!.user!.avatarUrl,
+                                displayName:
+                                    amityComment.data!.user!.displayName!,
+                                commentCount:
+                                    amityComment.data!.childrenNumber ?? 0,
+                                reactionCount:
+                                    amityComment.data!.reactionCount ?? 0,
+                                createdAt: amityComment.data!.createdAt!,
+                                text:
+                                    (amityComment.data!.data as CommentTextData)
+                                        .text,
+                                myReactions:
+                                    amityComment.data!.myReactions ?? [],
+                                onPressedLike: () {
+                                  vm.addCommentReaction(amityComment.data!);
+                                },
+                                onPressedUnLike: () {
+                                  vm.removeCommentReaction(amityComment.data!);
+                                },
+                              ),
+                            Expanded(
+                              child: SingleChildScrollView(
+                                controller: vm.scrollcontroller,
+                                child: Column(
+                                  children: [
+                                    Stack(
                                       children: [
-                                        CommentComponent(
-                                            postId: widget.postId,
-                                            commentId: widget.commentId,
-                                            theme: theme),
+                                        Container(
+                                          padding: null,
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.stretch,
+                                            children: [
+                                              CommentComponent(
+                                                postId: widget.postId,
+                                                commentId:
+                                                    widget.comment.commentId!,
+                                                theme: theme,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                       ],
-                                    ),
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                            TextInputComment(
+                              controller: _commentTextEditController,
+                              onPressedSend: () async {
+                                HapticFeedback.heavyImpact();
+                                await Provider.of<PostVM>(context,
+                                        listen: false)
+                                    .createReplyComment(
+                                  widget.postId,
+                                  widget.comment.commentId!,
+                                  _commentTextEditController.text,
+                                );
+
+                                _commentTextEditController.clear();
+                              },
+                            ),
+                          ],
                         ),
                       ),
-                      TextInputComment(
-                        controller: _commentTextEditController,
-                        onPressedSend: () async {
-                          HapticFeedback.heavyImpact();
-                          await Provider.of<PostVM>(context, listen: false)
-                              .createReplyComment(
-                                  widget.postId,
-                                  widget.commentId,
-                                  _commentTextEditController.text);
-
-                          _commentTextEditController.clear();
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
+                    ),
+                  );
+                });
           });
     });
   }
@@ -319,7 +365,8 @@ class _CommentComponentState extends State<CommentComponent> {
                                       },
                                       onPressedAccept: () {
                                         if (snapshot.data != null) {
-                                          vm.deleteReplyComment(snapshot.data!);
+                                          vm.deleteReplyComment(
+                                              widget.postId, snapshot.data!);
                                         }
                                         deleteDialog.close();
                                       });

@@ -43,14 +43,17 @@ class _CommentComponentState extends State<CommentComponent> {
     super.dispose();
   }
 
-  void navigateToEditComment(AmityComment comment) {
-    Navigator.of(context).push(MaterialPageRoute(
+  Future<void> navigateToEditComment(AmityComment comment) async {
+    await Navigator.of(context).push(MaterialPageRoute(
       builder: (context) => Builder(builder: (context) {
         return EditCommentScreen(
           comment: comment,
         );
       }),
     ));
+    if (mounted) {
+      getData();
+    }
   }
 
   bool isLiked(AsyncSnapshot<AmityComment> snapshot) {
@@ -62,12 +65,28 @@ class _CommentComponentState extends State<CommentComponent> {
     }
   }
 
-  Future<void> onShowRepliesClicked(String postId, String commentId) async {
+  Future<void> navigateToUserProfile(AmityUser amityUser) async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => ChangeNotifierProvider(
+          create: (context) => UserFeedVM(),
+          child: UserProfileScreen(
+            amityUser: amityUser,
+          ),
+        ),
+      ),
+    );
+    if (mounted) {
+      getData();
+    }
+  }
+
+  Future<void> onShowRepliesClicked(String postId, AmityComment comment) async {
     await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => ReplyCommentScreen(
           postId: postId,
-          commentId: commentId,
+          comment: comment,
         ),
       ),
     );
@@ -101,28 +120,16 @@ class _CommentComponentState extends State<CommentComponent> {
                   color: Colors.white,
                   child: ListTile(
                     leading: GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => ChangeNotifierProvider(
-                                  create: (context) => UserFeedVM(),
-                                  child: UserProfileScreen(
-                                    amityUser: vm.amityComments[index].user!,
-                                  ))));
-                        },
-                        child: getAvatarImage(
-                            vm.amityComments[index].user!.avatarUrl)),
+                      onTap: () {
+                        navigateToUserProfile(vm.amityComments[index].user!);
+                      },
+                      child: getAvatarImage(
+                        vm.amityComments[index].user!.avatarUrl,
+                      ),
+                    ),
                     title: GestureDetector(
                       onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => ChangeNotifierProvider(
-                              create: (context) => UserFeedVM(),
-                              child: UserProfileScreen(
-                                amityUser: vm.amityComments[index].user!,
-                              ),
-                            ),
-                          ),
-                        );
+                        navigateToUserProfile(vm.amityComments[index].user!);
                       },
                       child: RichText(
                         text: TextSpan(
@@ -162,7 +169,9 @@ class _CommentComponentState extends State<CommentComponent> {
                           GestureDetector(
                             onTap: () {
                               onShowRepliesClicked(
-                                  widget.postId, snapshot.data!.commentId!);
+                                widget.postId,
+                                snapshot.data!,
+                              );
                             },
                             child: Padding(
                               padding: const EdgeInsets.only(bottom: 8.0),
@@ -203,13 +212,9 @@ class _CommentComponentState extends State<CommentComponent> {
                             if (snapshot.data!.childrenNumber! == 0)
                               _IconButton(
                                 onPressed: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (_) => ReplyCommentScreen(
-                                        postId: widget.postId,
-                                        commentId: snapshot.data!.commentId!,
-                                      ),
-                                    ),
+                                  onShowRepliesClicked(
+                                    widget.postId,
+                                    snapshot.data!,
                                   );
                                 },
                                 icon: Icons.reply,

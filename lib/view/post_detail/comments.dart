@@ -131,8 +131,31 @@ class CommentScreenState extends State<CommentScreen> {
                                           CrossAxisAlignment.stretch,
                                       children: [
                                         HeaderComment(
-                                          amityPost: snapshot.data!,
-                                          postData: postData,
+                                          avatarUrl: snapshot
+                                              .data!.postedUser?.avatarUrl,
+                                          displayName: snapshot.data!.postedUser
+                                                  ?.displayName ??
+                                              '',
+                                          commentCount:
+                                              snapshot.data!.commentCount ?? 0,
+                                          reactionCount:
+                                              snapshot.data!.reactionCount ?? 0,
+                                          createdAt: snapshot.data!.createdAt!,
+                                          text: postData.text,
+                                          myReactions:
+                                              snapshot.data!.myReactions,
+                                          onPressedLike: () {
+                                            Provider.of<PostVM>(context,
+                                                    listen: false)
+                                                .addPostReaction(
+                                                    snapshot.data!);
+                                          },
+                                          onPressedUnLike: () {
+                                            Provider.of<PostVM>(context,
+                                                    listen: false)
+                                                .removePostReaction(
+                                                    snapshot.data!);
+                                          },
                                         ),
                                         CommentComponent(
                                           postId: widget.amityPost.postId!,
@@ -169,9 +192,28 @@ class CommentScreenState extends State<CommentScreen> {
 }
 
 class HeaderComment extends StatelessWidget {
-  const HeaderComment({super.key, required this.amityPost, this.postData});
-  final AmityPost amityPost;
-  final TextData? postData;
+  const HeaderComment({
+    super.key,
+    this.avatarUrl,
+    required this.displayName,
+    required this.createdAt,
+    required this.commentCount,
+    required this.reactionCount,
+    this.onPressedLike,
+    this.onPressedUnLike,
+    this.text,
+    this.myReactions,
+  });
+
+  final String? avatarUrl;
+  final String displayName;
+  final DateTime createdAt;
+  final int commentCount;
+  final int reactionCount;
+  final VoidCallback? onPressedLike;
+  final VoidCallback? onPressedUnLike;
+  final String? text;
+  final List<String>? myReactions;
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -200,7 +242,7 @@ class HeaderComment extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  getAvatarImage(amityPost.postedUser!.avatarUrl, radius: 25),
+                  getAvatarImage(avatarUrl, radius: 25),
                   const SizedBox(width: 10),
                   Expanded(
                     flex: 12,
@@ -209,11 +251,11 @@ class HeaderComment extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          amityPost.postedUser!.displayName!,
+                          displayName,
                           overflow: TextOverflow.ellipsis,
                         ),
                         Text(
-                          DateFormat.yMMMMEEEEd().format(amityPost.createdAt!),
+                          DateFormat.yMMMMEEEEd().format(createdAt),
                           style: theme.textTheme.bodyLarge!
                               .copyWith(color: Colors.grey, fontSize: 11),
                           overflow: TextOverflow.ellipsis,
@@ -231,7 +273,7 @@ class HeaderComment extends StatelessWidget {
                       ),
                       const SizedBox(width: 8.5),
                       Text(
-                        amityPost.commentCount.toString(),
+                        commentCount.toString(),
                         style: AppTextStyle.body1.copyWith(
                             color: Colors.grey,
                             fontSize: 12,
@@ -240,34 +282,28 @@ class HeaderComment extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(width: 10),
-                  amityPost.myReactions!.isNotEmpty
-                      ? GestureDetector(
-                          onTap: () {
-                            Provider.of<PostVM>(context, listen: false)
-                                .removePostReaction(amityPost);
-                          },
-                          child: Icon(
-                            Icons.thumb_up_alt,
-                            size: 17,
-                            color: Provider.of<AmityUIConfiguration>(context)
-                                .primaryColor,
+                  if (myReactions != null)
+                    myReactions!.isNotEmpty
+                        ? GestureDetector(
+                            onTap: onPressedUnLike,
+                            child: Icon(
+                              Icons.thumb_up_alt,
+                              size: 17,
+                              color: Provider.of<AmityUIConfiguration>(context)
+                                  .primaryColor,
+                            ),
+                          )
+                        : GestureDetector(
+                            onTap: onPressedLike,
+                            child: const Icon(
+                              Icons.thumb_up_off_alt,
+                              size: 17,
+                              color: Colors.grey,
+                            ),
                           ),
-                        )
-                      : GestureDetector(
-                          onTap: () {
-                            log(amityPost.myReactions!.toString());
-                            Provider.of<PostVM>(context, listen: false)
-                                .addPostReaction(amityPost);
-                          },
-                          child: const Icon(
-                            Icons.thumb_up_off_alt,
-                            size: 17,
-                            color: Colors.grey,
-                          ),
-                        ),
                   const SizedBox(width: 10),
                   Text(
-                    amityPost.reactionCount.toString(),
+                    reactionCount.toString(),
                     style: theme.textTheme.bodyLarge!
                         .copyWith(color: Colors.grey, letterSpacing: 1),
                   ),
@@ -276,15 +312,18 @@ class HeaderComment extends StatelessWidget {
               ),
             ),
             Padding(
-                padding: const EdgeInsets.fromLTRB(10, 10, 0, 9),
-                child: postData?.text == "" || postData?.text == null
-                    ? const SizedBox()
-                    : LinkWell(
-                        postData?.text ?? "",
-                        textAlign: TextAlign.left,
-                        style: theme.textTheme.headlineMedium!.copyWith(
-                            fontWeight: FontWeight.w500, fontSize: 18),
-                      )),
+              padding: const EdgeInsets.fromLTRB(10, 10, 0, 9),
+              child: text == null || text == ''
+                  ? const SizedBox()
+                  : LinkWell(
+                      text ?? "",
+                      textAlign: TextAlign.left,
+                      style: theme.textTheme.headlineMedium!.copyWith(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 18,
+                      ),
+                    ),
+            ),
           ],
         ),
       ),
