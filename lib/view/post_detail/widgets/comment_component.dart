@@ -2,6 +2,7 @@ import 'package:amity_sdk/amity_sdk.dart';
 import 'package:amity_uikit_beta_service/viewmodel/configuration_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:linkwell/linkwell.dart';
 import 'package:provider/provider.dart';
 
 import '../../../components/custom_user_avatar.dart';
@@ -157,7 +158,7 @@ class _CommentComponentState extends State<CommentComponent> {
                         Padding(
                           padding:
                               const EdgeInsets.only(top: 8.0, bottom: 12.0),
-                          child: Text(
+                          child: LinkWell(
                             commentData.text!,
                             style:
                                 widget.theme.textTheme.headlineSmall!.copyWith(
