@@ -5,6 +5,7 @@ import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:linkwell/linkwell.dart';
 import 'package:provider/provider.dart';
 
 import '../../components/custom_user_avatar.dart';
@@ -308,7 +309,7 @@ class _CommentComponentState extends State<CommentComponent> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(top: 8.0, bottom: 8),
-                          child: Text(
+                          child: LinkWell(
                             commentData.text!,
                             style:
                                 widget.theme.textTheme.headlineSmall!.copyWith(
