@@ -364,9 +364,13 @@ class ImagePost extends StatelessWidget {
   void _goToImageViewer(BuildContext context, String url) {
     showDialog(
         context: context,
+        useSafeArea: false,
         builder: (_) {
           return ImageViewer(
-              imageURLs: imageURLs, initialIndex: imageURLs.indexOf(url));
-        });
+              imageURLs: imageURLs, 
+              initialIndex: imageURLs.indexOf(url),
+              );
+        },
+    );
   }
 }
