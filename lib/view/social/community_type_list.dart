@@ -202,8 +202,10 @@ class CommunityWidget extends StatelessWidget {
                       child: (community.avatarImage?.fileUrl != null)
                           ? CircleAvatar(
                               backgroundColor: Colors.transparent,
-                              backgroundImage: (NetworkImage(
-                                  community.avatarImage!.fileUrl)))
+                              backgroundImage: NetworkImage(
+                                community.avatarImage!.fileUrl ?? '',
+                              ),
+                            )
                           : const SizedBox(
                               width: 40,
                               height: 40,

@@ -125,7 +125,7 @@ class AmityVM extends ChangeNotifier {
   Future<void> _updateImageProfile(AmityImage amityImage) async {
     await AmityCoreClient.getCurrentUser()
         .update()
-        .avatarFileId(amityImage.fileId)
+        .avatarFileId(amityImage.fileId ?? '')
         .update()
         .then((value) {
       log("UpdateImageProfile success");
