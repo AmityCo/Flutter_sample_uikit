@@ -44,7 +44,8 @@ class AllCategoryListState extends State<AllCategoryList> {
         AppBar().preferredSize.height;
 
     final theme = Theme.of(context);
-    return Consumer<CategoryVM>(builder: (context, vm, _) {
+    return Consumer<CategoryVM>(
+      builder: (context, vm, _) {
         return Column(
           children: [
             Expanded(
@@ -112,8 +113,10 @@ class CategoryWidget extends StatelessWidget {
                     child: (category.avatar?.fileUrl != null)
                         ? CircleAvatar(
                             backgroundColor: Colors.transparent,
-                            backgroundImage:
-                                (NetworkImage(category.avatar!.fileUrl)))
+                            backgroundImage: NetworkImage(
+                              category.avatar!.fileUrl ?? '',
+                            ),
+                          )
                         : const SizedBox(
                             width: 40,
                             height: 40,

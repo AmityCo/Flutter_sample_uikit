@@ -28,7 +28,7 @@ class EditPostVM extends CreatePostVM {
           var imageData = child.data as ImageData;
           amityImages.add(
             UploadStatus(
-              path: imageData.fileInfo.fileUrl,
+              path: imageData.fileInfo.fileUrl ?? '',
               data: imageData.image,
               isComplete: true,
             ),

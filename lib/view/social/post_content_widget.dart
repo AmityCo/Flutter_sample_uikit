@@ -1,15 +1,17 @@
+import 'dart:developer';
+
 import 'package:amity_sdk/amity_sdk.dart';
 import 'package:any_link_preview/any_link_preview.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_link_previewer/flutter_link_previewer.dart';
 import 'package:linkify/linkify.dart';
 import 'package:linkwell/linkwell.dart';
-import 'package:optimized_cached_image/optimized_cached_image.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-import '../../components/video_player.dart';
 
+import '../../components/video_player.dart';
 import '../../constans/app_text_style.dart';
 import '../post_detail/comments.dart';
 import 'image_viewer.dart';
@@ -331,7 +333,7 @@ class ImagePost extends StatelessWidget {
           builder: (BuildContext context) {
             return GestureDetector(
               onTap: () {
-                Navigator.of(context).push(_goToImageViewer(url));
+                _goToImageViewer(context, url);
               },
               child: Container(
                 width: MediaQuery.of(context).size.width,
@@ -341,7 +343,7 @@ class ImagePost extends StatelessWidget {
                 child: ClipRRect(
                   borderRadius:
                       BorderRadius.circular(isCornerRadiusEnabled ? 10 : 0),
-                  child: OptimizedCacheImage(
+                  child: CachedNetworkImage(
                     imageUrl: url,
                     fit: BoxFit.cover,
                     placeholder: (context, url) => Container(
@@ -359,23 +361,19 @@ class ImagePost extends StatelessWidget {
     );
   }
 
-  Route _goToImageViewer(String url) {
-    return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) => ImageViewer(
-          imageURLs: imageURLs, initialIndex: imageURLs.indexOf(url)),
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const begin = Offset(0.0, 1.0);
-        const end = Offset.zero;
-        const curve = Curves.ease;
-
-        var tween =
-            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-        return SlideTransition(
-          position: animation.drive(tween),
-          child: child,
-        );
-      },
+  void _goToImageViewer(BuildContext context, String url) {
+    showDialog(
+        context: context,
+        useSafeArea: false,
+        builder: (_) {
+          return Scaffold(
+            backgroundColor: Colors.black,
+            body: ImageViewer(
+                imageURLs: imageURLs, 
+                initialIndex: imageURLs.indexOf(url),
+                ),
+          );
+        },
     );
   }
 }
