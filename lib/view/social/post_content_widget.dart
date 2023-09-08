@@ -366,10 +366,13 @@ class ImagePost extends StatelessWidget {
         context: context,
         useSafeArea: false,
         builder: (_) {
-          return ImageViewer(
-              imageURLs: imageURLs, 
-              initialIndex: imageURLs.indexOf(url),
-              );
+          return Scaffold(
+            backgroundColor: Colors.black,
+            body: ImageViewer(
+                imageURLs: imageURLs, 
+                initialIndex: imageURLs.indexOf(url),
+                ),
+          );
         },
     );
   }
