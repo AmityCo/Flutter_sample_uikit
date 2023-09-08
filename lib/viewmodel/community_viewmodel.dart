@@ -151,7 +151,6 @@ class CommunityVM extends ChangeNotifier {
     log("initAmityMyCommunityList");
     if (_amityMyCommunities.isNotEmpty) {
       _amityMyCommunities.clear();
-      notifyListeners();
     }
 
     AmitySocialClient.newCommunityRepository()
