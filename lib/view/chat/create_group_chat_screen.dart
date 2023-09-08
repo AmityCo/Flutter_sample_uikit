@@ -114,11 +114,13 @@ class CreateChatGroupState extends State<CreateChatGroup> {
                               Provider.of<ImagePickerVM>(context, listen: true)
                                           .amityImage !=
                                       null
-                                  ? NetworkImage(Provider.of<ImagePickerVM>(
-                                          context,
-                                          listen: false)
-                                      .amityImage!
-                                      .fileUrl)
+                                  ? NetworkImage(
+                                      Provider.of<ImagePickerVM>(context,
+                                                  listen: false)
+                                              .amityImage!
+                                              .fileUrl ??
+                                          '',
+                                    )
                                   : getImageProvider(null),
                         ),
                       ),

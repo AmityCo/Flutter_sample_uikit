@@ -1,12 +1,13 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:amity_sdk/amity_sdk.dart';
 import 'package:amity_uikit_beta_service/constans/app_text_style.dart';
 import 'package:animation_wrappers/animation_wrappers.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:video_player/video_player.dart';
 
 class LocalVideoPlayer extends StatefulWidget {
@@ -155,7 +156,7 @@ class _MyVideoPlayer2State extends State<MyVideoPlayer2> {
     await videoData.getVideo(AmityVideoQuality.HIGH).then((AmityVideo video) {
       if (mounted) {
         setState(() {
-          videoUrl = video.fileUrl;
+          videoUrl = video.fileUrl ?? '';
           log(">>>>>>>>>>>>>>>>>>>>>>>>$videoUrl");
         });
       }
@@ -231,7 +232,7 @@ class _MyVideoPlayer2State extends State<MyVideoPlayer2> {
                                   // )
                                 ],
                               )
-                        : OptimizedCacheImage(
+                        : CachedNetworkImage(
                             imageBuilder: (context, imageProvider) => Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [

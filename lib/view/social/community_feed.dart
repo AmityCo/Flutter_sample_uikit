@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:amity_sdk/amity_sdk.dart';
 import 'package:amity_uikit_beta_service/components/accept_dialog.dart';
 import 'package:amity_uikit_beta_service/components/custom_app_bar.dart';
@@ -5,9 +7,9 @@ import 'package:amity_uikit_beta_service/constans/app_assets.dart';
 import 'package:amity_uikit_beta_service/constans/app_string.dart';
 import 'package:amity_uikit_beta_service/constans/app_text_style.dart';
 import 'package:animation_wrappers/animation_wrappers.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:provider/provider.dart';
 
 import '../../components/custom_faded_slide_animation.dart';
@@ -276,7 +278,7 @@ class CommunityScreenState extends State<CommunityScreen> {
               child: community.avatarImage?.fileUrl == null ||
                       community.avatarImage?.fileUrl == ""
                   ? const SizedBox()
-                  : OptimizedCacheImage(
+                  : CachedNetworkImage(
                       height: 400,
                       imageUrl: "${community.avatarImage!.fileUrl}?size=full",
                       fit: BoxFit.cover,

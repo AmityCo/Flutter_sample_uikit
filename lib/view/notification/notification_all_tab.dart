@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:amity_sdk/amity_sdk.dart';
 import 'package:amity_uikit_beta_service/components/custom_user_avatar.dart';
 import 'package:amity_uikit_beta_service/view/social/user_pending_request_component.dart';
@@ -5,9 +7,9 @@ import 'package:amity_uikit_beta_service/view/user/user_profile.dart';
 import 'package:amity_uikit_beta_service/viewmodel/notification_viewmodel.dart';
 import 'package:amity_uikit_beta_service/viewmodel/pending_request_viewmodel.dart';
 import 'package:animation_wrappers/animation_wrappers.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get_time_ago/get_time_ago.dart';
-import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:provider/provider.dart';
 
 import '../../constans/app_text_style.dart';
@@ -274,7 +276,7 @@ class _NotificationAllTabScreenState extends State<NotificationAllTabScreen> {
                                                             BorderRadius
                                                                 .circular(7),
                                                         child:
-                                                            OptimizedCacheImage(
+                                                            CachedNetworkImage(
                                                           imageUrl: notificationItem
                                                                   .targetImageUrl ??
                                                               "",

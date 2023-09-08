@@ -1,6 +1,5 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-
-import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:provider/provider.dart';
 
 import '../viewmodel/configuration_viewmodel.dart';
@@ -8,7 +7,7 @@ import '../utils/env_manager.dart';
 
 getAvatarImage(String? url, {double? radius, String? fileId}) {
   if (url != null) {
-    var imageOPS = OptimizedCacheImage(
+    var imageOPS = CachedNetworkImage(
       imageBuilder: (context, imageProvider) => CircleAvatar(
           radius: radius,
           backgroundColor: Colors.transparent,
@@ -27,7 +26,7 @@ getAvatarImage(String? url, {double? radius, String? fileId}) {
     );
     return imageOPS;
   } else if (fileId != null) {
-    var imageOPS = OptimizedCacheImage(
+    var imageOPS = CachedNetworkImage(
       imageBuilder: (context, imageProvider) => CircleAvatar(
           backgroundColor: Colors.transparent,
           backgroundImage: (imageProvider)),
@@ -60,7 +59,7 @@ getAvatarImage(String? url, {double? radius, String? fileId}) {
 
 getNotificationAvatarImage(String? url, {double? radius, String? fileId}) {
   if (url != null) {
-    var imageOPS = OptimizedCacheImage(
+    var imageOPS = CachedNetworkImage(
       imageBuilder: (context, imageProvider) => CircleAvatar(
           radius: radius,
           backgroundColor: Colors.transparent,
@@ -79,7 +78,7 @@ getNotificationAvatarImage(String? url, {double? radius, String? fileId}) {
     );
     return imageOPS;
   } else if (fileId != null) {
-    var imageOPS = OptimizedCacheImage(
+    var imageOPS = CachedNetworkImage(
       imageBuilder: (context, imageProvider) => CircleAvatar(
           backgroundColor: Colors.transparent,
           backgroundImage: (imageProvider)),
@@ -111,7 +110,7 @@ getNotificationAvatarImage(String? url, {double? radius, String? fileId}) {
 
 getCommuAvatarImage(String? url, {double? radius, String? fileId}) {
   if (url != null) {
-    var imageOPS = OptimizedCacheImage(
+    var imageOPS = CachedNetworkImage(
       imageBuilder: (context, imageProvider) => CircleAvatar(
           radius: radius,
           backgroundColor: Colors.transparent,
@@ -123,7 +122,7 @@ getCommuAvatarImage(String? url, {double? radius, String? fileId}) {
     );
     return imageOPS;
   } else if (fileId != null) {
-    var imageOPS = OptimizedCacheImage(
+    var imageOPS = CachedNetworkImage(
       imageBuilder: (context, imageProvider) => CircleAvatar(
           backgroundColor: Colors.transparent,
           backgroundImage: (imageProvider)),
@@ -163,7 +162,7 @@ class CommuPlaceHolderWidget extends StatelessWidget {
 
 getNotificationImage(String? url, {double? radius, String? fileId}) {
   if (url != null) {
-    var imageOPS = OptimizedCacheImage(
+    var imageOPS = CachedNetworkImage(
       imageBuilder: (context, imageProvider) => CircleAvatar(
           radius: radius,
           backgroundColor: Colors.transparent,
@@ -182,7 +181,7 @@ getNotificationImage(String? url, {double? radius, String? fileId}) {
     );
     return imageOPS;
   } else if (fileId != null) {
-    var imageOPS = OptimizedCacheImage(
+    var imageOPS = CachedNetworkImage(
       imageBuilder: (context, imageProvider) => CircleAvatar(
           backgroundColor: Colors.transparent,
           backgroundImage: (imageProvider)),
