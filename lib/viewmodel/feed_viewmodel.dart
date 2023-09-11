@@ -33,7 +33,7 @@ class FeedVM extends ChangeNotifier {
         .onError((error, stackTrace) async {
       await AmityDialog()
           .showAlertErrorDialog(title: "Error!", message: error.toString());
-          return;
+      return;
     });
 
     _amityGlobalFeedPosts.removeAt(postIndex);
@@ -49,7 +49,6 @@ class FeedVM extends ChangeNotifier {
       pageSize: 5,
     )..addListener(
         () async {
-          
           log("initAmityGlobalfeed listener...");
           if (_controllerGlobal.error == null) {
             _amityGlobalFeedPosts.clear();
@@ -94,6 +93,23 @@ class FeedVM extends ChangeNotifier {
     //   },
     // );
     // notifyListeners();
+  }
+
+  void updatePost(AmityPost post) {
+    AmitySocialClient.newPostRepository()
+        .getPost(post.postId!)
+        .then((AmityPost post) {
+      final idx = _amityGlobalFeedPosts
+          .indexWhere((element) => element.postId == post.postId);
+      if (idx != -1) {
+        _amityGlobalFeedPosts[idx] = post;
+        notifyListeners();
+      }
+    }).onError<AmityException>((error, stackTrace) async {
+      await AmityDialog()
+          .showAlertErrorDialog(title: "Error!", message: error.toString());
+      return;
+    });
   }
 
   void loadnextpage() async {

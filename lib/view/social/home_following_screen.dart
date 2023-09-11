@@ -204,6 +204,13 @@ class _PostWidgetState extends State<PostWidget>
     }
   }
 
+  Future<int> checkIsFollowing() async {
+    AmityMyFollowInfo myFollowInfo = await AmityCoreClient.newUserRepository()
+        .relationship()
+        .getMyFollowInfo();
+    return myFollowInfo.followingCount ?? -1;
+  }
+
   Future<void> navigatorToCommentScreen() async {
     await showDialog(
       context: context,
@@ -212,7 +219,61 @@ class _PostWidgetState extends State<PostWidget>
         amityPost: widget.post,
       ),
     );
-    onRefresh();
+    if (mounted) {
+      Provider.of<FeedVM>(context, listen: false).updatePost(widget.post);
+    }
+  }
+
+  Future<void> navigatorToUser() async {
+    int beforeFollowing = -1;
+    try {
+      beforeFollowing = await checkIsFollowing();
+    } catch (_) {}
+    if (mounted) {
+      await showDialog(
+        context: context,
+        useSafeArea: false,
+        builder: (context) => ChangeNotifierProvider(
+          create: (context) => UserFeedVM(),
+          child: UserProfileScreen(
+            amityUser: widget.post.postedUser!,
+          ),
+        ),
+      );
+      if (widget.post.postedUser!.userId !=
+          AmityCoreClient.getCurrentUser().userId) {
+        if (beforeFollowing != -1) {
+          int afterFollowing = await checkIsFollowing();
+          if(afterFollowing != -1){
+            if(afterFollowing != beforeFollowing){
+              onRefresh();
+            }
+          }
+        }
+      }
+    }
+  }
+
+  Future<void> navigatorToCommunity() async {
+    final community = (widget.post.target as CommunityTarget).targetCommunity!;
+    await showDialog(
+      context: context,
+      useSafeArea: false,
+      builder: (context) => ChangeNotifierProvider(
+        create: (context) => CommuFeedVM(),
+        child: CommunityScreen(
+          isFromFeed: true,
+          community: community,
+        ),
+      ),
+    );
+    if (mounted) {
+      final result = await Provider.of<CommunityVM>(context, listen: false)
+          .getAmityCommunity(community.channelId!);
+      if (!(result.isJoined ?? false)) {
+        onRefresh();
+      }
+    }
   }
 
   Future<void> onDeletePost() async {
@@ -341,17 +402,7 @@ class _PostWidgetState extends State<PostWidget>
                     leading: FadeAnimation(
                       child: GestureDetector(
                         onTap: () async {
-                          await showDialog(
-                            context: context,
-                            useSafeArea: false,
-                            builder: (context) => ChangeNotifierProvider(
-                              create: (context) => UserFeedVM(),
-                              child: UserProfileScreen(
-                                amityUser: widget.post.postedUser!,
-                              ),
-                            ),
-                          );
-                          onRefresh();
+                          navigatorToUser();
                         },
                         child: getAvatarImage(
                           widget.post.postedUser!.userId !=
@@ -372,17 +423,7 @@ class _PostWidgetState extends State<PostWidget>
                       children: [
                         GestureDetector(
                           onTap: () async {
-                            await showDialog(
-                              context: context,
-                              useSafeArea: false,
-                              builder: (context) => ChangeNotifierProvider(
-                                create: (context) => UserFeedVM(),
-                                child: UserProfileScreen(
-                                  amityUser: widget.post.postedUser!,
-                                ),
-                              ),
-                            );
-                            onRefresh();
+                            navigatorToUser();
                           },
                           child: Text(
                             widget.post.postedUser!.userId !=
@@ -420,21 +461,7 @@ class _PostWidgetState extends State<PostWidget>
                                 widget.isFromFeed
                             ? GestureDetector(
                                 onTap: () async {
-                                  await showDialog(
-                                    context: context,
-                                    useSafeArea: false,
-                                    builder: (context) =>
-                                        ChangeNotifierProvider(
-                                      create: (context) => CommuFeedVM(),
-                                      child: CommunityScreen(
-                                        isFromFeed: true,
-                                        community: (widget.post.target
-                                                as CommunityTarget)
-                                            .targetCommunity!,
-                                      ),
-                                    ),
-                                  );
-                                  onRefresh();
+                                  navigatorToCommunity();
                                 },
                                 child: Text(
                                   (widget.post.target as CommunityTarget)
