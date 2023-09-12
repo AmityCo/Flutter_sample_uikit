@@ -114,13 +114,9 @@ class AmitySLEUIKit {
     AppTextStyle.mainStyle = provider.textStyle ?? const TextStyle();
   }
 
-  static void updateUserMetaData({required Map<String, dynamic> metaData}) {
-    final user = getCurrentUser();
-    if (user.id == null) {
-      return;
-    }
+  static void updateUserMetaData({required String userId,required Map<String, dynamic> metaData}) {
     AmityCoreClient.newUserRepository()
-        .updateUser(user.id!)
+        .updateUser(userId)
         .metadata(metaData)
         .update()
         .then((AmityUser user) {
