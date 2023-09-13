@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:amity_sdk/amity_sdk.dart';
 import 'package:amity_uikit_beta_service/components/custom_app_bar.dart';
 import 'package:amity_uikit_beta_service/components/accept_dialog.dart';
@@ -41,12 +43,29 @@ class Comments {
 
 class ReplyCommentScreenState extends State<ReplyCommentScreen> {
   final _commentTextEditController = TextEditingController();
+  final scrollController = ScrollController();
+  int commentCount = 0;
   @override
   void initState() {
     //query comment here
     Provider.of<PostVM>(context, listen: false)
         .listenForReplyComments(widget.postId, widget.comment.commentId!);
     super.initState();
+  }
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
+  }
+
+  void updateScrollController() {
+    try {
+      Future.delayed(const Duration(milliseconds: 300)).then((value) {
+        scrollController.jumpTo(scrollController.position.maxScrollExtent);
+      });
+    } catch (e) {
+      log('UpdateScrollController Error:$e');
+    }
   }
 
   @override
@@ -70,6 +89,13 @@ class ReplyCommentScreenState extends State<ReplyCommentScreen> {
         return Scaffold(
           appBar: appBar,
         );
+      }
+      final replyCommentsLength = vm.amityReplyComments.length;
+      if(commentCount < replyCommentsLength){
+        commentCount = replyCommentsLength;
+        updateScrollController();
+      }else{
+        commentCount = replyCommentsLength;
       }
       return StreamBuilder<AmityComment>(
           key: Key(comment.commentId ?? ''),
@@ -114,7 +140,7 @@ class ReplyCommentScreenState extends State<ReplyCommentScreen> {
                               ),
                             Expanded(
                               child: SingleChildScrollView(
-                                controller: vm.scrollcontroller,
+                                controller: scrollController,
                                 child: Column(
                                   children: [
                                     Stack(
