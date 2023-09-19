@@ -119,7 +119,7 @@ class CommunityListState extends State<CommunityList> {
                         itemCount: getLength(),
                         itemBuilder: (context, index) {
                           return StreamBuilder<AmityCommunity>(
-                              stream: getList()[index].listen,
+                              stream: getList()[index].listen.stream,
                               initialData: getList()[index],
                               builder: (context, snapshot) {
                                 return CommunityWidget(
@@ -203,7 +203,7 @@ class CommunityWidget extends StatelessWidget {
                         ? CircleAvatar(
                             backgroundColor: Colors.transparent,
                             backgroundImage:
-                                (NetworkImage(community.avatarImage!.fileUrl)))
+                                (NetworkImage(community.avatarImage!.fileUrl!)))
                         : const CircleAvatar(
                             backgroundImage: AssetImage(
                                 "assets/images/user_placeholder.png")),

@@ -1,5 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:extended_image/extended_image.dart';
+// import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 
 class ImageViewer extends StatelessWidget {
@@ -27,49 +27,50 @@ class ImageViewer extends StatelessWidget {
               items: imageURLs.map((url) {
                 return Builder(
                   builder: (BuildContext context) {
-                    return Container(
-                        width: MediaQuery.of(context).size.width,
-                        decoration:
-                            const BoxDecoration(color: Colors.transparent),
-                        child: ExtendedImage.network(
-                          url,
-                          cache: true,
-                          fit: BoxFit.cover,
-                          enableLoadState: true,
-                          loadStateChanged: (ExtendedImageState state) {
-                            if (state.extendedImageLoadState ==
-                                LoadState.loading) {
-                              return const Center(
-                                  child: CircularProgressIndicator());
-                            } else if (state.extendedImageLoadState ==
-                                LoadState.completed) {
-                              return ExtendedRawImage(
-                                fit: BoxFit.fitWidth,
-                                image: state.extendedImageInfo?.image,
-                                width: state.extendedImageInfo?.image.width
-                                    .toDouble(),
-                                height: state.extendedImageInfo?.image.height
-                                    .toDouble(),
-                              );
-                            } else {
-                              return const Text("Else STATE MESNT NOT HANDLED");
-                            }
-                          },
-                          mode: ExtendedImageMode.gesture,
-                          initGestureConfigHandler: (state) {
-                            return GestureConfig(
-                              minScale: 0.9,
-                              animationMinScale: 0.7,
-                              maxScale: 3.0,
-                              animationMaxScale: 3.5,
-                              speed: 1.0,
-                              inertialSpeed: 100.0,
-                              initialScale: 1.0,
-                              inPageView: false,
-                              initialAlignment: InitialAlignment.center,
-                            );
-                          },
-                        ));
+                    return Container();
+                    // return Container(
+                    //     width: MediaQuery.of(context).size.width,
+                    //     decoration:
+                    //         const BoxDecoration(color: Colors.transparent),
+                    //     child: ExtendedImage.network(
+                    //       url,
+                    //       cache: true,
+                    //       fit: BoxFit.cover,
+                    //       enableLoadState: true,
+                    //       loadStateChanged: (ExtendedImageState state) {
+                    //         if (state.extendedImageLoadState ==
+                    //             LoadState.loading) {
+                    //           return const Center(
+                    //               child: CircularProgressIndicator());
+                    //         } else if (state.extendedImageLoadState ==
+                    //             LoadState.completed) {
+                    //           return ExtendedRawImage(
+                    //             fit: BoxFit.fitWidth,
+                    //             image: state.extendedImageInfo?.image,
+                    //             width: state.extendedImageInfo?.image.width
+                    //                 .toDouble(),
+                    //             height: state.extendedImageInfo?.image.height
+                    //                 .toDouble(),
+                    //           );
+                    //         } else {
+                    //           return const Text("Else STATE MESNT NOT HANDLED");
+                    //         }
+                    //       },
+                    //       mode: ExtendedImageMode.gesture,
+                    //       initGestureConfigHandler: (state) {
+                    //         return GestureConfig(
+                    //           minScale: 0.9,
+                    //           animationMinScale: 0.7,
+                    //           maxScale: 3.0,
+                    //           animationMaxScale: 3.5,
+                    //           speed: 1.0,
+                    //           inertialSpeed: 100.0,
+                    //           initialScale: 1.0,
+                    //           inPageView: false,
+                    //           initialAlignment: InitialAlignment.center,
+                    //         );
+                    //       },
+                    //     ));
                   },
                 );
               }).toList(),
@@ -81,8 +82,8 @@ class ImageViewer extends StatelessWidget {
                   onTap: () {
                     Navigator.of(context).pop();
                   },
-                  child:
-                      const Icon(Icons.close_rounded, size: 30, color: Colors.white),
+                  child: const Icon(Icons.close_rounded,
+                      size: 30, color: Colors.white),
                 )),
           ],
         ),

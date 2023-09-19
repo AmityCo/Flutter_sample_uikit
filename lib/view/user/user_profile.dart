@@ -9,7 +9,7 @@ import '../../components/custom_user_avatar.dart';
 import '../../viewmodel/amity_viewmodel.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
 import '../../viewmodel/user_feed_viewmodel.dart';
-import '../social/home_following_screen.dart';
+import '../social/global_feed.dart';
 import 'edit_profile.dart';
 
 class UserProfileScreen extends StatefulWidget {
@@ -323,7 +323,7 @@ class UserProfileScreenState extends State<UserProfileScreen>
                                                 child: StreamBuilder<
                                                         AmityUserFollowInfo>(
                                                     stream: vm.amityMyFollowInfo
-                                                        .listen,
+                                                        .listen.stream,
                                                     initialData:
                                                         vm.amityMyFollowInfo,
                                                     builder:
@@ -355,11 +355,8 @@ class UserProfileScreenState extends State<UserProfileScreen>
                                                                       .status)),
                                                           padding:
                                                               const EdgeInsets
-                                                                      .fromLTRB(
-                                                                  10,
-                                                                  10,
-                                                                  10,
-                                                                  10),
+                                                                  .fromLTRB(10,
+                                                                  10, 10, 10),
                                                           child: Text(
                                                             getFollowingStatusString(
                                                                 snapshot.data!
@@ -443,7 +440,7 @@ class UserProfileScreenState extends State<UserProfileScreen>
                               itemBuilder: (context, index) {
                                 // var post = vm.amityPosts[index];
                                 return StreamBuilder<AmityPost>(
-                                    stream: vm.amityPosts[index].listen,
+                                    stream: vm.amityPosts[index].listen.stream,
                                     initialData: vm.amityPosts[index],
                                     builder: (context, snapshot) {
                                       return PostWidget(

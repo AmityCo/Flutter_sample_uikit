@@ -36,7 +36,7 @@ class UserFeedVM extends ChangeNotifier {
       amityUser = user;
     }
 
-    amityUser!.relationship().getFollowInfo().then((value) {
+    amityUser!.relationship().getFollowInfo(user.userId!).then((value) {
       amityMyFollowInfo = value;
       notifyListeners();
     }).onError((error, stackTrace) {

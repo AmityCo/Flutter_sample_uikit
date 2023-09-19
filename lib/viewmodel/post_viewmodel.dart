@@ -127,9 +127,16 @@ class PostVM extends ChangeNotifier {
 
   void removePostReaction(AmityPost post) {
     HapticFeedback.heavyImpact();
-    post.react().removeReaction('like').then((value) => {
-          //success
-        });
+    print("removePostReaction");
+
+    post.react().removeReaction('like').then((value) {
+      print(value.toString());
+      print("success");
+      // Handle success
+    }).catchError((error) {
+      print(error);
+      // Handle error
+    });
   }
 
   void removeCommentReaction(AmityComment comment) {

@@ -9,7 +9,7 @@ import '../../viewmodel/community_viewmodel.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
 import 'create_post_screen.dart';
 import 'edit_community.dart';
-import 'home_following_screen.dart';
+import 'global_feed.dart';
 
 class CommunityScreen extends StatefulWidget {
   final AmityCommunity community;
@@ -305,7 +305,8 @@ class CommunityScreenState extends State<CommunityScreen> {
                         itemBuilder: (context, index) {
                           return StreamBuilder<AmityPost>(
                               key: Key(vm.getCommunityPosts()[index].postId!),
-                              stream: vm.getCommunityPosts()[index].listen,
+                              stream:
+                                  vm.getCommunityPosts()[index].listen.stream,
                               initialData: vm.getCommunityPosts()[index],
                               builder: (context, snapshot) {
                                 return PostWidget(

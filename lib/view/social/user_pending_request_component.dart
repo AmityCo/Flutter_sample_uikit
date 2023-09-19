@@ -58,7 +58,7 @@ class _AmityPendingScreenState extends State<AmityPendingScreen> {
                 return StreamBuilder<AmityFollowRelationship>(
                     // key: Key(vm.getFollowRelationships[index].sourceUserId! +
                     //     vm.getFollowRelationships[index].sourceUserId!),
-                    stream: vm.pendingRequestList[index].listen,
+                    stream: vm.pendingRequestList[index].listen.stream,
                     initialData: vm.pendingRequestList[index],
                     builder: (context, snapshot) {
                       return Padding(

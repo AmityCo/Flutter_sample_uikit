@@ -72,7 +72,7 @@ class GlobalFeedScreenState extends State<GlobalFeedScreen> {
                     itemBuilder: (context, index) {
                       return StreamBuilder<AmityPost>(
                           key: Key(vm.getAmityPosts()[index].postId!),
-                          stream: vm.getAmityPosts()[index].listen,
+                          stream: vm.getAmityPosts()[index].listen.stream,
                           initialData: vm.getAmityPosts()[index],
                           builder: (context, snapshot) {
                             return PostWidget(
@@ -438,9 +438,10 @@ class _PostWidgetState extends State<PostWidget>
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            widget.post.myReactions!.isNotEmpty
+                            widget.post.myReactions!.contains("like")
                                 ? GestureDetector(
                                     onTap: () {
+                                      print(widget.post.myReactions);
                                       HapticFeedback.heavyImpact();
                                       Provider.of<PostVM>(context,
                                               listen: false)
@@ -478,6 +479,7 @@ class _PostWidgetState extends State<PostWidget>
                                     ))
                                 : GestureDetector(
                                     onTap: () {
+                                      print(widget.post.myReactions);
                                       HapticFeedback.heavyImpact();
                                       Provider.of<PostVM>(context,
                                               listen: false)

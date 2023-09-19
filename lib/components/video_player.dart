@@ -139,7 +139,7 @@ class _MyVideoPlayer2State extends State<MyVideoPlayer2> {
     await videoData.getVideo(AmityVideoQuality.HIGH).then((AmityVideo video) {
       if (mounted) {
         setState(() {
-          videoUrl = video.fileUrl;
+          videoUrl = video.fileUrl!;
           log(">>>>>>>>>>>>>>>>>>>>>>>>$videoUrl");
         });
       }

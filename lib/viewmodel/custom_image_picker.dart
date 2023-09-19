@@ -59,8 +59,8 @@ class ImagePickerVM extends ChangeNotifier {
                         imageState = ImageState.loading;
                         notifyListeners();
                         await AmityCoreClient.newFileRepository()
-                            .image(File(image.path))
-                            .upload()
+                            .uploadImage(File(image.path))
+                            .done
                             .then((value) {
                           var fileInfo = value as AmityUploadComplete;
 
@@ -91,8 +91,8 @@ class ImagePickerVM extends ChangeNotifier {
                       imageState = ImageState.loading;
                       notifyListeners();
                       await AmityCoreClient.newFileRepository()
-                          .image(File(image.path))
-                          .upload()
+                          .uploadImage(File(image.path))
+                          .done
                           .then((value) {
                         var fileInfo = value as AmityUploadComplete;
 

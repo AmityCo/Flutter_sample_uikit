@@ -117,7 +117,7 @@ class CreateChatGroupState extends State<CreateChatGroup> {
                                           context,
                                           listen: false)
                                       .amityImage!
-                                      .fileUrl)
+                                      .fileUrl!)
                                   : getImageProvider(null),
                         ),
                       ),

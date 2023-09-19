@@ -178,7 +178,7 @@ class CategoryWidget extends StatelessWidget {
             child: (category.avatar?.fileUrl != null)
                 ? CircleAvatar(
                     backgroundColor: Colors.transparent,
-                    backgroundImage: (NetworkImage(category.avatar!.fileUrl)))
+                    backgroundImage: (NetworkImage(category.avatar!.fileUrl!)))
                 : const CircleAvatar(
                     backgroundImage:
                         AssetImage("assets/images/user_placeholder.png")),

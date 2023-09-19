@@ -66,8 +66,8 @@ class CreatePostVM extends ChangeNotifier {
           amityImages.add(fileWithStatus);
           notifyListeners();
           await AmityCoreClient.newFileRepository()
-              .image(File(image.path))
-              .upload()
+              .uploadImage(File(image.path))
+              .done
               .then((value) {
             if (value is AmityUploadComplete) {
               var fileInfo = value as AmityUploadComplete;
@@ -94,8 +94,8 @@ class CreatePostVM extends ChangeNotifier {
         amityImages.add(fileWithStatus);
         notifyListeners();
         await AmityCoreClient.newFileRepository()
-            .image(File(image.path))
-            .upload()
+            .uploadImage(File(image.path))
+            .done
             .then((value) {
           var fileInfo = value as AmityUploadComplete;
 
@@ -123,8 +123,8 @@ class CreatePostVM extends ChangeNotifier {
 
           notifyListeners();
           await AmityCoreClient.newFileRepository()
-              .video(File(video.path))
-              .upload()
+              .uploadImage(File(video.path))
+              .done
               .then((value) {
             var fileInfo = value as AmityUploadComplete;
 

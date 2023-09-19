@@ -22,7 +22,7 @@ class EditPostVM extends CreatePostVM {
         imageUrlList = [];
         for (var child in children) {
           var imageData = child.data as ImageData;
-          imageUrlList.add(imageData.fileInfo.fileUrl);
+          imageUrlList.add(imageData.fileInfo.fileUrl!);
         }
 
         log("ImageData: $imageUrlList");
