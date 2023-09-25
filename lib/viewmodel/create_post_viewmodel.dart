@@ -153,20 +153,11 @@ class CreatePostVM extends ChangeNotifier {
           amityVideo!.file = File(video.path);
 
           notifyListeners();
-          await AmityCoreClient.newFileRepository()
+          AmityCoreClient.newFileRepository()
               .uploadVideo(File(video.path))
-              .then((value) {
-            var fileInfo = value as AmityUploadComplete;
-
-            amityVideo!.addFile(fileInfo.getFile);
-            log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>${fileInfo.getFile.fileId}");
-            isUploading = false;
-            notifyListeners();
-          }).onError((error, stackTrace) async {
-            log("error: $error");
-            await AmityDialog().showAlertErrorDialog(
-                title: "Error!", message: error.toString());
-          });
+              .stream
+              .listen(onUploadVideo);
+              
         } else {
           log("error: video is null");
           // await AmityDialog().showAlertErrorDialog(
@@ -178,6 +169,28 @@ class CreatePostVM extends ChangeNotifier {
             .showAlertErrorDialog(title: "Error!", message: error.toString());
       }
     }
+  }
+
+  void onUploadVideo(AmityUploadResult<AmityVideo> amityResult) {
+    amityResult.when(
+      progress: (uploadInfo, cancelToken) {},
+      complete: (value) {
+        var fileInfo = value as AmityUploadComplete;
+
+            amityVideo!.addFile(fileInfo.getFile);
+            log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>${fileInfo.getFile.fileId}");
+            isUploading = false;
+            notifyListeners();
+      },
+      error: (error) async {
+       log("error: $error");
+            await AmityDialog().showAlertErrorDialog(
+                title: "Error!", message: error.toString());
+      },
+      cancel: () {
+        // handle cancel request
+      },
+    );
   }
 
   void deleteImageAt({required int index}) {
