@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:amity_sdk/amity_sdk.dart';
+import 'package:amity_uikit_beta_service/utils/de_bounce.dart';
 import 'package:flutter/material.dart';
 
 import '../../components/alert_dialog.dart';
@@ -8,11 +9,13 @@ import '../../components/alert_dialog.dart';
 enum Feedtype { global, commu }
 
 class FeedVM extends ChangeNotifier {
-  var _amityGlobalFeedPosts = <AmityPost>[];
+  final _amityGlobalFeedPosts = <AmityPost>[];
 
   late PagingController<AmityPost> _controllerGlobal;
 
   final scrollcontroller = ScrollController();
+  bool isLoading = false;
+  final debounce = Debounce(duration: const Duration(seconds: 2));
 
   bool loadingNexPage = false;
   List<AmityPost> getAmityPosts() {
@@ -24,19 +27,21 @@ class FeedVM extends ChangeNotifier {
     notifyListeners();
   }
 
-  void deletePost(AmityPost post, int postIndex) async {
-    AmitySocialClient.newPostRepository()
+  Future<void> deletePost(AmityPost post, int postIndex) async {
+    await AmitySocialClient.newPostRepository()
         .deletePost(postId: post.postId!)
-        .then((value) {
-      _amityGlobalFeedPosts.removeAt(postIndex);
-      notifyListeners();
-    }).onError((error, stackTrace) async {
+        .onError((error, stackTrace) async {
       await AmityDialog()
           .showAlertErrorDialog(title: "Error!", message: error.toString());
+      return;
     });
+
+    _amityGlobalFeedPosts.removeAt(postIndex);
+    notifyListeners();
   }
 
   Future<void> initAmityGlobalfeed() async {
+    isLoading = true;
     _controllerGlobal = PagingController(
       pageFuture: (token) => AmitySocialClient.newFeedRepository()
           .getGlobalFeed()
@@ -57,6 +62,10 @@ class FeedVM extends ChangeNotifier {
             await AmityDialog().showAlertErrorDialog(
                 title: "Error!", message: _controllerGlobal.error.toString());
           }
+          debounce.run(() {
+            isLoading = false;
+            notifyListeners();
+          });
         },
       );
 
@@ -84,6 +93,23 @@ class FeedVM extends ChangeNotifier {
     //   },
     // );
     // notifyListeners();
+  }
+
+  void updatePost(AmityPost post) {
+    AmitySocialClient.newPostRepository()
+        .getPost(post.postId!)
+        .then((AmityPost post) {
+      final idx = _amityGlobalFeedPosts
+          .indexWhere((element) => element.postId == post.postId);
+      if (idx != -1) {
+        _amityGlobalFeedPosts[idx] = post;
+        notifyListeners();
+      }
+    }).onError<AmityException>((error, stackTrace) async {
+      await AmityDialog()
+          .showAlertErrorDialog(title: "Error!", message: error.toString());
+      return;
+    });
   }
 
   void loadnextpage() async {

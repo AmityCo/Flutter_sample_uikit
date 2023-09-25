@@ -16,7 +16,7 @@ import 'package:flutter/material.dart';
 void main() async {
   ///Step 1: Initialize amity SDK with the following function
   WidgetsFlutterBinding.ensureInitialized();
-  AmitySLEUIKit()
+  AmitySLEUIKit
       .initUIKit("b3babb0b3a89f4341d31dc1a01091edcd70f8de7b23d697f", "sg");
 
   runApp(const MyApp());
@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
     return AmitySLEProvider(
       child: Builder(builder: (context2) {
         ///If you want to change color of uikit use the following metgod here
-        AmitySLEUIKit().configAmityThemeColor(context2, (config) {
+        AmitySLEUIKit.configAmityThemeColor(context2, (config) {
           config.primaryColor = Colors.blue;
         });
         return MaterialApp(
@@ -65,7 +65,7 @@ class InitialWidget extends StatelessWidget {
               ElevatedButton(
                 onPressed: () {
                   ///Step 3: login with Amity
-                  AmitySLEUIKit().registerDevice(context, "johnwick2");
+                  AmitySLEUIKit.registerDevice(context, "johnwick2");
                 },
                 child: const Text("Login to Amity"),
               ),
@@ -76,7 +76,21 @@ class InitialWidget extends StatelessWidget {
             children: [
               ElevatedButton(
                 onPressed: () {
-                  ///Step 4: Navigate To channel List page
+                  ///Step 4: Navigate To Community page
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const CommunityView(),
+                  ));
+                },
+                child: const Text("Navigate to UIKIT: Community page"),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  ///Step 5: Navigate To channel List page
                   Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => const AmitySLEChannelScreen(),
                   ));
@@ -90,7 +104,7 @@ class InitialWidget extends StatelessWidget {
             children: [
               ElevatedButton(
                 onPressed: () async {
-                  ///4.1: Navigate To channel chat screen page with ChannelId
+                  ///5.1: Navigate To channel chat screen page with ChannelId
 
                   await Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => const SingleChatRoom(
@@ -107,7 +121,7 @@ class InitialWidget extends StatelessWidget {
             children: [
               ElevatedButton(
                 onPressed: () {
-                  ///4.e: Navigate To Global Feed Screen
+                  ///5.e: Navigate To Global Feed Screen
                   Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) =>
                         const Scaffold(body: GlobalFeedScreen()),

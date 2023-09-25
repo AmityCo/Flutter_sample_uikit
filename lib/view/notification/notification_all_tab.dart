@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:amity_sdk/amity_sdk.dart';
 import 'package:amity_uikit_beta_service/components/custom_user_avatar.dart';
 import 'package:amity_uikit_beta_service/view/social/user_pending_request_component.dart';
@@ -5,13 +7,13 @@ import 'package:amity_uikit_beta_service/view/user/user_profile.dart';
 import 'package:amity_uikit_beta_service/viewmodel/notification_viewmodel.dart';
 import 'package:amity_uikit_beta_service/viewmodel/pending_request_viewmodel.dart';
 import 'package:animation_wrappers/animation_wrappers.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get_time_ago/get_time_ago.dart';
-import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:provider/provider.dart';
 
+import '../../constans/app_text_style.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
-import '../../viewmodel/user_viewmodel.dart';
 
 class NotificationAllTabScreen extends StatefulWidget {
   const NotificationAllTabScreen({super.key});
@@ -135,7 +137,7 @@ class _NotificationAllTabScreenState extends State<NotificationAllTabScreen> {
                                         // ),
                                         title: RichText(
                                           text: TextSpan(
-                                            style: theme.textTheme.subtitle1!
+                                            style: theme.textTheme.headlineSmall!
                                                 .copyWith(
                                               letterSpacing: 0.5,
                                             ),
@@ -143,7 +145,7 @@ class _NotificationAllTabScreenState extends State<NotificationAllTabScreen> {
                                               TextSpan(
                                                   text: "Follow Request",
                                                   style: theme
-                                                      .textTheme.subtitle2!
+                                                      .textTheme.headlineSmall!
                                                       .copyWith(fontSize: 12)),
                                             ],
                                           ),
@@ -153,7 +155,7 @@ class _NotificationAllTabScreenState extends State<NotificationAllTabScreen> {
                                               Provider.of<PendingVM>(context,
                                                       listen: true)
                                                   .pendingRequestList),
-                                          style: theme.textTheme.subtitle2!
+                                          style: theme.textTheme.headlineSmall!
                                               .copyWith(
                                             fontSize: 9,
                                             color: theme.hintColor,
@@ -170,7 +172,7 @@ class _NotificationAllTabScreenState extends State<NotificationAllTabScreen> {
                                   vm.notificationsObject?.data?.isEmpty ?? false
                                       ? ""
                                       : "This month",
-                                  style: theme.textTheme.headline6,
+                                  style: theme.textTheme.headlineMedium,
                                 )),
                             vm.notificationsObject?.data?.isEmpty ?? false
                                 ? const Center(
@@ -211,7 +213,7 @@ class _NotificationAllTabScreenState extends State<NotificationAllTabScreen> {
                                             title: RichText(
                                               text: TextSpan(
                                                 style: theme
-                                                    .textTheme.subtitle1!
+                                                    .textTheme.headlineSmall!
                                                     .copyWith(
                                                   letterSpacing: 0.5,
                                                 ),
@@ -223,7 +225,7 @@ class _NotificationAllTabScreenState extends State<NotificationAllTabScreen> {
                                                                       .actors ??
                                                                   []),
                                                       style: theme
-                                                          .textTheme.subtitle2!
+                                                          .textTheme.headlineSmall!
                                                           .copyWith(
                                                               fontSize: 12)),
                                                   TextSpan(
@@ -231,7 +233,7 @@ class _NotificationAllTabScreenState extends State<NotificationAllTabScreen> {
                                                           " ${vm.verbStringBuilder(
                                                         notificationItem.verb!,
                                                       )} ",
-                                                      style: TextStyle(
+                                                      style: AppTextStyle.body1.copyWith(
                                                           color: theme
                                                               .primaryColor,
                                                           fontSize: 12)),
@@ -242,7 +244,7 @@ class _NotificationAllTabScreenState extends State<NotificationAllTabScreen> {
                                                           notificationItem
                                                               .targetDisplayName),
                                                       style: theme
-                                                          .textTheme.subtitle2!
+                                                          .textTheme.headlineSmall!
                                                           .copyWith(
                                                         fontSize: 12,
                                                       )),
@@ -254,7 +256,7 @@ class _NotificationAllTabScreenState extends State<NotificationAllTabScreen> {
                                                   .notificationsObject!
                                                   .data![index]
                                                   .lastUpdate!),
-                                              style: theme.textTheme.subtitle2!
+                                              style: theme.textTheme.headlineSmall!
                                                   .copyWith(
                                                 fontSize: 9,
                                                 color: theme.hintColor,
@@ -274,7 +276,7 @@ class _NotificationAllTabScreenState extends State<NotificationAllTabScreen> {
                                                             BorderRadius
                                                                 .circular(7),
                                                         child:
-                                                            OptimizedCacheImage(
+                                                            CachedNetworkImage(
                                                           imageUrl: notificationItem
                                                                   .targetImageUrl ??
                                                               "",

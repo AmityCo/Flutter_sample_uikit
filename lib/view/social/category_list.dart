@@ -178,14 +178,16 @@ class CategoryWidget extends StatelessWidget {
             child: (category.avatar?.fileUrl != null)
                 ? CircleAvatar(
                     backgroundColor: Colors.transparent,
-                    backgroundImage: (NetworkImage(category.avatar!.fileUrl)))
+                    backgroundImage:
+                        NetworkImage(category.avatar!.fileUrl ?? ''),
+                  )
                 : const CircleAvatar(
                     backgroundImage:
                         AssetImage("assets/images/user_placeholder.png")),
           ),
           title: Text(
             category.name ?? "Category",
-            style: theme.textTheme.bodyText1!
+            style: theme.textTheme.bodyLarge!
                 .copyWith(fontWeight: FontWeight.bold),
           ),
           trailing: Provider.of<CategoryVM>(context, listen: true)

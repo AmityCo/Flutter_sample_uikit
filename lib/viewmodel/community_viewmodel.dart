@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../../components/alert_dialog.dart';
 
-enum CommunityListType { my, recommend, trending }
+enum CommunityListType { my, recommend, trending,category }
 
 enum CommunityFeedMenuOption { edit, members }
 
@@ -151,7 +151,6 @@ class CommunityVM extends ChangeNotifier {
     log("initAmityMyCommunityList");
     if (_amityMyCommunities.isNotEmpty) {
       _amityMyCommunities.clear();
-      notifyListeners();
     }
 
     AmitySocialClient.newCommunityRepository()

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../components/custom_user_avatar.dart';
+import '../../constans/app_text_style.dart';
 import '../../viewmodel/amity_viewmodel.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
 import '../../viewmodel/custom_image_picker.dart';
@@ -100,11 +101,14 @@ class ProfileScreenState extends State<ProfileScreen> {
     final myAppBar = AppBar(
       title: Text(
         "Edit Profile",
-        style: theme.textTheme.headline6,
+        style: theme.textTheme.headlineSmall?.copyWith(
+            color:
+                context.watch<AmityUIConfiguration>().appbarConfig.textColor),
       ),
-      backgroundColor: Colors.white,
+      backgroundColor:
+          context.watch<AmityUIConfiguration>().appbarConfig.backgroundColor,
       leading: IconButton(
-        color: Provider.of<AmityUIConfiguration>(context).primaryColor,
+        color: context.watch<AmityUIConfiguration>().appbarConfig.iconBackColor,
         onPressed: () {
           Navigator.of(context).pop();
         },
@@ -155,13 +159,16 @@ class ProfileScreenState extends State<ProfileScreen> {
           },
           child: Text(
             "Save",
-            style: theme.textTheme.button!.copyWith(
+            style: theme.textTheme.bodyMedium!.copyWith(
                 color: Provider.of<ImagePickerVM>(
                           context,
                         ).imageState ==
                         ImageState.loading
                     ? Colors.grey
-                    : Provider.of<AmityUIConfiguration>(context).primaryColor,
+                    : context
+                        .watch<AmityUIConfiguration>()
+                        .appbarConfig
+                        .textColor,
                 fontWeight: FontWeight.bold),
           ),
         ),
@@ -208,12 +215,18 @@ class ProfileScreenState extends State<ProfileScreen> {
                             padding: const EdgeInsets.all(5),
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: Provider.of<AmityUIConfiguration>(context)
-                                  .primaryColor,
+                              color: context
+                                  .watch<AmityUIConfiguration>()
+                                  .buttonConfig
+                                  .backgroundColor,
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Icons.camera_alt,
                               size: 18,
+                              color: context
+                                  .watch<AmityUIConfiguration>()
+                                  .buttonConfig
+                                  .textColor,
                             ),
                           ),
                         ),
@@ -229,7 +242,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                         width: double.infinity,
                         child: Text(
                           "Profile Info",
-                          style: theme.textTheme.headline6!.copyWith(
+                          style: theme.textTheme.headlineSmall!.copyWith(
                             color: Colors.grey,
                             fontSize: 16,
                           ),
@@ -243,9 +256,9 @@ class ProfileScreenState extends State<ProfileScreen> {
                           enabled: false,
                           controller:
                               TextEditingController(text: vm.amityUser!.userId),
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             labelText: "User Id",
-                            labelStyle: TextStyle(height: 1),
+                            labelStyle: AppTextStyle.mainStyle.copyWith(height: 1),
                             border: InputBorder.none,
                           ),
                         ),
@@ -258,11 +271,11 @@ class ProfileScreenState extends State<ProfileScreen> {
                         padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
                         child: TextField(
                           controller: _displayNameController,
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             labelText: "Display Name",
                             alignLabelWithHint: false,
                             border: InputBorder.none,
-                            labelStyle: TextStyle(height: 1),
+                            labelStyle: AppTextStyle.mainStyle.copyWith(height: 1),
                           ),
                         ),
                       ),
@@ -274,11 +287,11 @@ class ProfileScreenState extends State<ProfileScreen> {
                         padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
                         child: TextField(
                           controller: _descriptionController,
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             labelText: "Description",
                             alignLabelWithHint: false,
                             border: InputBorder.none,
-                            labelStyle: TextStyle(height: 1),
+                            labelStyle: AppTextStyle.mainStyle.copyWith(height: 1),
                           ),
                         ),
                       ),

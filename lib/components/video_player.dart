@@ -1,11 +1,13 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:amity_sdk/amity_sdk.dart';
+import 'package:amity_uikit_beta_service/constans/app_text_style.dart';
 import 'package:animation_wrappers/animation_wrappers.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:video_player/video_player.dart';
 
 class LocalVideoPlayer extends StatefulWidget {
@@ -69,12 +71,15 @@ class _LocalVideoPlayerState extends State<LocalVideoPlayer> {
                 )
               : Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    CircularProgressIndicator(),
-                    SizedBox(height: 20),
-                    Text('Loading',
-                        style: TextStyle(fontWeight: FontWeight.w500)),
-                    SizedBox(height: 20),
+                  children: [
+                    const CircularProgressIndicator(),
+                    const SizedBox(height: 20),
+                    Text(
+                      'Loading',
+                      style: AppTextStyle.header2
+                          .copyWith(fontWeight: FontWeight.w500),
+                    ),
+                    const SizedBox(height: 20),
                   ],
                 ),
         ),
@@ -88,13 +93,15 @@ class MyVideoPlayer2 extends StatefulWidget {
   final AmityPost post;
   final bool isInFeed;
   final bool isEnableVideoTools;
-  const MyVideoPlayer2(
-      {Key? key,
-      required this.url,
-      required this.isInFeed,
-      required this.isEnableVideoTools,
-      required this.post})
-      : super(key: key);
+  final VideoData? videoData;
+  const MyVideoPlayer2({
+    Key? key,
+    required this.url,
+    required this.isInFeed,
+    required this.isEnableVideoTools,
+    required this.post,
+    this.videoData,
+  }) : super(key: key);
 
   @override
   State<MyVideoPlayer2> createState() => _MyVideoPlayer2State();
@@ -107,11 +114,21 @@ class _MyVideoPlayer2State extends State<MyVideoPlayer2> {
 
   @override
   void initState() {
-    var postData = widget.post.data as VideoData;
-    if (postData.thumbnail != null) {
-      thumbnailURL = postData.thumbnail!.fileUrl;
-      log(thumbnailURL.toString());
+    VideoData? vData;
+    if (widget.post.data is VideoData) {
+      var postData = widget.post.data as VideoData;
+      vData = postData;
+    } else if (widget.videoData != null) {
+      vData = widget.videoData;
     }
+
+    if (vData != null) {
+      if (vData.thumbnail != null) {
+        thumbnailURL = vData.thumbnail!.fileUrl;
+        log(thumbnailURL.toString());
+      }
+    }
+
     if (!widget.isInFeed) {
       initializePlayer();
     }
@@ -139,13 +156,13 @@ class _MyVideoPlayer2State extends State<MyVideoPlayer2> {
     await videoData.getVideo(AmityVideoQuality.HIGH).then((AmityVideo video) {
       if (mounted) {
         setState(() {
-          videoUrl = video.fileUrl;
+          videoUrl = video.fileUrl ?? '';
           log(">>>>>>>>>>>>>>>>>>>>>>>>$videoUrl");
         });
       }
     });
-
-    videoPlayerController = VideoPlayerController.network(videoUrl);
+    final videoUri = Uri.parse(videoUrl);
+    videoPlayerController = VideoPlayerController.networkUrl(videoUri);
     await videoPlayerController.initialize();
 
     var chewieProgressColors = ChewieProgressColors(
@@ -207,15 +224,15 @@ class _MyVideoPlayer2State extends State<MyVideoPlayer2> {
                                   controller: chewieController!,
                                 ),
                               )
-                            : Column(
+                            : const Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
+                                children: [
                                   // CircularProgressIndicator(
                                   //   color: Theme.of(context).primaryColor,
                                   // )
                                 ],
                               )
-                        : OptimizedCacheImage(
+                        : CachedNetworkImage(
                             imageBuilder: (context, imageProvider) => Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -234,9 +251,9 @@ class _MyVideoPlayer2State extends State<MyVideoPlayer2> {
                             ),
                             imageUrl: thumbnailURL ?? "",
                             fit: BoxFit.fill,
-                            placeholder: (context, url) => Column(
+                            placeholder: (context, url) => const Column(
                               mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
+                              children: [
                                 //  CircularProgressIndicator()
                               ],
                             ),
