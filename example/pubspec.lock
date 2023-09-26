@@ -5,10 +5,10 @@ packages:
     dependency: transitive
     description:
       name: amity_sdk
-      sha256: b53c5aa255873848a07a32cc9797395ef12d901fe33bd0dd979a2cfd250c63a2
+      sha256: "90aa6031af490c89bf52ebf6d8ca15d6bf251a4481881c61f6d1d8651c28cdb5"
       url: "https://pub.dev"
     source: hosted
-    version: "0.26.0"
+    version: "0.27.0"
   amity_uikit_beta_service:
     dependency: "direct main"
     description:
@@ -378,6 +378,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.16"
+  flutter_sticky_header:
+    dependency: transitive
+    description:
+      name: flutter_sticky_header
+      sha256: "017f398fbb45a589e01491861ca20eb6570a763fd9f3888165a978e11248c709"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.6.5"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -1107,6 +1115,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.7"
+  value_layout_builder:
+    dependency: transitive
+    description:
+      name: value_layout_builder
+      sha256: "98202ec1807e94ac72725b7f0d15027afde513c55c69ff3f41bcfccb950831bc"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.1"
   vector_math:
     dependency: transitive
     description:

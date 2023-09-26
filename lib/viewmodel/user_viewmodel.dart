@@ -85,4 +85,167 @@ class UserVM extends ChangeNotifier {
       notifyListeners();
     });
   }
+
+  final scrollcontroller = ScrollController();
+  bool loadingNexPage = false;
+  Future<void> initUserList(String keyworkd) async {
+    _amityUsersController = PagingController(
+      pageFuture: (token) => AmityCoreClient.newUserRepository()
+          .searchUserByDisplayName(keyworkd)
+          .getPagingData(token: token, limit: 20),
+      pageSize: 20,
+    )..addListener(
+        () async {
+          if (_amityUsersController.error == null) {
+            _userList.clear();
+            _userList.addAll(_amityUsersController.loadedItems);
+            sortedUserListWithHeaders();
+            notifyListeners();
+          } else {
+            log("error");
+            await AmityDialog().showAlertErrorDialog(
+                title: "Error!",
+                message: _amityUsersController.error.toString());
+          }
+        },
+      );
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _amityUsersController.fetchNextPage();
+    });
+
+    scrollcontroller.removeListener(() {});
+    scrollcontroller.addListener(loadnextpage);
+  }
+
+  void loadnextpage() async {
+    if ((scrollcontroller.position.pixels >
+        scrollcontroller.position.maxScrollExtent - 800)) {
+      print("hasmore: ${_amityUsersController.hasMoreItems}");
+    }
+    if ((scrollcontroller.position.pixels >
+            scrollcontroller.position.maxScrollExtent - 800) &&
+        _amityUsersController.hasMoreItems &&
+        !loadingNexPage) {
+      loadingNexPage = true;
+      notifyListeners();
+      log("loading Next Page...");
+      sortedUserListWithHeaders();
+      await _amityUsersController.fetchNextPage().then((value) {
+        loadingNexPage = false;
+        notifyListeners();
+      });
+    }
+  }
+
+  List<AmityUser> _amityUsers = [];
+  List<AmityUser> selectedUsers = [];
+  late PagingController<AmityUser> _amityUsersController;
+
+  List<AmityUser> get amityUsers => _amityUsers;
+
+  void getUsersForCommunity(AmityUserSortOption amityUserSortOption) {
+    print("getUsersForCommunity");
+    _amityUsersController = PagingController(
+      pageFuture: (token) => AmityCoreClient.newUserRepository()
+          .getUsers()
+          .sortBy(amityUserSortOption)
+          .getPagingData(token: token, limit: 20),
+      pageSize: 20,
+    )..addListener(
+        () {
+          if (_amityUsersController.error == null) {
+            _amityUsers.clear();
+            _amityUsers.addAll(_amityUsersController.loadedItems);
+            notifyListeners();
+          } else {
+            // handle error
+            print(_amityUsersController.error);
+          }
+        },
+      );
+  }
+
+  void selectUser(AmityUser user) {
+    selectedUsers.add(user);
+    notifyListeners();
+  }
+
+  List<Map<String, List<AmityUser>>> listWithHeaders = [];
+
+  void sortedUserListWithHeaders() {
+    print("sorted");
+    List<AmityUser> users = _userList;
+
+    // Step 1: Sort the users list by display name (case insensitive)
+    users.sort((a, b) {
+      String? nameA =
+          a.displayName?.isNotEmpty == true ? a.displayName : a.userId;
+      String? nameB =
+          b.displayName?.isNotEmpty == true ? b.displayName : b.userId;
+      return nameA!.toLowerCase().compareTo(nameB!.toLowerCase());
+    });
+
+    List<Map<String, List<AmityUser>>> currentListWithHeaders = [];
+    String? currentHeader;
+    List<AmityUser> currentUserList = [];
+
+    for (var user in users) {
+      String? initial;
+
+      // Step 2: Get the initial letter of the display name (default to '#' if not a letter)
+      if (user.displayName != null && user.displayName!.isNotEmpty) {
+        initial = user.displayName![0].toUpperCase();
+      }
+
+      if (initial != null && !RegExp(r'[A-Z]').hasMatch(initial)) {
+        initial = '#';
+      }
+
+      // Step 3: Add the header to the list if it's a new header
+      if (initial != currentHeader) {
+        if (currentHeader != null) {
+          currentListWithHeaders.add({currentHeader: currentUserList});
+        }
+        currentHeader = initial;
+        currentUserList = [];
+      }
+
+      // Step 4: Add the user to the list
+      currentUserList.add(user);
+    }
+
+    // Add the last group of users to the list
+    if (currentHeader != null) {
+      currentListWithHeaders.add({currentHeader: currentUserList});
+    }
+
+    listWithHeaders = currentListWithHeaders;
+
+    // Print for debugging
+    // for (var item in listWithHeaders) {
+    //   print(item.keys.first);
+    //   for (var user in item.values.first) {
+    //     print(user.displayName);
+    //   }
+    // }
+  }
+
+  void searchWithKeyword(String keyword) {
+    initUserList(keyword);
+  }
+
+  List<AmityUser> selectedCommunityUsers = [];
+
+  void toggleUserSelection(AmityUser user) {
+    if (selectedCommunityUsers
+        .any((selectedUser) => selectedUser.id == user.id)) {
+      selectedCommunityUsers
+          .removeWhere((selectedUser) => selectedUser.id == user.id);
+    } else {
+      selectedCommunityUsers.add(user);
+    }
+
+    notifyListeners();
+  }
 }

@@ -4,6 +4,8 @@ import 'dart:developer';
 
 import 'package:amity_sdk/amity_sdk.dart';
 import 'package:amity_uikit_beta_service/utils/navigation_key.dart';
+import 'package:amity_uikit_beta_service/viewmodel/category_viewmodel.dart';
+import 'package:amity_uikit_beta_service/viewmodel/my_community_viewmodel.dart';
 import 'package:amity_uikit_beta_service/viewmodel/notification_viewmodel.dart';
 import 'package:amity_uikit_beta_service/viewmodel/pending_request_viewmodel.dart';
 import 'package:flutter/material.dart';
@@ -156,7 +158,10 @@ class AmitySLEProvider extends StatelessWidget {
             create: ((context) => AmityUIConfiguration())),
         ChangeNotifierProvider<NotificationVM>(
             create: ((context) => NotificationVM())),
+        ChangeNotifierProvider<CategoryVM>(create: ((context) => CategoryVM())),
         ChangeNotifierProvider<PendingVM>(create: ((context) => PendingVM())),
+        ChangeNotifierProvider<MyCommunityVM>(
+            create: ((context) => MyCommunityVM())),
       ],
       child: Builder(
         builder: (context) => MaterialApp(

@@ -51,13 +51,13 @@ class CategoryVM extends ChangeNotifier {
     notifyListeners();
   }
 
-  void initCategoryList(List<String> ids) async {
+  void initCategoryList({List<String>? ids}) async {
     log("initAmityTrendingCommunityList");
 
-    if (_categories.isNotEmpty) {
-      _categories.clear();
-      notifyListeners();
-    }
+    // if (_categories.isNotEmpty) {
+    //   _categories.clear();
+    //   notifyListeners();
+    // }
 
     AmitySocialClient.newCommunityRepository()
         .getCategories()
@@ -69,7 +69,9 @@ class CategoryVM extends ChangeNotifier {
       for (var category in _categories) {
         _categoryIds.add(category.categoryId!);
       }
-      _selectedCategories = ids;
+      if (ids != null) {
+        _selectedCategories = ids;
+      }
 
       notifyListeners();
     }).onError((error, stackTrace) async {

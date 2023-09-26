@@ -30,6 +30,7 @@ class MyApp extends StatelessWidget {
     ///Step2: Wrap Material App with AmitySLEProvider and Builder
     return AmitySLEProvider(
       child: Builder(builder: (context2) {
+
         ///If you want to change color of uikit use the following metgod here
         AmitySLEUIKit().configAmityThemeColor(context2, (config) {
           config.primaryColor = Colors.blue;

@@ -1,126 +1,10 @@
-// import 'package:amity_uikit_beta_service/amity_sle_uikit.dart';
-// import 'package:amity_uikit_beta_service/utils/navigation_key.dart';
-// import 'package:amity_uikit_beta_service/view/chat/chat_friend_tab.dart';
-// import 'package:amity_uikit_beta_service/view/chat/single_chat_room.dart';
-// import 'package:amity_uikit_beta_service/view/social/global_feed.dart';
-
-// import 'package:flutter/material.dart';
-
-// void main() async {
-//   ///Step 1: Initialize amity SDK with the following function
-//   WidgetsFlutterBinding.ensureInitialized();
-//   AmitySLEUIKit()
-//       .initUIKit("b3babb0b3a89f4341d31dc1a01091edcd70f8de7b23d697f", "sg");
-
-//   runApp(MyApp());
-// }
-
-// class MyApp extends StatelessWidget {
-//   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-
-//   MyApp({Key? key}) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return AmitySLEProvider(
-//       child: Builder(builder: (context2) {
-//         AmitySLEUIKit().configAmityThemeColor(context2, (config) {
-//           config.primaryColor = Colors.blue;
-//         });
-//         return MaterialApp(
-//           navigatorKey: navigatorKey, // Use the same navigatorKey
-//           title: 'Flutter Demo',
-//           theme: ThemeData(
-//             primarySwatch: Colors.blue,
-//           ),
-//           home: const InitialWidget(),
-//         );
-//       }),
-//     );
-//   }
-// }
-
-// class InitialWidget extends StatelessWidget {
-//   const InitialWidget({
-//     Key? key,
-//   }) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: Column(
-//         crossAxisAlignment: CrossAxisAlignment.center,
-//         mainAxisAlignment: MainAxisAlignment.center,
-//         children: [
-//           Row(
-//             mainAxisAlignment: MainAxisAlignment.center,
-//             children: [
-//               ElevatedButton(
-//                 onPressed: () {
-//                   ///Step 3: login with Amity
-//                   AmitySLEUIKit()
-//                       .registerDevice(context: context, userId: "johnwick6");
-//                 },
-//                 child: const Text("Login to Amity"),
-//               ),
-//             ],
-//           ),
-//           Row(
-//             mainAxisAlignment: MainAxisAlignment.center,
-//             children: [
-//               ElevatedButton(
-//                 onPressed: () {
-//                   ///Step 4: Navigate To channel List page
-//                   Navigator.of(context).push(MaterialPageRoute(
-//                     builder: (context) => const AmitySLEChannelScreen(),
-//                   ));
-//                 },
-//                 child: const Text("Navigate to UIKIT: Channel List page"),
-//               ),
-//             ],
-//           ),
-//           Row(
-//             mainAxisAlignment: MainAxisAlignment.center,
-//             children: [
-//               ElevatedButton(
-//                 onPressed: () async {
-//                   ///4.1: Navigate To channel chat screen page with ChannelId
-
-//                   await Navigator.of(context).push(MaterialPageRoute(
-//                     builder: (context) => const SingleChatRoom(
-//                       channelId: "Flutter_Flutter",
-//                     ),
-//                   ));
-//                 },
-//                 child: const Text("Navigate to UIKIT: Chat room page"),
-//               ),
-//             ],
-//           ),
-//           Row(
-//             mainAxisAlignment: MainAxisAlignment.center,
-//             children: [
-//               ElevatedButton(
-//                 onPressed: () {
-//                   ///4.e: Navigate To Global Feed Screen
-//                   Navigator.of(context).push(MaterialPageRoute(
-//                     builder: (context) =>
-//                         const Scaffold(body: GlobalFeedScreen()),
-//                   ));
-//                 },
-//                 child: const Text("Navigate to UIKIT: Global Feed"),
-//               ),
-//             ],
-//           )
-//         ],
-//       ),
-//     );
-//   }
-// }
-
 import 'package:amity_uikit_beta_service/amity_sle_uikit.dart';
+import 'package:amity_uikit_beta_service/view/UIKit/social/my_community_feed.dart';
+import 'package:amity_uikit_beta_service/view/social/create_post_screen.dart';
 import 'package:amity_uikit_beta_service/view/social/global_feed.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:amity_uikit_beta_service/view/UIKit/social/create_community_page.dart';
 
 void main() {
   ///Step 1: Initialize amity SDK with the following function
@@ -138,14 +22,12 @@ class MyApp extends StatelessWidget {
     return AmitySLEProvider(
       child: Builder(builder: (context2) {
         AmitySLEUIKit().configAmityThemeColor(context2, (config) {
-          config.primaryColor = Colors.blue;
+          config.primaryColor = Color(0xFF1054DE);
         });
         return MaterialApp(
           navigatorKey: navigatorKey, // Use the same navigatorKey
           title: 'Flutter Demo',
-          theme: ThemeData(
-            primarySwatch: Colors.blue,
-          ),
+
           home: UserListPage(),
           routes: {
             '/second': (context) => SecondPage(),
@@ -310,8 +192,25 @@ class ThirdPage extends StatelessWidget {
               onTap: () {
                 // Navigate or perform action based on 'Newsfeed' tap
                 Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) =>
-                      const Scaffold(body: GlobalFeedScreen()),
+                  builder: (context) => Scaffold(body: CreateCommunityPage()),
+                ));
+              },
+            ),
+            ListTile(
+              title: Text('Create Post'),
+              onTap: () {
+                // Navigate or perform action based on 'Newsfeed' tap
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => Scaffold(body: CreatePostScreen2()),
+                ));
+              },
+            ),
+            ListTile(
+              title: Text('My Community'),
+              onTap: () {
+                // Navigate or perform action based on 'Newsfeed' tap
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => Scaffold(body: MyCommunityPage()),
                 ));
               },
             ),

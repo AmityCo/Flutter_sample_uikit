@@ -1,12 +1,24 @@
 import 'package:flutter/material.dart';
 
 class AmityUIConfiguration extends ChangeNotifier {
-  Color primaryColor = Colors.grey;
+  Color primaryColor = Color(0xFF1054DE);
   IconData placeHolderIcon = Icons.chat;
   Color displaynameColor = Colors.black;
 
   ChannelListConfig channelListConfig = ChannelListConfig();
   MessageRoomConfig messageRoomConfig = MessageRoomConfig();
+
+  TextStyle titleTextStyle = const TextStyle(
+    fontSize: 17,
+    color: Colors.black,
+    fontWeight: FontWeight.w600,
+  );
+
+  TextStyle hintTextStyle = const TextStyle(
+    fontSize: 15,
+    color: Colors.black,
+    fontWeight: FontWeight.w400,
+  );
 
   void updateUI() {
     notifyListeners();

@@ -3,15 +3,15 @@ import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../viewmodel/category_viewmodel.dart';
-import '../../viewmodel/configuration_viewmodel.dart';
+import '../../../viewmodel/category_viewmodel.dart';
+import '../../../viewmodel/configuration_viewmodel.dart';
 
 // ignore: must_be_immutable
 class CategoryList extends StatefulWidget {
-  AmityCommunity community;
+  AmityCommunity? community;
   TextEditingController categoryTextController;
 
-  CategoryList(this.community, this.categoryTextController, {super.key});
+  CategoryList({this.community, required this.categoryTextController});
   @override
   CategoryListState createState() => CategoryListState();
 }
@@ -49,12 +49,16 @@ class CategoryListState extends State<CategoryList> {
     super.initState();
     // community = widget.community;
     Future.delayed(Duration.zero, () {
-      Provider.of<CategoryVM>(context, listen: false)
-          .setCommunity(widget.community);
-      Provider.of<CategoryVM>(context, listen: false).initCategoryList(
-          Provider.of<CategoryVM>(context, listen: false)
-              .getCommunity()
-              .categoryIds!);
+      if (widget.community != null) {
+        Provider.of<CategoryVM>(context, listen: false)
+            .setCommunity(widget.community!);
+        Provider.of<CategoryVM>(context, listen: false).initCategoryList(
+            ids: Provider.of<CategoryVM>(context, listen: false)
+                .getCommunity()
+                .categoryIds!);
+      } else {
+        Provider.of<CategoryVM>(context, listen: false).initCategoryList();
+      }
     });
   }
 
@@ -74,29 +78,46 @@ class CategoryListState extends State<CategoryList> {
     final theme = Theme.of(context);
     return Consumer<CategoryVM>(builder: (context, vm, _) {
       return Scaffold(
+        appBar: AppBar(
+          elevation: 0.0,
+          backgroundColor: Colors.white,
+          leading: IconButton(
+            icon: const Icon(
+              Icons.close,
+              color: Colors.black,
+            ),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          title: Text(
+            'Select category',
+            style: Provider.of<AmityUIConfiguration>(context).titleTextStyle,
+          ),
+        ),
         body: SafeArea(
           child: Column(
             children: [
               Expanded(
                 child: Container(
                   height: bHeight,
-                  color: Colors.grey[200],
+                  color: Colors.white,
                   child: FadedSlideAnimation(
                     beginOffset: const Offset(0, 0.3),
                     endOffset: const Offset(0, 0),
                     slideCurve: Curves.linearToEaseOut,
                     child: Column(
                       children: [
-                        Align(
-                          alignment: Alignment.topLeft,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: const Icon(Icons.chevron_left,
-                                color: Colors.black, size: 35),
-                          ),
-                        ),
+                        // Align(
+                        //   alignment: Alignment.topLeft,
+                        //   child: GestureDetector(
+                        //     onTap: () {
+                        //       Navigator.of(context).pop();
+                        //     },
+                        //     child: const Icon(Icons.chevron_left,
+                        //         color: Colors.black, size: 35),
+                        //   ),
+                        // ),
                         getLength() < 1
                             ? Center(
                                 child: CircularProgressIndicator(
@@ -108,7 +129,6 @@ class CategoryListState extends State<CategoryList> {
                             : Expanded(
                                 child: ListView.builder(
                                   physics: const BouncingScrollPhysics(),
-                                  // shrinkWrap: true,
                                   itemCount: getLength(),
                                   itemBuilder: (context, index) {
                                     return CategoryWidget(
@@ -161,7 +181,7 @@ class CategoryWidget extends StatelessWidget {
     return Card(
       elevation: 0,
       child: Padding(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
         child: ListTile(
           contentPadding: const EdgeInsets.all(0),
           onTap: () {
@@ -173,21 +193,27 @@ class CategoryWidget extends StatelessWidget {
                     .getSelectedCommunityName(
                         Provider.of<CategoryVM>(context, listen: false)
                             .getCategoryIds()[index]);
+            Navigator.of(context).pop();
           },
           leading: FadeAnimation(
             child: (category.avatar?.fileUrl != null)
                 ? CircleAvatar(
                     backgroundColor: Colors.transparent,
-                    backgroundImage: (NetworkImage(category.avatar!.fileUrl!)))
-                : const CircleAvatar(
-                    backgroundImage:
-                        AssetImage("assets/images/user_placeholder.png")),
+                    backgroundImage: NetworkImage(category.avatar!.fileUrl!),
+                  )
+                : Container(
+                    height: 40,
+                    width: 40,
+                    decoration: const BoxDecoration(
+                        color: Color(0xFFD9E5FC), shape: BoxShape.circle),
+                    child: const Icon(
+                      Icons.category,
+                      color: Colors.white,
+                    ),
+                  ),
           ),
-          title: Text(
-            category.name ?? "Category",
-            style: theme.textTheme.bodyText1!
-                .copyWith(fontWeight: FontWeight.bold),
-          ),
+          title: Text(category.name ?? "Category",
+              style: Provider.of<AmityUIConfiguration>(context).hintTextStyle),
           trailing: Provider.of<CategoryVM>(context, listen: true)
                   .checkIfSelected(
                       Provider.of<CategoryVM>(context, listen: false)

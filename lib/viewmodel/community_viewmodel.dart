@@ -1,7 +1,13 @@
 import 'dart:developer';
 
+import 'dart:io';
+
 import 'package:amity_sdk/amity_sdk.dart';
+import 'package:amity_uikit_beta_service/viewmodel/create_post_viewmodel.dart';
+import 'package:amity_uikit_beta_service/viewmodel/user_viewmodel.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 import '../../components/alert_dialog.dart';
 
@@ -45,6 +51,47 @@ class CommunityVM extends ChangeNotifier {
       await AmityDialog()
           .showAlertErrorDialog(title: "Error!", message: error.toString());
     });
+  }
+//ป่าวๆ
+
+  Future<void> createCommunity({
+    required BuildContext context,
+    required String name,
+    required String description,
+    required AmityImage? avatar,
+    List<String>? tags,
+    required List<String> categoryIds,
+    required bool isPublic,
+    Map<String, String>? metadata,
+    List<String>? userIds,
+  }) async {
+    try {
+      final communityBuilder = AmitySocialClient.newCommunityRepository()
+          .createCommunity(name)
+          .description(description)
+          .categoryIds(categoryIds);
+
+      if (isPublic) {
+        communityBuilder.isPublic(true);
+      } else {
+        communityBuilder.isPublic(false);
+        communityBuilder.userIds(userIds!);
+      }
+
+      if (avatar != null) {
+        communityBuilder.avatar(avatar);
+      }
+
+      await communityBuilder.create();
+
+      notifyListeners();
+      Navigator.of(context).pop();
+      final userProvider = Provider.of<UserVM>(context, listen: false);
+      userProvider.selectedCommunityUsers.clear();
+    } catch (error, _) {
+      await AmityDialog()
+          .showAlertErrorDialog(title: "Error!", message: error.toString());
+    }
   }
 
   Future<void> updateCommunity(
@@ -170,5 +217,46 @@ class CommunityVM extends ChangeNotifier {
     var commuObj = await AmitySocialClient.newCommunityRepository()
         .getCommunity(communityId);
     return commuObj;
+  }
+
+  AmityImage? amityImages;
+  File? pickedFile;
+
+  Future addFile() async {
+    final XFile? xFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (xFile != null) {
+      pickedFile = File(xFile.path);
+      notifyListeners();
+
+      log(xFile.path);
+      AmityCoreClient.newFileRepository()
+          .uploadImage(pickedFile!)
+          .stream
+          .listen((amityUploadResult) {
+        amityUploadResult.when(
+          progress: (uploadInfo, cancelToken) {
+            int progress = uploadInfo.getProgressPercentage();
+            print(progress);
+          },
+          complete: (file) {
+            //check if the upload result is complete
+
+            final AmityImage uploadedImage = file;
+            amityImages = uploadedImage;
+            //proceed result with uploadedImage
+          },
+          error: (error) async {
+            final AmityException amityException = error;
+            //handle error
+            await AmityDialog().showAlertErrorDialog(
+                title: "Error!", message: error.toString());
+          },
+          cancel: () {
+            //upload is cancelled
+          },
+        );
+      });
+    }
   }
 }

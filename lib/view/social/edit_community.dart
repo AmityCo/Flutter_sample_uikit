@@ -9,7 +9,7 @@ import '../../viewmodel/category_viewmodel.dart';
 import '../../viewmodel/community_viewmodel.dart';
 import '../../viewmodel/configuration_viewmodel.dart';
 import '../../viewmodel/custom_image_picker.dart';
-import 'category_list.dart';
+import '../UIKit/social/category_list.dart';
 
 class EditCommunityScreen extends StatefulWidget {
   final AmityCommunity community;
@@ -69,12 +69,6 @@ class EditCommunityScreenState extends State<EditCommunityScreen> {
                     Provider.of<CategoryVM>(context, listen: false)
                         .getSelectedCategory(),
                     communityType == CommunityType.public ? true : false);
-
-            //edit profile
-            // await Provider.of<CommunityVM>(context, listen: false)
-            //     .editCurrentUserInfo(
-            //         displayName: _displayNameController.text,
-            //         description: _descriptionController.text);
           },
           child: Text(
             "Save",
@@ -207,7 +201,9 @@ class EditCommunityScreenState extends State<EditCommunityScreen> {
                           onTap: () {
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => CategoryList(
-                                    widget.community, _categoryController)));
+                                    community: widget.community,
+                                    categoryTextController:
+                                        _categoryController)));
                           },
                           decoration: const InputDecoration(
                             labelText: "Category",
