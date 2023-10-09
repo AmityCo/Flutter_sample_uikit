@@ -5,6 +5,7 @@ import 'package:amity_uikit_beta_service/view/social/global_feed.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:amity_uikit_beta_service/view/UIKit/social/create_community_page.dart';
+import 'package:amity_uikit_beta_service/view/UIKit/social/explore_page.dart';
 
 void main() {
   ///Step 1: Initialize amity SDK with the following function
@@ -211,6 +212,15 @@ class ThirdPage extends StatelessWidget {
                 // Navigate or perform action based on 'Newsfeed' tap
                 Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => Scaffold(body: MyCommunityPage()),
+                ));
+              },
+            ),
+            ListTile(
+              title: Text('Explore'),
+              onTap: () {
+                // Navigate or perform action based on 'Newsfeed' tap
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => Scaffold(body: CommunityPage()),
                 ));
               },
             ),

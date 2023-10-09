@@ -87,7 +87,7 @@ class CommunityVM extends ChangeNotifier {
       notifyListeners();
       Navigator.of(context).pop();
       final userProvider = Provider.of<UserVM>(context, listen: false);
-      userProvider.selectedCommunityUsers.clear();
+      userProvider.clearselectedCommunityUsers();
     } catch (error, _) {
       await AmityDialog()
           .showAlertErrorDialog(title: "Error!", message: error.toString());
@@ -229,7 +229,7 @@ class CommunityVM extends ChangeNotifier {
       pickedFile = File(xFile.path);
       notifyListeners();
 
-      log(xFile.path);
+      //log(xFile.path);
       AmityCoreClient.newFileRepository()
           .uploadImage(pickedFile!)
           .stream

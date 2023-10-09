@@ -235,15 +235,20 @@ class UserVM extends ChangeNotifier {
     initUserList(keyword);
   }
 
-  List<AmityUser> selectedCommunityUsers = [];
+  final List<AmityUser> _selectedCommunityUsers = [];
+  List<AmityUser> get selectedCommunityUsers => _selectedCommunityUsers;
+
+  void clearselectedCommunityUsers() {
+    _selectedCommunityUsers.clear();
+  }
 
   void toggleUserSelection(AmityUser user) {
-    if (selectedCommunityUsers
+    if (_selectedCommunityUsers
         .any((selectedUser) => selectedUser.id == user.id)) {
-      selectedCommunityUsers
+      _selectedCommunityUsers
           .removeWhere((selectedUser) => selectedUser.id == user.id);
     } else {
-      selectedCommunityUsers.add(user);
+      _selectedCommunityUsers.add(user);
     }
 
     notifyListeners();

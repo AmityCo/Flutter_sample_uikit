@@ -187,8 +187,6 @@ class UserListPage extends StatelessWidget {
                       slivers: Provider.of<UserVM>(context)
                           .listWithHeaders
                           .map<Widget>((item) {
-                        log(item.toString());
-
                         return SliverStickyHeader(
                           header: Container(
                             padding: EdgeInsets.fromLTRB(10, 5, 0, 5),

@@ -55,7 +55,7 @@ class CategoryListState extends State<CategoryList> {
         Provider.of<CategoryVM>(context, listen: false).initCategoryList(
             ids: Provider.of<CategoryVM>(context, listen: false)
                 .getCommunity()
-                .categoryIds!);
+                ?.categoryIds!);
       } else {
         Provider.of<CategoryVM>(context, listen: false).initCategoryList();
       }
@@ -78,6 +78,7 @@ class CategoryListState extends State<CategoryList> {
     final theme = Theme.of(context);
     return Consumer<CategoryVM>(builder: (context, vm, _) {
       return Scaffold(
+        backgroundColor: Colors.white,
         appBar: AppBar(
           elevation: 0.0,
           backgroundColor: Colors.white,
@@ -172,13 +173,14 @@ class CategoryWidget extends StatelessWidget {
 
   final AmityCommunityCategory category;
   final ThemeData theme;
-  final AmityCommunity community;
+  final AmityCommunity? community;
   final int index;
   final TextEditingController textController;
 
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: Colors.white,
       elevation: 0,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),

@@ -50,7 +50,6 @@ class CommuFeedVM extends ChangeNotifier {
             await AmityDialog().showAlertErrorDialog(
                 title: "Error!", message: _controllerCommu.error.toString());
             //update widgets
-
           }
         },
       );

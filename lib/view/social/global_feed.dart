@@ -38,7 +38,10 @@ class GlobalFeedScreenState extends State<GlobalFeedScreen> {
   @override
   void initState() {
     super.initState();
-    Provider.of<FeedVM>(context, listen: false).initAmityGlobalfeed();
+    var globalFeedProvider = Provider.of<FeedVM>(context, listen: false);
+    if (globalFeedProvider.getAmityPosts().isEmpty) {
+      globalFeedProvider.initAmityGlobalfeed();
+    }
   }
 
   @override

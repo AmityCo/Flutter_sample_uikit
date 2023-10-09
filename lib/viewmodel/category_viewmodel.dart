@@ -9,17 +9,23 @@ class CategoryVM extends ChangeNotifier {
   var _categories = <AmityCommunityCategory>[];
   var _selectedCategories = <String>[];
   final _categoryIds = <String>[];
-  var _community = AmityCommunity();
+  AmityCommunity? _community;
   List<AmityCommunityCategory> getCategories() {
     return _categories;
   }
 
-  AmityCommunity getCommunity() {
+  AmityCommunity? getCommunity() {
     return _community;
   }
 
   void setCommunity(AmityCommunity community) {
     _community = community;
+  }
+
+  void clear() {
+    _categories.clear();
+    _selectedCategories.clear();
+    _community = null;
   }
 
   List<String> getCategoryIds() {

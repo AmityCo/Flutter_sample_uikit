@@ -46,8 +46,7 @@ class FeedVM extends ChangeNotifier {
         () async {
           log("initAmityGlobalfeed listener...");
           if (_controllerGlobal.error == null) {
-            _amityGlobalFeedPosts.clear();
-            _amityGlobalFeedPosts.addAll(_controllerGlobal.loadedItems);
+            _amityGlobalFeedPosts = _controllerGlobal.loadedItems;
 
             notifyListeners();
           } else {

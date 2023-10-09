@@ -35,8 +35,7 @@ class AmityChatRepoImp implements AmityChatRepo {
       required Function(
         AmityMessage?,
         String?,
-      )
-          callback}) async {
+      ) callback}) async {
     log("fetchChannelById...");
     socket.emitWithAck('v3/message.query', {
       "channelId": channelId,

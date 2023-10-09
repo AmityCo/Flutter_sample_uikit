@@ -31,9 +31,7 @@ class EditCommunityScreenState extends State<EditCommunityScreen> {
 
     _displayNameController.text = widget.community.displayName ?? "";
     _descriptionController.text = widget.community.description ?? "";
-    _categoryController.text = widget.community.categories != null
-        ? widget.community.categories![0]!.name!
-        : "No category";
+    _categoryController.text = "null";
     communityType = widget.community.isPublic!
         ? CommunityType.public
         : CommunityType.private;

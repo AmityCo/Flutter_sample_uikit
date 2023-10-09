@@ -1,4 +1,5 @@
 import 'package:amity_sdk/amity_sdk.dart';
+import 'package:amity_uikit_beta_service/utils/pdf_manager.dart';
 import 'package:amity_uikit_beta_service/view/UIKit/social/category_list.dart';
 import 'package:amity_uikit_beta_service/view/social/select_user_page.dart';
 import 'package:amity_uikit_beta_service/viewmodel/category_viewmodel.dart';
@@ -37,8 +38,12 @@ class _CreateCommunityPageState extends State<CreateCommunityPage> {
   void initState() {
     super.initState();
     final userProvider = Provider.of<UserVM>(context, listen: false);
-
+    final communityProvider = Provider.of<CommunityVM>(context, listen: false);
+    final categoryVM = Provider.of<CategoryVM>(context, listen: false);
+    communityProvider.pickedFile = null;
+    categoryVM.clear();
     userProvider.initUserList("");
+    userProvider.clearselectedCommunityUsers();
   }
 
   @override

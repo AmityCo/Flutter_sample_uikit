@@ -1,4 +1,5 @@
 import 'package:amity_sdk/amity_sdk.dart';
+import 'package:amity_uikit_beta_service/view/UIKit/social/community_member_page.dart';
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:optimized_cached_image/optimized_cached_image.dart';
@@ -69,6 +70,9 @@ class CommunityScreenState extends State<CommunityScreen> {
             builder: (context) => EditCommunityScreen(widget.community)));
         break;
       case CommunityFeedMenuOption.members:
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => MemberManagementPage(
+                communityId: widget.community.communityId!)));
         break;
       default:
     }
@@ -88,50 +92,45 @@ class CommunityScreenState extends State<CommunityScreen> {
             const Spacer(),
             IconButton(
                 onPressed: () {
-                  if (vm.isCurrentUserIsAdmin) {
-                    showModalBottomSheet(
-                        context: context,
-                        builder: (context) {
-                          return Wrap(
-                            children: [
-                              ListTile(
-                                leading: const Icon(Icons.edit),
-                                title: Text(
-                                    "Edit Community:${AmityCoreClient.getCurrentUser().roles}"),
-                                onTap: () {
-                                  Navigator.of(context).pop();
-                                  onCommunityOptionTap(
-                                      CommunityFeedMenuOption.edit);
-                                },
-                              ),
-                              ListTile(
-                                leading: const Icon(Icons.people_alt_rounded),
-                                title: const Text('Members'),
-                                onTap: () {
-                                  onCommunityOptionTap(
-                                      CommunityFeedMenuOption.members);
-                                },
-                              ),
-                              const ListTile(
-                                title: Text(''),
-                              ),
-                            ],
-                          );
-                          // return SizedBox(
-                          //   height: 200,
-                          //   child: Column(
-                          //     crossAxisAlignment: CrossAxisAlignment.start,
-                          //     mainAxisSize: MainAxisSize.min,
-                          //     children: const <Widget>[],
-                          //   ),
-                          // );
-                        });
-                  }
+                  showModalBottomSheet(
+                      context: context,
+                      builder: (context) {
+                        return Wrap(
+                          children: [
+                            ListTile(
+                              leading: const Icon(Icons.edit),
+                              title: Text(
+                                  "Edit Community:${AmityCoreClient.getCurrentUser().roles}"),
+                              onTap: () {
+                                Navigator.of(context).pop();
+                                onCommunityOptionTap(
+                                    CommunityFeedMenuOption.edit);
+                              },
+                            ),
+                            ListTile(
+                              leading: const Icon(Icons.people_alt_rounded),
+                              title: const Text('Members'),
+                              onTap: () {
+                                onCommunityOptionTap(
+                                    CommunityFeedMenuOption.members);
+                              },
+                            ),
+                            const ListTile(
+                              title: Text(''),
+                            ),
+                          ],
+                        );
+                        // return SizedBox(
+                        //   height: 200,
+                        //   child: Column(
+                        //     crossAxisAlignment: CrossAxisAlignment.start,
+                        //     mainAxisSize: MainAxisSize.min,
+                        //     children: const <Widget>[],
+                        //   ),
+                        // );
+                      });
                 },
-                icon: Icon(Icons.more_horiz_rounded,
-                    color: vm.isCurrentUserIsAdmin
-                        ? Colors.black
-                        : Colors.grey[200]))
+                icon: const Icon(Icons.more_horiz_rounded, color: Colors.black))
           ],
         ),
         Row(

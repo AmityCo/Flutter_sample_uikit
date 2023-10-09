@@ -1,7 +1,9 @@
 import 'package:amity_sdk/amity_sdk.dart';
 import 'package:amity_uikit_beta_service/view/UIKit/social/create_community_page.dart';
+import 'package:amity_uikit_beta_service/view/social/community_feed.dart';
 import 'package:amity_uikit_beta_service/viewmodel/configuration_viewmodel.dart';
 import 'package:amity_uikit_beta_service/viewmodel/my_community_viewmodel.dart';
+import 'package:amity_uikit_beta_service/viewmodel/user_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -18,6 +20,7 @@ class _MyCommunityPageState extends State<MyCommunityPage> {
     super.initState();
     Future.delayed(Duration.zero, () {
       Provider.of<MyCommunityVM>(context, listen: false).initMyCommunity();
+      Provider.of<UserVM>(context, listen: false).clearselectedCommunityUsers();
     });
   }
 
@@ -39,7 +42,7 @@ class _MyCommunityPageState extends State<MyCommunityPage> {
             },
           ),
           title: Text(
-            'My Community Feed',
+            'My Community',
             style: Provider.of<AmityUIConfiguration>(context)
                 .titleTextStyle, // Adjust as needed
           ),
@@ -134,7 +137,10 @@ class CommunityWidget extends StatelessWidget {
           ],
         ),
         onTap: () {
-          // Handle tap
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => CommunityScreen(
+                  community:
+                      community))); // Replace with your CreateCommunityPage
         },
       ),
     );
