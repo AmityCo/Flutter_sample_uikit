@@ -72,6 +72,7 @@ class MemberManagementVM extends ChangeNotifier {
     if (_amityModeratorsController.error == null) {
       _moderatorList.clear();
       _moderatorList.addAll(_amityModeratorsController.loadedItems);
+
       notifyListeners();
     } else {
       // Handle the error appropriately
@@ -132,7 +133,8 @@ class MemberManagementVM extends ChangeNotifier {
   }
 
   // Method to remove member(s) from the community
-  void removeMembers(String communityId, List<String> removingMemberIds) {
+  Future<void> removeMembers(
+      String communityId, List<String> removingMemberIds) async {
     AmityLoadingDialog.showLoadingDialog();
     AmitySocialClient.newCommunityRepository()
         .membership(communityId)
@@ -140,6 +142,7 @@ class MemberManagementVM extends ChangeNotifier {
         .then((value) {
       _amityUsersController
           .removeWhere((element) => removingMemberIds.contains(element.userId));
+      AmityLoadingDialog.hideLoadingDialog();
     }).onError((error, stackTrace) async {
       AmityDialog()
           .showAlertErrorDialog(title: "Error!", message: error.toString());
@@ -148,11 +151,25 @@ class MemberManagementVM extends ChangeNotifier {
   }
 
   // Method to report a user
-  void reportUser(AmityUser user) {
-    user.report().flag().then((value) {
-      // success
+  Future<void> reportUser(AmityUser user) async {
+    await user.report().flag().then((value) {
+      print(value);
+      AmitySuccessDialog.showTimedDialog("Report sent");
     }).onError((error, stackTrace) {
-      // handle error
+      AmityDialog()
+          .showAlertErrorDialog(title: "Error!", message: error.toString());
+    });
+    notifyListeners();
+  }
+
+  // Method to report a user
+  Future<void> undoReportUser(AmityUser user) async {
+    await user.report().unflag().then((value) {
+      print(value);
+      AmitySuccessDialog.showTimedDialog("Unreport sent");
+    }).onError((error, stackTrace) {
+      AmityDialog()
+          .showAlertErrorDialog(title: "Error!", message: error.toString());
     });
     notifyListeners();
   }
@@ -169,12 +186,11 @@ class MemberManagementVM extends ChangeNotifier {
       currentUserRoles = await community.getCurentUserRoles();
       notifyListeners();
     }).onError((error, stackTrace) {
-      // Handle error
+      AmityDialog()
+          .showAlertErrorDialog(title: "Error!", message: error.toString());
     });
   }
 
   List<AmityCommunityMember> get userList => _userList;
   List<AmityCommunityMember> get moderatorList => _moderatorList;
 }
-
-mixin nu {}

@@ -62,7 +62,6 @@ class UserVM extends ChangeNotifier {
     } else {
       selectedUserList.add(id);
     }
-    notifyListeners();
   }
 
   bool checkIfSelected(String id) {
@@ -252,5 +251,12 @@ class UserVM extends ChangeNotifier {
     }
 
     notifyListeners();
+  }
+
+  void setSelectedUsersList(List<AmityUser> users) {
+    _selectedCommunityUsers.clear();
+    for (AmityUser user in users) {
+      _selectedCommunityUsers.add(user);
+    }
   }
 }

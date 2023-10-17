@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'dart:io';
@@ -102,7 +103,7 @@ class CommunityVM extends ChangeNotifier {
       List<String> categoryIds,
       bool isPublic) async {
     if (avatar != null) {
-      AmitySocialClient.newCommunityRepository()
+      await AmitySocialClient.newCommunityRepository()
           .updateCommunity(communityId)
           .avatar(avatar)
           .displayName(displayName)
@@ -116,7 +117,7 @@ class CommunityVM extends ChangeNotifier {
             .showAlertErrorDialog(title: "Error!", message: error.toString());
       });
     } else {
-      AmitySocialClient.newCommunityRepository()
+      await AmitySocialClient.newCommunityRepository()
           .updateCommunity(communityId)
           .displayName(displayName)
           .description(description)
@@ -164,17 +165,22 @@ class CommunityVM extends ChangeNotifier {
     });
   }
 
-  void leaveCommunity(String communityId, {CommunityListType? type}) async {
+  void leaveCommunity(String communityId,
+      {CommunityListType? type,
+      required void Function(bool isSuccess) callback}) async {
     AmitySocialClient.newCommunityRepository()
         .leaveCommunity(communityId)
         .then((value) {
       if (type != null) {
         refreshCommunity(type);
       }
+      AmitySuccessDialog.showTimedDialog("Leave community");
       notifyListeners();
+      callback(true); // Calling the callback with success status
     }).onError((error, stackTrace) async {
       await AmityDialog()
           .showAlertErrorDialog(title: "Error!", message: error.toString());
+      callback(false); // Calling the callback with failure status
     });
   }
 
@@ -228,8 +234,9 @@ class CommunityVM extends ChangeNotifier {
     if (xFile != null) {
       pickedFile = File(xFile.path);
       notifyListeners();
-
+      AmityLoadingDialog.showLoadingDialog();
       //log(xFile.path);
+
       AmityCoreClient.newFileRepository()
           .uploadImage(pickedFile!)
           .stream
@@ -241,7 +248,8 @@ class CommunityVM extends ChangeNotifier {
           },
           complete: (file) {
             //check if the upload result is complete
-
+            print("complete");
+            AmityLoadingDialog.hideLoadingDialog();
             final AmityImage uploadedImage = file;
             amityImages = uploadedImage;
             //proceed result with uploadedImage
@@ -258,5 +266,111 @@ class CommunityVM extends ChangeNotifier {
         );
       });
     }
+  }
+
+  XFile? _seletedFIle;
+  Future selectFile() async {
+    _seletedFIle = await ImagePicker().pickImage(source: ImageSource.gallery)!;
+    if (_seletedFIle != null) {
+      pickedFile = File(_seletedFIle!.path);
+      notifyListeners();
+
+      //log(xFile.path);
+    }
+  }
+
+  Future<void> uploadSelectedFileToAmity() async {
+    final completer = Completer<void>();
+    if (pickedFile != null) {
+      AmityCoreClient.newFileRepository()
+          .uploadImage(pickedFile!)
+          .stream
+          .listen(
+        (amityUploadResult) {
+          amityUploadResult.when(
+            progress: (uploadInfo, cancelToken) {
+              int progress = uploadInfo.getProgressPercentage();
+              print(progress);
+            },
+            complete: (file) {
+              //check if the upload result is complete
+              print("complete");
+              final AmityImage uploadedImage = file;
+              amityImages = uploadedImage;
+              //proceed result with uploadedImage
+              completer.complete();
+            },
+            error: (error) async {
+              final AmityException amityException = error;
+              //handle error
+              await AmityDialog().showAlertErrorDialog(
+                title: "Error!",
+                message: error.toString(),
+              );
+              completer.completeError(error);
+            },
+            cancel: () {
+              //upload is cancelled
+              completer.completeError(Exception('Upload cancelled'));
+            },
+          );
+        },
+      );
+    } else {
+      completer.complete();
+    }
+
+    // Wait for the completer to complete, which happens in the listener above.
+    return completer.future;
+  }
+
+  void deleteCommunity(String communityId, {required Function(bool) callback}) {
+    AmitySocialClient.newCommunityRepository()
+        .deleteCommunity(communityId)
+        .then((value) {
+      //success
+      _amityMyCommunities
+          .removeWhere((element) => element.communityId == communityId);
+      AmitySuccessDialog.showTimedDialog("Community deleted");
+      notifyListeners(); // To update the UI after removing the community
+
+      if (callback != null) {
+        callback(true); // Success status
+      }
+    }).onError((error, stackTrace) async {
+      //handle error
+      await AmityDialog()
+          .showAlertErrorDialog(title: "Error!", message: error.toString());
+      if (callback != null) {
+        callback(false); // Failure status
+      }
+    });
+  }
+
+  void configPostReview(String communityId, bool isEnabled) {
+    AmitySocialClient.newCommunityRepository()
+        .updateCommunity(communityId)
+        .isPostReviewEnabled(isEnabled)
+        .update()
+        .then((value) {
+      //handle result
+      print("success");
+    }).onError((error, stackTrace) async {
+      //handle error
+      await AmityDialog()
+          .showAlertErrorDialog(title: "Error!", message: error.toString());
+    });
+  }
+
+  Future<void> addMembers(String communityId, List<String> userIds) async {
+    await AmitySocialClient.newCommunityRepository()
+        .membership(communityId)
+        .addMembers(userIds)
+        .then((members) {})
+        .onError((error, stackTrace) async {
+      //handle error
+      await AmityDialog()
+          .showAlertErrorDialog(title: "Error!", message: error.toString());
+    });
   }
 }

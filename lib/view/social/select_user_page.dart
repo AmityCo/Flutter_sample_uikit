@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:amity_sdk/amity_sdk.dart';
+import 'package:amity_uikit_beta_service/viewmodel/amity_viewmodel.dart';
 import 'package:amity_uikit_beta_service/viewmodel/configuration_viewmodel.dart';
 import 'package:amity_uikit_beta_service/viewmodel/user_viewmodel.dart';
 import 'package:flutter/material.dart';
@@ -8,22 +9,31 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:provider/provider.dart';
 
-class UserListPage extends StatelessWidget {
-  const UserListPage({super.key});
+class UserListPage extends StatefulWidget {
+  final List<AmityUser>? preSelectMember;
+  final Function(List<AmityUser>)? onDonePressed; // Add this line
+
+  const UserListPage(
+      {super.key,
+      this.preSelectMember,
+      this.onDonePressed}); // Modify this line
+
+  @override
+  State<UserListPage> createState() => _UserListPageState();
+}
+
+class _UserListPageState extends State<UserListPage> {
+  @override
+  void initState() {
+    if (widget.preSelectMember != null) {
+      print(widget.preSelectMember);
+      Provider.of<UserVM>(context, listen: false)
+          .setSelectedUsersList(widget.preSelectMember!);
+    }
+    super.initState();
+  }
 
 //   @override
-//   _UserListPageState createState() => _UserListPageState();
-// }
-
-// class _UserListPageState extends State<UserListPage> {
-//   @override
-//   void initState() {
-//     super.initState();
-//     final userProvider = Provider.of<UserVM>(context, listen: false);
-
-//     userProvider.initUserList("");
-//   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,12 +58,20 @@ class UserListPage extends StatelessWidget {
                   Provider.of<UserVM>(context, listen: false)
                       .selectedCommunityUsers);
             },
-            child: Text('Done',
-                style: TextStyle(
-                  color:
-                      Provider.of<AmityUIConfiguration>(context, listen: false)
-                          .primaryColor,
-                )),
+            child: TextButton(
+              onPressed: () {
+                if (widget.onDonePressed != null) {
+                  widget.onDonePressed!(
+                      Provider.of<UserVM>(context, listen: false)
+                          .selectedCommunityUsers);
+                }
+              },
+              child: Text('Done',
+                  style: TextStyle(
+                      color: Provider.of<AmityUIConfiguration>(context,
+                              listen: false)
+                          .primaryColor)),
+            ),
           ),
         ],
       ),

@@ -1,6 +1,10 @@
 import 'package:amity_sdk/amity_sdk.dart';
+import 'package:amity_uikit_beta_service/components/alert_dialog.dart';
+import 'package:amity_uikit_beta_service/components/custom_dialog.dart';
+import 'package:amity_uikit_beta_service/view/social/select_user_page.dart';
 import 'package:amity_uikit_beta_service/view/user/user_profile.dart';
 import 'package:amity_uikit_beta_service/viewmodel/community_member_viewmodel.dart';
+import 'package:amity_uikit_beta_service/viewmodel/community_viewmodel.dart';
 import 'package:amity_uikit_beta_service/viewmodel/user_feed_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -8,8 +12,10 @@ import 'package:provider/provider.dart';
 class MemberManagementPage extends StatefulWidget {
   final String communityId;
 
-  const MemberManagementPage({Key? key, required this.communityId})
-      : super(key: key);
+  const MemberManagementPage({
+    Key? key,
+    required this.communityId,
+  }) : super(key: key);
 
   @override
   State<MemberManagementPage> createState() => _MemberManagementPageState();
@@ -28,6 +34,7 @@ class _MemberManagementPageState extends State<MemberManagementPage> {
       Provider.of<MemberManagementVM>(context, listen: false)
           .checkCurrentUserRole(widget.communityId);
     });
+
     super.initState();
   }
 
@@ -36,7 +43,46 @@ class _MemberManagementPageState extends State<MemberManagementPage> {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
+        backgroundColor: Colors.white,
         appBar: AppBar(
+          actions: [
+            IconButton(
+              icon: Icon(Icons.add, color: Colors.black),
+              onPressed: () async {
+                var userList =
+                    Provider.of<MemberManagementVM>(context, listen: false)
+                        .userList;
+                List<AmityUser> userIdList =
+                    userList.map((user) => user.user!).toList();
+                Navigator.of(context).push<List<AmityUser>>(MaterialPageRoute(
+                    builder: (context) => UserListPage(
+                          preSelectMember: userIdList,
+                          onDonePressed: (users) async {
+                            List<String> userIds =
+                                users.map((user) => user.userId!).toList();
+                            if (users.isNotEmpty) {
+                              await Provider.of<CommunityVM>(context,
+                                      listen: false)
+                                  .addMembers(widget.communityId, userIds);
+                              await Provider.of<MemberManagementVM>(context,
+                                      listen: false)
+                                  .initMember(
+                                communityId: widget.communityId,
+                              );
+                              await Provider.of<MemberManagementVM>(context,
+                                      listen: false)
+                                  .initModerators(
+                                communityId: widget.communityId,
+                              );
+                              Navigator.of(context).pop();
+                            } else {
+                              print('Failed to add members');
+                            }
+                          },
+                        )));
+              },
+            ),
+          ],
           elevation: 0.0,
           iconTheme: IconThemeData(color: Colors.black),
           backgroundColor: Colors.white,
@@ -57,6 +103,7 @@ class _MemberManagementPageState extends State<MemberManagementPage> {
                     fontWeight: FontWeight.w600,
                     fontFamily: 'SF Pro Text',
                   ),
+
                   tabs: [
                     Tab(text: "Members"),
                     Tab(text: "Moderators"),
@@ -140,22 +187,23 @@ class ModeratorList extends StatelessWidget {
           itemCount: viewModel.moderatorList.length,
           controller: viewModel.scrollControllerForModerator,
           itemBuilder: (context, index) {
-            final moderator = viewModel.moderatorList[index];
             return ListTile(
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => ChangeNotifierProvider(
                         create: (context) => UserFeedVM(),
                         child: UserProfileScreen(
-                          amityUser: moderator.user!,
+                          amityUser: viewModel.moderatorList[index].user!,
                         ))));
               },
               leading: CircleAvatar(
                 backgroundColor: const Color(0xFFD9E5FC),
-                backgroundImage: moderator.user?.avatarUrl == null
-                    ? null
-                    : NetworkImage(moderator.user!.avatarUrl!),
-                child: moderator.user?.avatarUrl != null
+                backgroundImage:
+                    viewModel.moderatorList[index].user?.avatarUrl == null
+                        ? null
+                        : NetworkImage(
+                            viewModel.moderatorList[index].user!.avatarUrl!),
+                child: viewModel.moderatorList[index].user?.avatarUrl != null
                     ? null
                     : const Icon(Icons.person,
                         size: 20,
@@ -163,7 +211,7 @@ class ModeratorList extends StatelessWidget {
                             .white), // Adjust to use the correct attribute for avatar URL
               ),
               title: Text(
-                moderator.user?.displayName ?? '',
+                viewModel.moderatorList[index].user?.displayName ?? '',
                 style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15),
               ),
               trailing: IconButton(
@@ -172,7 +220,8 @@ class ModeratorList extends StatelessWidget {
                   color: Colors.black,
                 ),
                 onPressed: () {
-                  _showOptionsBottomSheet(context, moderator, viewModel);
+                  _showOptionsBottomSheet(
+                      context, viewModel.moderatorList[index], viewModel);
                 },
               ),
             );
@@ -204,8 +253,10 @@ void _showOptionsBottomSheet(BuildContext context, AmityCommunityMember member,
           child: Wrap(
             children: isModerator
                 ? [
-                    showDemoteButton
-                        ? ListTile(
+                    member.roles!.contains('community-moderator') &
+                            !showDemoteButton
+                        ? SizedBox()
+                        : ListTile(
                             title: Text(
                               member.roles!.contains('community-moderator')
                                   ? 'Dismiss moderator'
@@ -229,15 +280,23 @@ void _showOptionsBottomSheet(BuildContext context, AmityCommunityMember member,
                                 communityId: viewModel.communityId,
                               );
                             },
-                          )
-                        : SizedBox(),
+                          ),
                     ListTile(
-                      title: const Text(
-                        'Report',
+                      title: Text(
+                        member.user!.isFlaggedByMe ? "Undo Report" : "Report",
                         style: TextStyle(fontWeight: FontWeight.w500),
                       ),
-                      onTap: () {
-                        viewModel.reportUser(member.user!);
+                      onTap: () async {
+                        if (member.user!.isFlaggedByMe) {
+                          await viewModel.undoReportUser(member.user!);
+                        } else {
+                          await viewModel.reportUser(member.user!);
+                        }
+                        await viewModel.initModerators(
+                            communityId: viewModel.communityId);
+                        await viewModel.initMember(
+                          communityId: viewModel.communityId,
+                        );
                         Navigator.pop(context);
                       },
                     ),
@@ -247,9 +306,14 @@ void _showOptionsBottomSheet(BuildContext context, AmityCommunityMember member,
                         style: TextStyle(
                             color: Colors.red, fontWeight: FontWeight.w500),
                       ),
-                      onTap: () {
-                        viewModel.removeMembers(
+                      onTap: () async {
+                        await viewModel.removeMembers(
                             viewModel.communityId, [member.userId!]);
+                        await viewModel.initModerators(
+                            communityId: viewModel.communityId);
+                        await viewModel.initMember(
+                          communityId: viewModel.communityId,
+                        );
                         Navigator.pop(context);
                       },
                     ),

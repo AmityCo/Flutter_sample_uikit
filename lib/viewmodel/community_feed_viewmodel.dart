@@ -13,6 +13,7 @@ class CommuFeedVM extends ChangeNotifier {
 
   final scrollcontroller = ScrollController();
 
+  AmityCommunity? community;
   List<AmityPost> getCommunityPosts() {
     return _amityCommunityFeedPosts;
   }

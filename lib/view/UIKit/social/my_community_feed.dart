@@ -49,10 +49,12 @@ class _MyCommunityPageState extends State<MyCommunityPage> {
           actions: [
             IconButton(
               icon: Icon(Icons.add, color: Colors.black),
-              onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(
+              onPressed: () async {
+                await Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) =>
-                        CreateCommunityPage())); // Replace with your CreateCommunityPage
+                        const CreateCommunityPage())); // Replace with your CreateCommunityPage
+                await Provider.of<MyCommunityVM>(context, listen: false)
+                    .initMyCommunity();
               },
             ),
           ],
@@ -107,42 +109,48 @@ class _MyCommunityPageState extends State<MyCommunityPage> {
 class CommunityWidget extends StatelessWidget {
   final AmityCommunity community;
 
-  const CommunityWidget({required this.community});
+  const CommunityWidget({super.key, required this.community});
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 0,
-      child: ListTile(
-        leading: (community.avatarFileId != null)
-            ? CircleAvatar(
-                backgroundColor: Colors.transparent,
-                backgroundImage: NetworkImage(community.avatarImage!.fileUrl!),
-              )
-            : Container(
-                height: 40,
-                width: 40,
-                decoration: const BoxDecoration(
-                    color: Color(0xFFD9E5FC), shape: BoxShape.circle),
-                child: const Icon(
-                  Icons.group,
-                  color: Colors.white,
-                ),
+    return StreamBuilder<AmityCommunity>(
+        stream: community.listen.stream,
+        builder: (context, snapshot) {
+          var communityStream = snapshot.data ?? community;
+          return Card(
+            elevation: 0,
+            child: ListTile(
+              leading: (communityStream.avatarFileId != null)
+                  ? CircleAvatar(
+                      backgroundColor: Colors.transparent,
+                      backgroundImage:
+                          NetworkImage(communityStream.avatarImage!.fileUrl!),
+                    )
+                  : Container(
+                      height: 40,
+                      width: 40,
+                      decoration: const BoxDecoration(
+                          color: Color(0xFFD9E5FC), shape: BoxShape.circle),
+                      child: const Icon(
+                        Icons.group,
+                        color: Colors.white,
+                      ),
+                    ),
+              title: Row(
+                children: [
+                  if (!community.isPublic!) const Icon(Icons.lock, size: 16.0),
+                  const SizedBox(width: 4.0),
+                  Text(communityStream.displayName ?? "Community"),
+                ],
               ),
-        title: Row(
-          children: [
-            if (!community.isPublic!) const Icon(Icons.lock, size: 16.0),
-            const SizedBox(width: 4.0),
-            Text(community.displayName ?? "Community"),
-          ],
-        ),
-        onTap: () {
-          Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => CommunityScreen(
-                  community:
-                      community))); // Replace with your CreateCommunityPage
-        },
-      ),
-    );
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => CommunityScreen(
+                        community:
+                            communityStream))); // Replace with your CreateCommunityPage
+              },
+            ),
+          );
+        });
   }
 }

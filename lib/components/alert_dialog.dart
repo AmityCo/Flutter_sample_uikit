@@ -1,3 +1,4 @@
+import 'package:amity_uikit_beta_service/components/custom_dialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -50,7 +51,7 @@ class AmityLoadingDialog {
     return showDialog<void>(
       context: context,
       barrierColor: Colors.transparent,
-      barrierDismissible: false,
+      barrierDismissible: true,
       builder: (BuildContext context) {
         return Center(
           child: SizedBox(
@@ -93,5 +94,68 @@ class AmityLoadingDialog {
     Navigator.of(
       NavigationService.navigatorKey.currentContext!,
     ).pop(); // Close the dialog
+  }
+}
+
+class AmitySuccessDialog {
+  static Future<void> showTimedDialog(String text) async {
+    final context = NavigationService.navigatorKey.currentContext;
+
+    if (context == null) {
+      print("Context is null, cannot show dialog");
+      return Future.value();
+    }
+
+    showDialog<void>(
+      context: context,
+      barrierColor: Colors.transparent,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return TimedDialog(
+          text: text,
+        );
+      },
+    );
+  }
+}
+
+class ConfirmationDialog {
+  Future<void> show({
+    required BuildContext context,
+    required String title,
+    required String detailText,
+    String leftButtonText = 'Cancel',
+    String rightButtonText = 'Confirm',
+    required Function onConfirm,
+  }) async {
+    return showCupertinoDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return CupertinoTheme(
+          data: CupertinoThemeData(brightness: Brightness.dark),
+          child: CupertinoAlertDialog(
+            title: Text(title),
+            content: Text(detailText),
+            actions: <Widget>[
+              CupertinoDialogAction(
+                child: Text(leftButtonText),
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+              ),
+              CupertinoDialogAction(
+                textStyle: TextStyle(color: Colors.red),
+                child: Text(rightButtonText),
+                onPressed: () {
+                  onConfirm();
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+                isDefaultAction: true,
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }

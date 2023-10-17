@@ -223,12 +223,13 @@ class CommunityWidget extends StatelessWidget {
                         backgroundColor: MaterialStateProperty.all<Color>(
                       Provider.of<AmityUIConfiguration>(context).primaryColor,
                     )),
-                    onPressed: () {
+                    onPressed: () async {
                       if (community.isJoined != null) {
                         if (community.isJoined!) {
                           Provider.of<CommunityVM>(context, listen: false)
                               .leaveCommunity(community.communityId ?? "",
-                                  type: communityType);
+                                  type: communityType,
+                                  callback: (bool isSuccess) {});
                         } else {
                           Provider.of<CommunityVM>(context, listen: false)
                               .joinCommunity(community.communityId ?? "",

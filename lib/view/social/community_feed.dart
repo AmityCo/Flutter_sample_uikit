@@ -1,5 +1,6 @@
 import 'package:amity_sdk/amity_sdk.dart';
-import 'package:amity_uikit_beta_service/view/UIKit/social/community_member_page.dart';
+import 'package:amity_uikit_beta_service/view/UIKit/social/community_setting/community_member_page.dart';
+import 'package:amity_uikit_beta_service/view/UIKit/social/community_setting/setting_page.dart';
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:optimized_cached_image/optimized_cached_image.dart';
@@ -45,11 +46,11 @@ class CommunityScreenState extends State<CommunityScreen> {
     }
   }
 
-  Widget communityDescription(CommuFeedVM vm) {
+  Widget communityDescription(AmityCommunity community) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        widget.community.description == null
+        community.description == null
             ? Container()
             : const Text(
                 "About",
@@ -58,77 +59,82 @@ class CommunityScreenState extends State<CommunityScreen> {
         const SizedBox(
           height: 5.0,
         ),
-        Text(widget.community.description ?? ""),
+        Text(community.description ?? ""),
       ],
     );
   }
 
-  void onCommunityOptionTap(CommunityFeedMenuOption option) {
+  void onCommunityOptionTap(
+      CommunityFeedMenuOption option, AmityCommunity community) {
     switch (option) {
       case CommunityFeedMenuOption.edit:
         Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => EditCommunityScreen(widget.community)));
+            builder: (context) => EditCommunityScreen(community)));
         break;
       case CommunityFeedMenuOption.members:
         Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => MemberManagementPage(
-                communityId: widget.community.communityId!)));
+            builder: (context) =>
+                MemberManagementPage(communityId: community.communityId!)));
         break;
       default:
     }
   }
 
-  Widget communityInfo(CommuFeedVM vm) {
+  Widget communityInfo(AmityCommunity community) {
     return Column(
       children: [
         Row(
           children: [
             Text(
-                widget.community.displayName != null
-                    ? widget.community.displayName!
+                community.displayName != null
+                    ? community.displayName!
                     : "Community",
                 style:
                     const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
             const Spacer(),
             IconButton(
                 onPressed: () {
-                  showModalBottomSheet(
-                      context: context,
-                      builder: (context) {
-                        return Wrap(
-                          children: [
-                            ListTile(
-                              leading: const Icon(Icons.edit),
-                              title: Text(
-                                  "Edit Community:${AmityCoreClient.getCurrentUser().roles}"),
-                              onTap: () {
-                                Navigator.of(context).pop();
-                                onCommunityOptionTap(
-                                    CommunityFeedMenuOption.edit);
-                              },
-                            ),
-                            ListTile(
-                              leading: const Icon(Icons.people_alt_rounded),
-                              title: const Text('Members'),
-                              onTap: () {
-                                onCommunityOptionTap(
-                                    CommunityFeedMenuOption.members);
-                              },
-                            ),
-                            const ListTile(
-                              title: Text(''),
-                            ),
-                          ],
-                        );
-                        // return SizedBox(
-                        //   height: 200,
-                        //   child: Column(
-                        //     crossAxisAlignment: CrossAxisAlignment.start,
-                        //     mainAxisSize: MainAxisSize.min,
-                        //     children: const <Widget>[],
-                        //   ),
-                        // );
-                      });
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context2) => CommunitySettingPage(
+                            community: community,
+                          )));
+                  // showModalBottomSheet(
+                  //     context: context,
+                  //     builder: (context) {
+                  //       return Wrap(
+                  //         children: [
+                  //           ListTile(
+                  //             leading: const Icon(Icons.edit),
+                  //             title: Text(
+                  //                 "Edit Community:${AmityCoreClient.getCurrentUser().roles}"),
+                  //             onTap: () {
+                  //               Navigator.of(context).pop();
+                  //               onCommunityOptionTap(
+                  //                   CommunityFeedMenuOption.edit);
+                  //             },
+                  //           ),
+                  //           ListTile(
+                  //             leading: const Icon(Icons.people_alt_rounded),
+                  //             title: const Text('Members'),
+                  //             onTap: () {
+                  //               onCommunityOptionTap(
+                  //                   CommunityFeedMenuOption.members);
+                  //             },
+                  //           ),
+                  //           const ListTile(
+                  //             title: Text(''),
+                  //           ),
+                  //         ],
+                  //       );
+                  //       // return SizedBox(
+                  //       //   height: 200,
+                  //       //   child: Column(
+                  //       //     crossAxisAlignment: CrossAxisAlignment.start,
+                  //       //     mainAxisSize: MainAxisSize.min,
+                  //       //     children: const <Widget>[],
+                  //       //   ),
+                  //       // );
+                  //     });
                 },
                 icon: const Icon(Icons.more_horiz_rounded, color: Colors.black))
           ],
@@ -139,13 +145,13 @@ class CommunityScreenState extends State<CommunityScreen> {
             const SizedBox(
               width: 5,
             ),
-            Text(widget.community.isPublic != null
-                ? (widget.community.isPublic! ? "Public" : "Private")
+            Text(community.isPublic != null
+                ? (community.isPublic! ? "Public" : "Private")
                 : "N/A"),
             const SizedBox(
               width: 20,
             ),
-            Text("${widget.community.membersCount} members"),
+            Text("${community.membersCount} members"),
             const Spacer(),
             ElevatedButton(
               style: ButtonStyle(
@@ -153,14 +159,13 @@ class CommunityScreenState extends State<CommunityScreen> {
                 Provider.of<AmityUIConfiguration>(context).primaryColor,
               )),
               onPressed: () {
-                if (widget.community.isJoined != null) {
-                  if (widget.community.isJoined!) {
+                if (community.isJoined != null) {
+                  if (community.isJoined!) {
                     AmitySocialClient.newCommunityRepository()
-                        .leaveCommunity(widget.community.communityId!)
+                        .leaveCommunity(community.communityId!)
                         .then((value) {
                       setState(() {
-                        widget.community.isJoined =
-                            !(widget.community.isJoined!);
+                        community.isJoined = !(community.isJoined!);
                       });
                     }).onError((error, stackTrace) {
                       //handle error
@@ -168,11 +173,10 @@ class CommunityScreenState extends State<CommunityScreen> {
                     });
                   } else {
                     AmitySocialClient.newCommunityRepository()
-                        .joinCommunity(widget.community.communityId!)
+                        .joinCommunity(community.communityId!)
                         .then((value) {
                       setState(() {
-                        widget.community.isJoined =
-                            !(widget.community.isJoined!);
+                        community.isJoined = !(community.isJoined!);
                       });
                     }).onError((error, stackTrace) {
                       log(error.toString());
@@ -180,8 +184,8 @@ class CommunityScreenState extends State<CommunityScreen> {
                   }
                 }
               },
-              child: Text(widget.community.isJoined != null
-                  ? (widget.community.isJoined! ? "Leave" : "Join")
+              child: Text(community.isJoined != null
+                  ? (community.isJoined! ? "Leave" : "Join")
                   : "N/A"),
             )
           ],
@@ -190,19 +194,18 @@ class CommunityScreenState extends State<CommunityScreen> {
     );
   }
 
-  Widget communityDetailSection(CommuFeedVM vm) {
+  Widget communityDetailSection(AmityCommunity community) {
     return Column(
       children: [
         Row(
           children: [
             Expanded(
-              child: widget.community.avatarImage?.fileUrl == null ||
-                      widget.community.avatarImage?.fileUrl == ""
+              child: community.avatarImage?.fileUrl == null ||
+                      community.avatarImage?.fileUrl == ""
                   ? const SizedBox()
                   : OptimizedCacheImage(
                       height: 400,
-                      imageUrl:
-                          "${widget.community.avatarImage!.fileUrl}?size=full",
+                      imageUrl: "${community.avatarImage!.fileUrl}?size=full",
                       fit: BoxFit.cover,
                       placeholder: (context, url) => Container(
                         height: 400,
@@ -219,9 +222,9 @@ class CommunityScreenState extends State<CommunityScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              communityInfo(vm),
+              communityInfo(community),
               const Divider(),
-              communityDescription(vm)
+              communityDescription(community)
             ],
           ),
         )
@@ -247,84 +250,94 @@ class CommunityScreenState extends State<CommunityScreen> {
     //final bHeight = mediaQuery.size.height - mediaQuery.padding.top;
 
     return Consumer<CommuFeedVM>(builder: (__, vm, _) {
-      return Scaffold(
-        appBar: myAppBar,
-        floatingActionButton: (widget.community.isJoined!)
-            ? FloatingActionButton(
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context2) => CreatePostScreen2(
-                            communityID: widget.community.communityId,
-                            context: context,
-                          )));
+      return StreamBuilder<AmityCommunity>(
+          stream: widget.community.listen.stream,
+          builder: (context, snapshot) {
+            var community = snapshot.data ?? widget.community;
+            return Scaffold(
+              appBar: myAppBar,
+              floatingActionButton: (community.isJoined!)
+                  ? FloatingActionButton(
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context2) => CreatePostScreen2(
+                                  communityID: community.communityId,
+                                  context: context,
+                                )));
+                      },
+                      backgroundColor:
+                          Provider.of<AmityUIConfiguration>(context)
+                              .primaryColor,
+                      child: const Icon(Icons.add),
+                    )
+                  : null,
+              backgroundColor: Colors.grey[200],
+              body: RefreshIndicator(
+                color: Provider.of<AmityUIConfiguration>(context).primaryColor,
+                onRefresh: () async {
+                  Provider.of<CommuFeedVM>(context, listen: false)
+                      .initAmityCommunityFeed(community.communityId!);
                 },
-                backgroundColor:
-                    Provider.of<AmityUIConfiguration>(context).primaryColor,
-                child: const Icon(Icons.add),
-              )
-            : null,
-        backgroundColor: Colors.grey[200],
-        body: RefreshIndicator(
-          color: Provider.of<AmityUIConfiguration>(context).primaryColor,
-          onRefresh: () async {
-            Provider.of<CommuFeedVM>(context, listen: false)
-                .initAmityCommunityFeed(widget.community.communityId!);
-          },
-          child: FadedSlideAnimation(
-            beginOffset: const Offset(0, 0.3),
-            endOffset: const Offset(0, 0),
-            slideCurve: Curves.linearToEaseOut,
-            child: SafeArea(
-              child: SingleChildScrollView(
-                controller: vm.scrollcontroller,
-                child: Column(
-                  children: [
-                    // Align(
-                    //   alignment: Alignment.topLeft,
-                    //   child: IconButton(
-                    //     onPressed: () {
-                    //       Navigator.of(context).pop();
-                    //     },
-                    //     icon: const Icon(Icons.chevron_left,
-                    //         color: Colors.black, size: 35),
-                    //   ),
-                    // ),
-                    SizedBox(
-                        width: double.infinity,
-                        // height: (bHeight - 120) * 0.4,
-                        child: communityDetailSection(vm)),
-                    FadedSlideAnimation(
-                      beginOffset: const Offset(0, 0.3),
-                      endOffset: const Offset(0, 0),
-                      slideCurve: Curves.linearToEaseOut,
-                      child: ListView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: vm.getCommunityPosts().length,
-                        itemBuilder: (context, index) {
-                          return StreamBuilder<AmityPost>(
-                              key: Key(vm.getCommunityPosts()[index].postId!),
-                              stream:
-                                  vm.getCommunityPosts()[index].listen.stream,
-                              initialData: vm.getCommunityPosts()[index],
-                              builder: (context, snapshot) {
-                                return PostWidget(
-                                  post: snapshot.data!,
-                                  theme: theme,
-                                  postIndex: index,
-                                  isCommunity: true,
-                                );
-                              });
-                        },
+                child: FadedSlideAnimation(
+                  beginOffset: const Offset(0, 0.3),
+                  endOffset: const Offset(0, 0),
+                  slideCurve: Curves.linearToEaseOut,
+                  child: SafeArea(
+                    child: SingleChildScrollView(
+                      controller: vm.scrollcontroller,
+                      child: Column(
+                        children: [
+                          // Align(
+                          //   alignment: Alignment.topLeft,
+                          //   child: IconButton(
+                          //     onPressed: () {
+                          //       Navigator.of(context).pop();
+                          //     },
+                          //     icon: const Icon(Icons.chevron_left,
+                          //         color: Colors.black, size: 35),
+                          //   ),
+                          // ),
+                          SizedBox(
+                              width: double.infinity,
+                              // height: (bHeight - 120) * 0.4,
+                              child: communityDetailSection(
+                                  community ?? community)),
+                          FadedSlideAnimation(
+                            beginOffset: const Offset(0, 0.3),
+                            endOffset: const Offset(0, 0),
+                            slideCurve: Curves.linearToEaseOut,
+                            child: ListView.builder(
+                              physics: const NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: vm.getCommunityPosts().length,
+                              itemBuilder: (context, index) {
+                                return StreamBuilder<AmityPost>(
+                                    key: Key(
+                                        vm.getCommunityPosts()[index].postId!),
+                                    stream: vm
+                                        .getCommunityPosts()[index]
+                                        .listen
+                                        .stream,
+                                    initialData: vm.getCommunityPosts()[index],
+                                    builder: (context, snapshot) {
+                                      return PostWidget(
+                                        post: snapshot.data!,
+                                        theme: theme,
+                                        postIndex: index,
+                                        isCommunity: true,
+                                      );
+                                    });
+                              },
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
+                  ),
                 ),
               ),
-            ),
-          ),
-        ),
-      );
+            );
+          });
     });
   }
 }
