@@ -147,8 +147,8 @@ class ConfirmationDialog {
                 textStyle: TextStyle(color: Colors.red),
                 child: Text(rightButtonText),
                 onPressed: () {
+                  Navigator.of(context).pop();
                   onConfirm();
-                  Navigator.of(context).pop(); // Close the dialog
                 },
                 isDefaultAction: true,
               ),

@@ -1,4 +1,5 @@
 import 'package:amity_uikit_beta_service/amity_sle_uikit.dart';
+import 'package:amity_uikit_beta_service/view/UIKit/social/create_post_screen.dart';
 import 'package:amity_uikit_beta_service/view/UIKit/social/my_community_feed.dart';
 import 'package:amity_uikit_beta_service/view/social/create_post_screen.dart';
 import 'package:amity_uikit_beta_service/view/social/global_feed.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:amity_uikit_beta_service/view/UIKit/social/create_community_page.dart';
 import 'package:amity_uikit_beta_service/view/UIKit/social/explore_page.dart';
+import 'package:amity_uikit_beta_service/view/UIKit/social/post_target_page.dart';
 
 void main() {
   ///Step 1: Initialize amity SDK with the following function
@@ -74,44 +76,49 @@ class _UserListPageState extends State<UserListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('User List'),
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: _controller,
-              decoration: InputDecoration(
-                labelText: 'Username',
-                border: OutlineInputBorder(),
+    return WillPopScope(
+      onWillPop: () async {
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('User List'),
+        ),
+        body: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                controller: _controller,
+                decoration: InputDecoration(
+                  labelText: 'Username',
+                  border: OutlineInputBorder(),
+                ),
               ),
             ),
-          ),
-          ElevatedButton(
-            onPressed: _addUsername,
-            child: Text('Add Username'),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: _usernames.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(_usernames[index]),
-                  onTap: () {
-                    ///Step 3: login with Amity
-                    AmitySLEUIKit().registerDevice(
-                        context: context, userId: _usernames[index]);
-                    Navigator.of(context)
-                        .pushNamed('/second', arguments: _usernames[index]);
-                  },
-                );
-              },
+            ElevatedButton(
+              onPressed: _addUsername,
+              child: Text('Add Username'),
             ),
-          ),
-        ],
+            Expanded(
+              child: ListView.builder(
+                itemCount: _usernames.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(_usernames[index]),
+                    onTap: () {
+                      ///Step 3: login with Amity
+                      AmitySLEUIKit().registerDevice(
+                          context: context, userId: _usernames[index]);
+                      Navigator.of(context)
+                          .pushNamed('/second', arguments: _usernames[index]);
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -139,8 +146,8 @@ class SecondPage extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.of(context).pushNamed('/third',
-                    arguments: {'username': username, 'feature': 'Chat'});
+                // Navigator.of(context).pushNamed('/third',
+                //     arguments: {'username': username, 'feature': 'Chat'});
               },
               child: Text('Chat'),
             ),
@@ -202,7 +209,7 @@ class ThirdPage extends StatelessWidget {
               onTap: () {
                 // Navigate or perform action based on 'Newsfeed' tap
                 Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => Scaffold(body: CreatePostScreen2()),
+                  builder: (context) => Scaffold(body: PostToPage()),
                 ));
               },
             ),

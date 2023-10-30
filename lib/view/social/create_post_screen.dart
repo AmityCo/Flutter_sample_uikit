@@ -223,15 +223,18 @@ class CreatePostScreen2State extends State<CreatePostScreen2> {
                           onTap: () async {
                             if (widget.communityID == null) {
                               //creat post in user Timeline
-                              await vm.createPost(context);
+                              await vm.createPost(context,
+                                  callback: (isSuccess, error) {});
                             } else {
                               //create post in Community
                               await vm.createPost(widget.context!,
-                                  communityId: widget.communityID);
+                                  communityId: widget.communityID,
+                                  callback: (isSuccess, error) {});
                             }
 
                             // ignore: use_build_context_synchronously
                             Navigator.of(context).pop();
+                            // Navigator.of(context).pop();
                           },
                           child: Container(
                             margin: const EdgeInsets.only(top: 15),
