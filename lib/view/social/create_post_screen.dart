@@ -104,15 +104,15 @@ class CreatePostScreen2State extends State<CreatePostScreen2> {
                                     childAspectRatio: 1,
                                     crossAxisSpacing: 10,
                                     mainAxisSpacing: 10),
-                            itemCount: vm.amityImages.length,
+                            itemCount: vm.amityUploadFile.length,
                             itemBuilder: (_, i) {
-                              return (vm.amityImages[i].isComplete)
+                              return (vm.amityUploadFile[i].isComplete)
                                   ? FadeAnimation(
                                       child: Stack(
                                         fit: StackFit.expand,
                                         children: [
                                           Image.network(
-                                            "${vm.amityImages[i].fileInfo!.fileUrl}?size=medium",
+                                            "${vm.amityUploadFile[i].fileInfo!.fileUrl}?size=medium",
                                             fit: BoxFit.cover,
                                           ),
                                           Align(

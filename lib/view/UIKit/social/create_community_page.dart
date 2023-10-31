@@ -92,7 +92,10 @@ class _CreateCommunityPageState extends State<CreateCommunityPage> {
                                   .pickedFile!),
                               fit: BoxFit.cover,
                             )
-                          : null,
+                          : const DecorationImage(
+                              image: AssetImage("assets/images/IMG_5637.JPG",
+                                  package: 'amity_uikit_beta_service'),
+                              fit: BoxFit.cover),
                     ),
                     child: DecoratedBox(
                       decoration: BoxDecoration(

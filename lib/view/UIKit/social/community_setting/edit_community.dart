@@ -276,7 +276,8 @@ class AmityEditCommunityScreenState extends State<AmityEditCommunityScreen> {
     if (url != null) {
       return NetworkImage(url);
     } else {
-      return const AssetImage("assets/images/user_placeholder.png");
+      return const AssetImage("assets/images/IMG_5637.JPG",
+          package: 'amity_uikit_beta_service');
     }
   }
 

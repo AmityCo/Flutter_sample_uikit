@@ -16,6 +16,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 
 class AmityCreatePostScreen extends StatefulWidget {
   final AmityCommunity? community;
@@ -134,6 +135,9 @@ class _AmityCreatePostScreenState extends State<AmityCreatePostScreen> {
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
                         children: [
+                          Text("${Provider.of<MediaPickerVM>(
+                            context,
+                          ).selectedFiles.isNotEmpty}"),
                           TextField(
                             controller: vm.textEditingController,
                             scrollPhysics: const NeverScrollableScrollPhysics(),
@@ -144,18 +148,6 @@ class _AmityCreatePostScreenState extends State<AmityCreatePostScreen> {
                             ),
                             // style: t/1heme.textTheme.bodyText1.copyWith(color: Colors.grey),
                           ),
-                          (vm.amityVideo != null)
-                              ? (Provider.of<MediaPickerVM>(context)
-                                      .selectedFiles
-                                      .isNotEmpty)
-                                  ? Consumer<MediaPickerVM>(
-                                      builder: (context, mediaPickerVM, _) {
-                                      return LocalVideoPlayer(
-                                          file: File(mediaPickerVM
-                                              .selectedFiles[0].path));
-                                    })
-                                  : const CircularProgressIndicator()
-                              : Container(),
                           Consumer<MediaPickerVM>(
                             builder: (context, mediaPickerVM, _) =>
                                 _buildMediaGrid(mediaPickerVM.selectedFiles),
@@ -205,16 +197,44 @@ class _AmityCreatePostScreenState extends State<AmityCreatePostScreen> {
                         Icons.play_circle_outline,
                         label: "Video",
                         onTap: () async {
-                          await Provider.of<CreatePostVM>(context,
-                                  listen: false)
-                              .addVideo();
+                          print("video");
+                          var mediaPickerVM = Provider.of<MediaPickerVM>(
+                              context,
+                              listen: false);
+                          await mediaPickerVM.pickVideo();
+                          for (var video in mediaPickerVM.selectedFiles) {
+                            if (Provider.of<CreatePostVM>(context,
+                                        listen: false)
+                                    .getProgress(video.path) ==
+                                null) {
+                              print("video:${video.path}");
+                              var file = File(video.path);
+                              Provider.of<CreatePostVM>(context, listen: false)
+                                  .uploadFile(file);
+                            }
+                          }
                         },
                       ),
                       _iconButton(
                         Icons.attach_file_outlined,
                         label: "File",
-                        onTap: () {
-                          // TODO: Implement file adding logic
+                        onTap: () async {
+                          print("file");
+                          var mediaPickerVM = Provider.of<MediaPickerVM>(
+                              context,
+                              listen: false);
+                          await mediaPickerVM.pickFile();
+                          for (var video in mediaPickerVM.selectedFiles) {
+                            if (Provider.of<CreatePostVM>(context,
+                                        listen: false)
+                                    .getProgress(video.path) ==
+                                null) {
+                              print("file:${video.path}");
+                              var file = File(video.path);
+                              Provider.of<CreatePostVM>(context, listen: false)
+                                  .uploadFile(file);
+                            }
+                          }
                         },
                       ),
                       _iconButton(
@@ -257,43 +277,58 @@ class _AmityCreatePostScreenState extends State<AmityCreatePostScreen> {
     );
   }
 
-  Widget _buildMediaGrid(List<XFile> files) {
+  Widget _buildMediaGrid(List<File> files) {
     if (files.isEmpty) return Container();
 
-    Widget _backgroundImage(XFile file) {
+    Widget _backgroundImage(File file) {
       int rawprogress =
           Provider.of<CreatePostVM>(context).getProgress(file.path) ?? 100;
       var progress = rawprogress / 100.00;
 
-      return Padding(
-        padding:
-            const EdgeInsets.all(2.0), // Padding of 2 pixels around the image
-        child: Stack(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: FileImage(File(file.path)),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            progress == 1
-                ? SizedBox()
-                : Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: LinearProgressIndicator(
-                        value: progress,
-                        minHeight: 4.0, // adjust as needed
-                        backgroundColor: Colors.black38,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      ),
+      return FutureBuilder(
+        future: Provider.of<CreatePostVM>(context).getImageProvider(file.path),
+        builder: (BuildContext context, AsyncSnapshot<ImageProvider> snapshot) {
+          // if (snapshot.connectionState == ConnectionState.waiting) {
+          //   return Center(
+          //       child:
+          //           CircularProgressIndicator()); // Loading indicator while waiting
+          // }
+
+          // if (snapshot.hasError) {
+          //   // Handle error, maybe display a default image or error message
+          //   return Center(child: Text('Error: ${snapshot.error}'));
+          // }
+          return Padding(
+            padding: const EdgeInsets.all(2.0),
+            child: Stack(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: snapshot.data!,
+                      fit: BoxFit.cover,
                     ),
                   ),
-          ],
-        ),
+                ),
+                progress == 1
+                    ? SizedBox()
+                    : Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: LinearProgressIndicator(
+                            value: progress,
+                            minHeight: 4.0,
+                            backgroundColor: Colors.black38,
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        ),
+                      ),
+              ],
+            ),
+          );
+        },
       );
     }
 

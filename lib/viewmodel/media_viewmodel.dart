@@ -1,19 +1,22 @@
 import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class MediaPickerVM with ChangeNotifier {
   final ImagePicker _picker = ImagePicker();
-  final List<XFile> _selectedFiles = [];
+  final List<File> _selectedFiles = [];
 
-  List<XFile> get selectedFiles => _selectedFiles;
+  List<File> get selectedFiles => _selectedFiles;
 
   Future<void> pickMultipleImages() async {
     try {
       List<XFile>? pickedImages = await _picker.pickMultiImage();
 
       if (pickedImages != null && pickedImages.isNotEmpty) {
-        _selectedFiles.addAll(pickedImages);
+        for (var image in pickedImages) {
+          _selectedFiles.add(File(image.path));
+        }
         notifyListeners();
       }
     } catch (e) {
@@ -22,11 +25,11 @@ class MediaPickerVM with ChangeNotifier {
     }
   }
 
-  Future<void> pickMultipleVideos() async {
+  Future<void> pickVideo() async {
     try {
       final XFile? video = await _picker.pickVideo(source: ImageSource.gallery);
       if (video != null) {
-        _selectedFiles.add(video);
+        _selectedFiles.add(File(video.path));
         notifyListeners();
       }
     } catch (e) {
@@ -42,6 +45,18 @@ class MediaPickerVM with ChangeNotifier {
   bool get hasSelectedFiles => _selectedFiles.isNotEmpty;
 
   Future<void> pickFile() async {
-    // Implement your file picker logic here
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles();
+
+      if (result != null && result.files.isNotEmpty) {
+        for (var file in result.files) {
+          _selectedFiles.add(File(file.path!));
+        }
+        notifyListeners();
+      }
+    } catch (e) {
+      print("Error picking files: $e");
+      // Handle the error as appropriate for your app
+    }
   }
 }
