@@ -175,17 +175,15 @@ class CreatePostVM extends ChangeNotifier {
     amityResult.when(
       progress: (uploadInfo, cancelToken) {},
       complete: (value) {
-        var fileInfo = value as AmityUploadComplete;
-
-            amityVideo!.addFile(fileInfo.getFile);
-            log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>${fileInfo.getFile.fileId}");
-            isUploading = false;
-            notifyListeners();
+        var fileInfo = value;
+        amityVideo!.addFile(fileInfo);
+        isUploading = false;
+        notifyListeners();
       },
       error: (error) async {
-       log("error: $error");
-            await AmityDialog().showAlertErrorDialog(
-                title: "Error!", message: error.toString());
+        log("error: $error");
+        await AmityDialog()
+            .showAlertErrorDialog(title: "Error!", message: error.toString());
       },
       cancel: () {
         // handle cancel request
@@ -214,7 +212,7 @@ class CreatePostVM extends ChangeNotifier {
       log("isNotSelectedImageYet");
 
       ///create video post
-      await creatVideoPost(
+      await createVideoPost(
         context,
         communityId: communityId,
       );
@@ -222,7 +220,7 @@ class CreatePostVM extends ChangeNotifier {
       log("isNotSelectVideoYet");
 
       ///create image post
-      await creatImagePost(
+      await createImagePost(
         context,
         communityId: communityId,
       );
@@ -254,7 +252,7 @@ class CreatePostVM extends ChangeNotifier {
     });
   }
 
-  Future<void> creatImagePost(BuildContext? context,
+  Future<void> createImagePost(BuildContext? context,
       {String? communityId}) async {
     log("creatImagePost...");
     List<AmityImage> images = [];
@@ -289,7 +287,7 @@ class CreatePostVM extends ChangeNotifier {
     });
   }
 
-  Future<void> creatVideoPost(BuildContext? context,
+  Future<void> createVideoPost(BuildContext? context,
       {String? communityId, bool isOutside = false}) async {
     log("creatVideoPost...");
     if (amityVideo != null) {
