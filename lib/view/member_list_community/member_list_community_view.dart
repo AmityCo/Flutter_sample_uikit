@@ -92,17 +92,14 @@ class _MemberListCommunityViewState extends State<MemberListCommunityView> {
             child: renderListView(),
           ),
           _isLoading && _amityCommunityMembers.isNotEmpty
-              ? Positioned.fill(
+              ? const Positioned.fill(
                   child: Align(
                     alignment: Alignment.center,
                     child: SizedBox(
                       height: 40.0,
                       width: 40.0,
                       child: Center(
-                        child: CircularProgressIndicator(
-                          color: Provider.of<AmityUIConfiguration>(context)
-                              .primaryColor,
-                        ),
+                        child: CircularProgressIndicator(),
                       ),
                     ),
                   ),
