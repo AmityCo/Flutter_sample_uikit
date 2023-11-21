@@ -43,7 +43,9 @@ class _MemberListCommunityViewState extends State<MemberListCommunityView> {
             _amityCommunityMembers
                 .addAll(_communityMembersController.loadedItems);
             //update widgets
-            updateScreen();
+            setState(() {
+              _isLoading = false;
+            });
           } else {
             //error on pagination controller
             setState(() {
@@ -67,14 +69,15 @@ class _MemberListCommunityViewState extends State<MemberListCommunityView> {
   }
 
   void loadnextpage() {
-    if ((_scrollController.position.maxScrollExtent -
-                _scrollController.position.pixels) <
-            100 &&
+    if ((_scrollController.position.pixels ==
+            _scrollController.position.maxScrollExtent) &&
         _communityMembersController.hasMoreItems) {
       setState(() {
         _isLoading = true;
       });
-      _communityMembersController.fetchNextPage();
+      Future.delayed(const Duration(milliseconds: 500), () {
+        _communityMembersController.fetchNextPage();
+      });
     }
   }
 
@@ -92,14 +95,17 @@ class _MemberListCommunityViewState extends State<MemberListCommunityView> {
             child: renderListView(),
           ),
           _isLoading && _amityCommunityMembers.isNotEmpty
-              ? const Positioned.fill(
+              ? Positioned.fill(
                   child: Align(
                     alignment: Alignment.center,
                     child: SizedBox(
                       height: 40.0,
                       width: 40.0,
                       child: Center(
-                        child: CircularProgressIndicator(),
+                        child: CircularProgressIndicator(
+                          color: Provider.of<AmityUIConfiguration>(context)
+                              .primaryColor,
+                        ),
                       ),
                     ),
                   ),
@@ -164,13 +170,5 @@ class _MemberListCommunityViewState extends State<MemberListCommunityView> {
   void dispose() {
     _scrollController.dispose();
     super.dispose();
-  }
-
-  void updateScreen() {
-    if (mounted) {
-      setState(() {
-        _isLoading = false;
-      });
-    }
   }
 }
