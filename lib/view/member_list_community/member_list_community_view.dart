@@ -43,14 +43,10 @@ class _MemberListCommunityViewState extends State<MemberListCommunityView> {
             _amityCommunityMembers
                 .addAll(_communityMembersController.loadedItems);
             //update widgets
-            setState(() {
-              _isLoading = false;
-            });
+            updateScreen(false);
           } else {
             //error on pagination controller
-            setState(() {
-              _isLoading = false;
-            });
+            updateScreen(false);
             await AmityDialog().showAlertErrorDialog(
                 title: "Error!",
                 message: _communityMembersController.error.toString());
@@ -72,9 +68,7 @@ class _MemberListCommunityViewState extends State<MemberListCommunityView> {
     if ((_scrollController.position.pixels ==
             _scrollController.position.maxScrollExtent) &&
         _communityMembersController.hasMoreItems) {
-      setState(() {
-        _isLoading = true;
-      });
+      updateScreen(true);
       Future.delayed(const Duration(milliseconds: 500), () {
         _communityMembersController.fetchNextPage();
       });
@@ -95,17 +89,15 @@ class _MemberListCommunityViewState extends State<MemberListCommunityView> {
             child: renderListView(),
           ),
           _isLoading && _amityCommunityMembers.isNotEmpty
-              ? Positioned.fill(
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: SizedBox(
-                      height: 40.0,
-                      width: 40.0,
-                      child: Center(
-                        child: CircularProgressIndicator(
-                          color: Provider.of<AmityUIConfiguration>(context)
-                              .primaryColor,
-                        ),
+              ? Expanded(
+                  flex: 0,
+                  child: SizedBox(
+                    height: 40.0,
+                    width: 40.0,
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        color: Provider.of<AmityUIConfiguration>(context)
+                            .primaryColor,
                       ),
                     ),
                   ),
@@ -170,5 +162,13 @@ class _MemberListCommunityViewState extends State<MemberListCommunityView> {
   void dispose() {
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void updateScreen(bool isLoading) {
+    if (mounted) {
+      setState(() {
+        _isLoading = isLoading;
+      });
+    }
   }
 }
