@@ -175,24 +175,24 @@ class CreatePostVM extends ChangeNotifier {
     final mimeType = lookupMimeType(file.path);
 
     if (mimeType != null) {
-      try {
-        if (mimeType.startsWith('image')) {
-          var client = AmityCoreClient.newFileRepository().uploadImage(file);
-          await _performUpload(client, file, onSuccess, onError);
-        } else if (mimeType.startsWith('video')) {
-          var client = AmityCoreClient.newFileRepository().uploadVideo(file);
-          await _performUpload(client, file, onSuccess, onError);
-        } else if (mimeType.startsWith('audio')) {
-          print("Audio upload not implemented yet");
-          onError("Audio upload not implemented yet");
-        } else {
-          print("upload File");
-          var client = AmityCoreClient.newFileRepository().uploadFile(file);
-          await _performUpload(client, file, onSuccess, onError);
-        }
-      } catch (e) {
-        onError(e.toString());
+      // try {
+      if (mimeType.startsWith('image')) {
+        var client = AmityCoreClient.newFileRepository().uploadImage(file);
+        await _performUpload(client, file, onSuccess, onError);
+      } else if (mimeType.startsWith('video')) {
+        var client = AmityCoreClient.newFileRepository().uploadVideo(file);
+        await _performUpload(client, file, onSuccess, onError);
+      } else if (mimeType.startsWith('audio')) {
+        print("Audio upload not implemented yet");
+        onError("Audio upload not implemented yet");
+      } else {
+        print("upload File");
+        var client = AmityCoreClient.newFileRepository().uploadFile(file);
+        await _performUpload(client, file, onSuccess, onError);
       }
+      // } catch (e) {
+      //   onError(e.toString());
+      // }
     } else {
       onError('Unsupported file type');
     }

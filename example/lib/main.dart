@@ -142,8 +142,6 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class AmityApp extends StatelessWidget {
-  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-
   AmityApp({super.key});
   @override
   Widget build(BuildContext context) {

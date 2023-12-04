@@ -35,7 +35,7 @@ class PostVM extends ChangeNotifier {
           .getComments()
           .post(postID)
           .sortBy(_sortOption)
-          .includeDeleted(false)
+          .includeDeleted(true)
           .getPagingData(token: token, limit: 20),
       pageSize: 20,
     )..addListener(

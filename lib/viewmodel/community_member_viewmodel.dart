@@ -101,17 +101,22 @@ class MemberManagementVM extends ChangeNotifier {
   // Method to promote user(s) to moderator
   Future<void> promoteToModerator(
       String communityId, List<String> userIds) async {
-    AmityLoadingDialog.showLoadingDialog();
-    await AmitySocialClient.newCommunityRepository()
-        .moderation(communityId)
-        .addRole('community-moderator', userIds)
-        .then((value) {
-      // handle result
-    }).onError((error, stackTrace) async {
-      AmityDialog()
-          .showAlertErrorDialog(title: "Error!", message: error.toString());
+    print("promoteToModerator");
+    AmityLoadingDialog.runWithLoadingDialog(() async {
+      await AmitySocialClient.newCommunityRepository()
+          .moderation(communityId)
+          .addRole('community-moderator', userIds)
+          .then((value) {
+        // handle result
+        print("promoteToModerator: success");
+      }).onError((error, stackTrace) async {
+        print("promoteToModerator: fail");
+        AmityDialog()
+            .showAlertErrorDialog(title: "Error!", message: error.toString());
+      });
+      print("finish loading...");
     });
-    AmityLoadingDialog.hideLoadingDialog();
+
     notifyListeners();
   }
 
@@ -123,12 +128,13 @@ class MemberManagementVM extends ChangeNotifier {
     await AmitySocialClient.newCommunityRepository()
         .moderation(communityId)
         .removeRole('community-moderator', userIds)
-        .then((value) {})
-        .onError((error, stackTrace) async {
+        .then((value) {
+      AmityLoadingDialog.hideLoadingDialog();
+    }).onError((error, stackTrace) async {
       AmityDialog()
           .showAlertErrorDialog(title: "Error!", message: error.toString());
     });
-    AmityLoadingDialog.hideLoadingDialog();
+
     notifyListeners();
   }
 
@@ -186,6 +192,7 @@ class MemberManagementVM extends ChangeNotifier {
       currentUserRoles = await community.getCurentUserRoles();
       notifyListeners();
     }).onError((error, stackTrace) {
+      print("${error},${stackTrace}");
       AmityDialog()
           .showAlertErrorDialog(title: "Error!", message: error.toString());
     });

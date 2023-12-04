@@ -19,13 +19,8 @@ class CommuFeedVM extends ChangeNotifier {
   }
 
   void addPostToFeed(AmityPost post) {
-    try {
-      _controllerCommu.addAtIndex(0, post);
-      notifyListeners();
-    } catch (e) {
-      print("Error while adding post to feed: $e");
-      // You can also perform other actions here like displaying a user-friendly error message
-    }
+    _controllerCommu.addAtIndex(0, post);
+    notifyListeners();
   }
 
   Future<void> initAmityCommunityFeed(String communityId) async {

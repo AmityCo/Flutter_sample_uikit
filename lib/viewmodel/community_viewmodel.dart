@@ -66,33 +66,28 @@ class CommunityVM extends ChangeNotifier {
     Map<String, String>? metadata,
     List<String>? userIds,
   }) async {
-    try {
-      final communityBuilder = AmitySocialClient.newCommunityRepository()
-          .createCommunity(name)
-          .description(description)
-          .categoryIds(categoryIds);
+    final communityBuilder = AmitySocialClient.newCommunityRepository()
+        .createCommunity(name)
+        .description(description)
+        .categoryIds(categoryIds);
 
-      if (isPublic) {
-        communityBuilder.isPublic(true);
-      } else {
-        communityBuilder.isPublic(false);
-        communityBuilder.userIds(userIds!);
-      }
-
-      if (avatar != null) {
-        communityBuilder.avatar(avatar);
-      }
-
-      await communityBuilder.create();
-
-      notifyListeners();
-      Navigator.of(context).pop();
-      final userProvider = Provider.of<UserVM>(context, listen: false);
-      userProvider.clearselectedCommunityUsers();
-    } catch (error, _) {
-      await AmityDialog()
-          .showAlertErrorDialog(title: "Error!", message: error.toString());
+    if (isPublic) {
+      communityBuilder.isPublic(true);
+    } else {
+      communityBuilder.isPublic(false);
+      communityBuilder.userIds(userIds!);
     }
+
+    if (avatar != null) {
+      communityBuilder.avatar(avatar);
+    }
+
+    await communityBuilder.create();
+
+    notifyListeners();
+    Navigator.of(context).pop();
+    final userProvider = Provider.of<UserVM>(context, listen: false);
+    userProvider.clearselectedCommunityUsers();
   }
 
   Future<void> updateCommunity(

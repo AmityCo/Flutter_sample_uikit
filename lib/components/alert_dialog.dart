@@ -40,19 +40,20 @@ class AmityDialog {
 }
 
 class AmityLoadingDialog {
+  static BuildContext? loadingContext;
+  static bool _isDialogShowing = false;
+
   static Future<void> showLoadingDialog() {
-    final context = NavigationService.navigatorKey.currentContext;
-
-    if (context == null) {
-      print("Context is null, cannot show dialog");
-      return Future.value();
-    }
-
+    print("show AmityLoadingDialog");
+    _isDialogShowing = true;
+    print("set _isDialogShowing: ${_isDialogShowing}");
     return showDialog<void>(
-      context: context,
+      context: NavigationService.navigatorKey.currentContext!,
       barrierColor: Colors.transparent,
-      barrierDismissible: true,
-      builder: (BuildContext context) {
+      barrierDismissible:
+          true, // Set to false to prevent dismissing by tapping outside
+      builder: (context) {
+        loadingContext = context;
         return Center(
           child: SizedBox(
             width: 200,
@@ -87,14 +88,29 @@ class AmityLoadingDialog {
           ),
         );
       },
-    );
+    ).then((value) => _isDialogShowing = false);
   }
 
   static void hideLoadingDialog() {
     print("Hide Loading!");
-    Navigator.of(
-      NavigationService.navigatorKey.currentContext!,
-    ).pop(); // Close the dialog
+    print(_isDialogShowing);
+    if (_isDialogShowing) {
+      print("close...");
+      Navigator.of(loadingContext!).pop();
+
+      _isDialogShowing = false;
+    }
+  }
+
+  static Future<void> runWithLoadingDialog<T>(Future<T> Function() task) async {
+    try {
+      showLoadingDialog(); // Show the loading dialog
+      await task(); // Wait for the passed function to complete
+    } catch (e) {
+      // Handle any errors here if needed
+    } finally {
+      hideLoadingDialog(); // Hide the loading dialog
+    }
   }
 }
 
@@ -106,9 +122,8 @@ class AmitySuccessDialog {
     //   return Future.value();
     // }
 
-    showDialog<void>(
+    showCupertinoDialog<void>(
       context: context ?? NavigationService.navigatorKey.currentContext!,
-      barrierColor: Colors.transparent,
       barrierDismissible: true,
       builder: (BuildContext context) {
         return TimedDialog(
