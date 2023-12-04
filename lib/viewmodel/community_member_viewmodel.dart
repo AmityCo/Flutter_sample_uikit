@@ -107,11 +107,11 @@ class MemberManagementVM extends ChangeNotifier {
         .addRole('community-moderator', userIds)
         .then((value) {
       // handle result
-      AmityLoadingDialog.hideLoadingDialog();
     }).onError((error, stackTrace) async {
       AmityDialog()
           .showAlertErrorDialog(title: "Error!", message: error.toString());
     });
+    AmityLoadingDialog.hideLoadingDialog();
     notifyListeners();
   }
 
@@ -123,12 +123,12 @@ class MemberManagementVM extends ChangeNotifier {
     await AmitySocialClient.newCommunityRepository()
         .moderation(communityId)
         .removeRole('community-moderator', userIds)
-        .then((value) {
-      AmityLoadingDialog.hideLoadingDialog();
-    }).onError((error, stackTrace) async {
+        .then((value) {})
+        .onError((error, stackTrace) async {
       AmityDialog()
           .showAlertErrorDialog(title: "Error!", message: error.toString());
     });
+    AmityLoadingDialog.hideLoadingDialog();
     notifyListeners();
   }
 

@@ -217,6 +217,8 @@ class _PostWidgetState extends State<PostWidget>
           Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => CommentScreen(
                     amityPost: widget.post,
+                    theme: widget.theme,
+                    isFromFeed: true,
                   )));
         },
         child: Container(
@@ -522,6 +524,8 @@ class _PostWidgetState extends State<PostWidget>
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => CommentScreen(
                                       amityPost: widget.post,
+                                      theme: widget.theme,
+                                      isFromFeed: true,
                                     )));
                           },
                           child: Row(

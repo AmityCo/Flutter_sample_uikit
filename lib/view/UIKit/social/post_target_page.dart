@@ -1,5 +1,6 @@
 import 'package:amity_sdk/amity_sdk.dart';
 import 'package:amity_uikit_beta_service/view/UIKit/social/create_post_screen.dart';
+import 'package:amity_uikit_beta_service/view/UIKit/social/create_post_screenV2.dart';
 import 'package:amity_uikit_beta_service/viewmodel/configuration_viewmodel.dart';
 import 'package:amity_uikit_beta_service/viewmodel/my_community_viewmodel.dart';
 import 'package:flutter/material.dart';
@@ -68,7 +69,7 @@ class _PostToPageState extends State<PostToPage> {
                 onTap: () {
                   // Navigate or perform action based on 'Newsfeed' tap
                   Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => const AmityCreatePostScreen(),
+                    builder: (context) => const AmityCreatePostV2Screen(),
                   ));
                 },
               ),
@@ -111,7 +112,7 @@ class _PostToPageState extends State<PostToPage> {
                         onTap: () {
                           // Navigate or perform action based on 'Newsfeed' tap
                           Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => AmityCreatePostScreen(
+                            builder: (context) => AmityCreatePostV2Screen(
                               community: community,
                             ),
                           ));

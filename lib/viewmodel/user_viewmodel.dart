@@ -69,6 +69,7 @@ class UserVM extends ChangeNotifier {
   }
 
   Future<void> getUsers() async {
+    print("get user");
     AmityCoreClient.newUserRepository()
         .getUsers()
         .sortBy(AmityUserSortOption.DISPLAY)

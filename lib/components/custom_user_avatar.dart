@@ -17,7 +17,7 @@ getAvatarImage(String? url, {double? radius, String? fileId}) {
       fit: BoxFit.fill,
       placeholder: (context, url) => CircleAvatar(
         radius: radius,
-        backgroundColor: AmityUIConfiguration().primaryColor,
+        backgroundColor: Color(0xFFD9E5FC),
         child: const Icon(
           Icons.person,
           color: Colors.white,
@@ -29,14 +29,13 @@ getAvatarImage(String? url, {double? radius, String? fileId}) {
   } else if (fileId != null) {
     var imageOPS = OptimizedCacheImage(
       imageBuilder: (context, imageProvider) => CircleAvatar(
-          backgroundColor: Colors.transparent,
-          backgroundImage: (imageProvider)),
+          backgroundColor: Color(0xFFD9E5FC), backgroundImage: (imageProvider)),
       imageUrl:
           "https://api.${env!.region}.amity.co/api/v3/files/$fileId/download?size=medium",
       fit: BoxFit.fill,
       placeholder: (context, url) => CircleAvatar(
         radius: radius,
-        backgroundColor: AmityUIConfiguration().primaryColor,
+        backgroundColor: Color(0xFFD9E5FC),
         child: const Icon(
           Icons.person,
           color: Colors.white,
@@ -48,7 +47,7 @@ getAvatarImage(String? url, {double? radius, String? fileId}) {
   } else {
     return CircleAvatar(
       radius: radius,
-      backgroundColor: AmityUIConfiguration().primaryColor,
+      backgroundColor: Color(0xFFD9E5FC),
       child: Icon(
         Icons.person,
         color: Colors.white,

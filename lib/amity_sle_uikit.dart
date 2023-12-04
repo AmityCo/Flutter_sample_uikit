@@ -8,6 +8,7 @@ import 'package:amity_uikit_beta_service/view/UIKit/social/my_community_feed.dar
 import 'package:amity_uikit_beta_service/viewmodel/category_viewmodel.dart';
 import 'package:amity_uikit_beta_service/viewmodel/community_feed_viewmodel.dart';
 import 'package:amity_uikit_beta_service/viewmodel/community_member_viewmodel.dart';
+import 'package:amity_uikit_beta_service/viewmodel/create_postV2_viewmodel.dart';
 import 'package:amity_uikit_beta_service/viewmodel/explore_page_viewmodel.dart';
 import 'package:amity_uikit_beta_service/viewmodel/media_viewmodel.dart';
 import 'package:amity_uikit_beta_service/viewmodel/my_community_viewmodel.dart';
@@ -29,37 +30,45 @@ import 'viewmodel/user_feed_viewmodel.dart';
 import 'viewmodel/user_viewmodel.dart';
 import 'utils/env_manager.dart';
 
+enum AmityRegion {
+  sg,
+  eu,
+  us,
+  custom; // Added for custom URLs
+}
+
 class AmitySLEUIKit {
-  Future<void> initUIKit(String apikey, String region) async {
-    env = ENV(apikey, region);
+  Future<void> initUIKit(
+      {required String apikey,
+      required AmityRegion region,
+      String? customEndpoint}) async {
     AmityRegionalHttpEndpoint? amityEndpoint;
-    if (region.isNotEmpty) {
-      switch (region) {
-        case "":
-          {
-            log("REGION is not specify Please check .env file");
-          }
 
-          break;
-        case "sg":
-          {
-            amityEndpoint = AmityRegionalHttpEndpoint.SG;
-          }
+    switch (region) {
+      case AmityRegion.custom:
+        if (customEndpoint != null) {
+          amityEndpoint = AmityRegionalHttpEndpoint.custom(customEndpoint);
+        } else {
+          print("please provide custom Endpoint");
+        }
 
-          break;
-        case "us":
-          {
-            amityEndpoint = AmityRegionalHttpEndpoint.US;
-          }
+        break;
+      case AmityRegion.sg:
+        {
+          amityEndpoint = AmityRegionalHttpEndpoint.SG;
+        }
 
-          break;
-        case "eu":
-          {
-            amityEndpoint = AmityRegionalHttpEndpoint.EU;
-          }
-      }
-    } else {
-      throw "REGION is not specify Please check .env file";
+        break;
+      case AmityRegion.eu:
+        {
+          amityEndpoint = AmityRegionalHttpEndpoint.US;
+        }
+
+        break;
+      case AmityRegion.us:
+        {
+          amityEndpoint = AmityRegionalHttpEndpoint.EU;
+        }
     }
 
     await AmityCoreClient.setup(
@@ -158,6 +167,8 @@ class AmitySLEProvider extends StatelessWidget {
             create: ((context) => ImagePickerVM())),
         ChangeNotifierProvider<CreatePostVM>(
             create: ((context) => CreatePostVM())),
+        ChangeNotifierProvider<CreatePostVMV2>(
+            create: ((context) => CreatePostVMV2())),
         ChangeNotifierProvider<ChannelVM>(create: ((context) => ChannelVM())),
         ChangeNotifierProvider<AmityUIConfiguration>(
             create: ((context) => AmityUIConfiguration())),

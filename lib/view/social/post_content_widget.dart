@@ -1,4 +1,5 @@
 import 'package:amity_sdk/amity_sdk.dart';
+import 'package:amity_uikit_beta_service/view/social/imag_viewer.dart';
 import 'package:any_link_preview/any_link_preview.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -232,24 +233,493 @@ class AmityPostWidgetState extends State<AmityPostWidget> {
     } else {
       switch (widget.posts[0].type) {
         case AmityDataType.IMAGE:
-          return ImagePost(
-              posts: widget.posts,
-              imageURLs: imageURLs,
-              isCornerRadiusEnabled:
-                  widget.isCornerRadiusEnabled || imageURLs.length > 1
-                      ? true
-                      : false);
+          return _buildMediaGrid(widget.posts);
         case AmityDataType.VIDEO:
-          return MyVideoPlayer2(
-              post: widget.posts[0],
-              url: videoUrl ?? "",
-              isInFeed: widget.isCornerRadiusEnabled,
-              isEnableVideoTools: false);
+          return _buildVideoGrid(widget.posts);
+        // return MyVideoPlayer2(
+        //     post: widget.posts[0],
+        //     url: videoUrl ?? "",
+        //     isInFeed: widget.isCornerRadiusEnabled,
+        //     isEnableVideoTools: false);
+        case AmityDataType.FILE:
+          return _listMediaGrid(widget.posts);
         default:
           return Container();
       }
     }
   }
+
+  // Future<void> _playVideo(AmityPost post) async {
+  //   if (post.data is VideoData) {
+  //     var data = post.data as VideoData;
+  //     var video = await data.getVideo(AmityVideoQuality.MEDIUM);
+  //     var videoURL = video.fileUrl;
+  //     // Logic to play the video, e.g., navigate to a video player widget
+  //     print(videoURL);
+  //     Navigator.of(context).push(MaterialPageRoute(
+  //       builder: (_) => MyVideoPlayer2(
+  //         url: videoURL!,
+  //         post: post,
+  //         isInFeed: true, // set accordingly
+  //         isEnableVideoTools: true, // set accordingly
+  //       ),
+  //     ));
+  //   }
+  // }
+
+  Widget _buildVideoGrid(List<AmityPost> files) {
+    if (files.isEmpty) return Container();
+
+    Widget _backgroundThumbnail(String fileUrl, int index) {
+      return GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => VideoPlayerScreen(files: files),
+            ),
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(2.0),
+          child: Stack(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: NetworkImage(fileUrl),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              const Align(
+                alignment: Alignment.center,
+                child: Icon(
+                  Icons.play_arrow,
+                  size: 70.0,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    String getURL(AmityPostData postData) {
+      if (postData is VideoData) {
+        var data = postData;
+        return data.thumbnail?.getUrl(AmityImageSize.MEDIUM) ?? "";
+      } else if (postData is ImageData) {
+        var data = postData;
+        return data.image?.getUrl(AmityImageSize.MEDIUM) ?? "";
+      } else {
+        return "";
+      }
+    }
+
+    switch (files.length) {
+      case 1:
+        return AspectRatio(
+          aspectRatio: 1,
+          child: _backgroundThumbnail(getURL(files[0].data!), 0),
+        );
+
+      case 2:
+        return AspectRatio(
+          aspectRatio: 1,
+          child: Row(children: [
+            Expanded(child: _backgroundThumbnail(getURL(files[0].data!), 0)),
+            Expanded(child: _backgroundThumbnail(getURL(files[1].data!), 1))
+          ]),
+        );
+
+      case 3:
+        return AspectRatio(
+          aspectRatio: 1,
+          child: Column(
+            children: [
+              Expanded(child: _backgroundThumbnail(getURL(files[0].data!), 0)),
+              Expanded(
+                child: Row(
+                  children: [
+                    Expanded(
+                        child: _backgroundThumbnail(getURL(files[1].data!), 1)),
+                    Expanded(
+                        child: _backgroundThumbnail(getURL(files[2].data!), 2)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+
+      case 4:
+        return AspectRatio(
+          aspectRatio: 1,
+          child: Column(
+            children: [
+              Expanded(child: _backgroundThumbnail(getURL(files[0].data!), 0)),
+              Expanded(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: _backgroundThumbnail(getURL(files[1].data!), 1),
+                      ),
+                    ),
+                    Expanded(
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: _backgroundThumbnail(getURL(files[2].data!), 2),
+                      ),
+                    ),
+                    Expanded(
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: _backgroundThumbnail(getURL(files[3].data!), 3),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+
+      default:
+        return AspectRatio(
+          aspectRatio: 1,
+          child: Column(
+            children: [
+              Expanded(child: _backgroundThumbnail(getURL(files[0].data!), 0)),
+              Expanded(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: _backgroundThumbnail(getURL(files[1].data!), 1),
+                      ),
+                    ),
+                    Expanded(
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: _backgroundThumbnail(getURL(files[2].data!), 2),
+                      ),
+                    ),
+                    Expanded(
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: Stack(
+                          children: [
+                            _backgroundThumbnail(getURL(files[3].data!), 3),
+                            // Black filter overlay
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.black
+                                    .withOpacity(0.3), // Semi-transparent black
+                              ),
+                            ),
+                            // Centered Text "6+"
+                            Center(
+                              child: Text(
+                                "${files.length - 3}+",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize:
+                                      24, // Adjust the font size as needed
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+    }
+  }
+
+  Widget _buildMediaGrid(List<AmityPost> files) {
+    if (files.isEmpty) return Container();
+
+    Widget _backgroundImage(String fileUrl, int index) {
+      return GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ImageViewerScreen(files: files),
+            ),
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(2.0),
+          child: Stack(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: NetworkImage("${fileUrl}"),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    String getURL(AmityPostData postData) {
+      if (postData is VideoData) {
+        var data = postData;
+        return data.thumbnail?.getUrl(AmityImageSize.MEDIUM) ?? "";
+      } else if (postData is ImageData) {
+        var data = postData;
+        return data.image?.getUrl(AmityImageSize.MEDIUM) ?? "";
+      } else {
+        return "";
+      }
+    }
+
+    switch (files.length) {
+      case 1:
+        return AspectRatio(
+          aspectRatio: 1,
+          child: _backgroundImage(getURL(files[0].data!), 0),
+        );
+
+      case 2:
+        return AspectRatio(
+          aspectRatio: 1,
+          child: Row(children: [
+            Expanded(child: _backgroundImage(getURL(files[0].data!), 0)),
+            Expanded(child: _backgroundImage(getURL(files[1].data!), 1))
+          ]),
+        );
+
+      case 3:
+        return AspectRatio(
+          aspectRatio: 1,
+          child: Column(
+            children: [
+              Expanded(child: _backgroundImage(getURL(files[0].data!), 0)),
+              Expanded(
+                child: Row(
+                  children: [
+                    Expanded(
+                        child: _backgroundImage(getURL(files[1].data!), 1)),
+                    Expanded(
+                        child: _backgroundImage(getURL(files[2].data!), 2)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+
+      case 4:
+        return AspectRatio(
+          aspectRatio: 1,
+          child: Column(
+            children: [
+              Expanded(child: _backgroundImage(getURL(files[0].data!), 0)),
+              Expanded(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: _backgroundImage(getURL(files[1].data!), 1),
+                      ),
+                    ),
+                    Expanded(
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: _backgroundImage(getURL(files[2].data!), 2),
+                      ),
+                    ),
+                    Expanded(
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: _backgroundImage(getURL(files[3].data!), 3),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+
+      default:
+        return AspectRatio(
+          aspectRatio: 1,
+          child: Column(
+            children: [
+              Expanded(child: _backgroundImage(getURL(files[0].data!), 0)),
+              Expanded(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: _backgroundImage(getURL(files[1].data!), 1),
+                      ),
+                    ),
+                    Expanded(
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: _backgroundImage(getURL(files[2].data!), 2),
+                      ),
+                    ),
+                    Expanded(
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: Stack(
+                          children: [
+                            _backgroundImage(getURL(files[3].data!), 3),
+                            // Black filter overlay
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.black
+                                    .withOpacity(0.3), // Semi-transparent black
+                              ),
+                            ),
+                            // Centered Text "6+"
+                            Center(
+                              child: Text(
+                                "${files.length - 3}+",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize:
+                                      24, // Adjust the font size as needed
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+    }
+  }
+}
+
+String _getFileImage(String filePath) {
+  String extension = filePath.split('.').last;
+  switch (extension) {
+    case 'audio':
+      return 'assets/images/fileType/audio_small.png';
+    case 'avi':
+      return 'assets/images/fileType/avi_large.png';
+    case 'csv':
+      return 'assets/images/fileType/csv_large.png';
+    case 'doc':
+      return 'assets/images/fileType/doc_large.png';
+    case 'exe':
+      return 'assets/images/fileType/exe_large.png';
+    case 'html':
+      return 'assets/images/fileType/html_large.png';
+    case 'img':
+      return 'assets/images/fileType/img_large.png';
+    case 'mov':
+      return 'assets/images/fileType/mov_large.png';
+    case 'mp3':
+      return 'assets/images/fileType/mp3_large.png';
+    case 'mp4':
+      return 'assets/images/fileType/mp4_large.png';
+    case 'pdf':
+      return 'assets/images/fileType/pdf_large.png';
+    case 'ppx':
+      return 'assets/images/fileType/ppx_large.png';
+    case 'rar':
+      return 'assets/images/fileType/rar_large.png';
+    case 'txt':
+      return 'assets/images/fileType/txt_large.png';
+    case 'xls':
+      return 'assets/images/fileType/xls_large.png';
+    case 'zip':
+      return 'assets/images/fileType/zip_large.png';
+    default:
+      return 'assets/images/fileType/default.png';
+  }
+}
+
+Widget _listMediaGrid(List<AmityPost> files) {
+  return ListView.builder(
+    physics: const NeverScrollableScrollPhysics(),
+    itemCount: files.length,
+    shrinkWrap: true,
+    itemBuilder: (context, index) {
+      String fileImage = _getFileImage(files[index].data!.fileInfo.fileName!);
+
+      return Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(4.0),
+          border: Border.all(
+            color: Color(0xffEBECEF),
+            width: 1.0,
+          ),
+        ),
+        margin: EdgeInsets.all(8.0),
+        child: Stack(
+          children: [
+            ListTile(
+              contentPadding: EdgeInsets.symmetric(
+                  vertical: 8, horizontal: 14), // Reduced padding
+              tileColor: Colors.white.withOpacity(0.0),
+              leading: Container(
+                height: 100, // Reduced height to make it slimmer
+                width: 40, // Added width to align the image
+                alignment:
+                    Alignment.centerLeft, // Center alignment for the image
+                child: Image(
+                  image: AssetImage(fileImage,
+                      package: 'amity_uikit_beta_service'),
+                ),
+              ),
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min, // Reduce extra space
+                children: [
+                  Text(
+                    "${files[index].data!.fileInfo.fileName}",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black,
+                    ),
+                  ),
+                  Text(
+                    '${(files[index].data!.fileInfo.fileSize)} KB',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
+      );
+    },
+  );
 }
 
 class TextPost extends StatelessWidget {
@@ -276,6 +746,8 @@ class TextPost extends StatelessWidget {
                         Navigator.of(context).push(MaterialPageRoute(
                             builder: (context) => CommentScreen(
                                   amityPost: post,
+                                  theme: Theme.of(context),
+                                  isFromFeed: true,
                                 )));
                       },
                       child: post.type == AmityDataType.TEXT

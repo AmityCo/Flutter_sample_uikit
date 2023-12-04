@@ -35,6 +35,7 @@ class PostVM extends ChangeNotifier {
           .getComments()
           .post(postID)
           .sortBy(_sortOption)
+          .includeDeleted(false)
           .getPagingData(token: token, limit: 20),
       pageSize: 20,
     )..addListener(
@@ -85,6 +86,21 @@ class PostVM extends ChangeNotifier {
       });
     }).onError((error, stackTrace) async {
       log(error.toString());
+      await AmityDialog()
+          .showAlertErrorDialog(title: "Error!", message: error.toString());
+    });
+  }
+
+  Future<void> deleteComment(AmityComment comment) async {
+    print("delete commet...");
+    comment.delete().then((value) {
+      print("delete commet success: ${value}");
+      amityComments
+          .removeWhere((element) => element.commentId == comment.commentId);
+      listenForComments(amityPost.postId!);
+
+      notifyListeners();
+    }).onError((error, stackTrace) async {
       await AmityDialog()
           .showAlertErrorDialog(title: "Error!", message: error.toString());
     });

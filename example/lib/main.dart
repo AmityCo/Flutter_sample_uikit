@@ -1,7 +1,7 @@
 import 'package:amity_uikit_beta_service/amity_sle_uikit.dart';
-import 'package:amity_uikit_beta_service/view/UIKit/social/create_post_screen.dart';
+
 import 'package:amity_uikit_beta_service/view/UIKit/social/my_community_feed.dart';
-import 'package:amity_uikit_beta_service/view/social/create_post_screen.dart';
+
 import 'package:amity_uikit_beta_service/view/social/global_feed.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,14 +12,139 @@ import 'package:amity_uikit_beta_service/view/UIKit/social/post_target_page.dart
 void main() {
   ///Step 1: Initialize amity SDK with the following function
   WidgetsFlutterBinding.ensureInitialized();
-  AmitySLEUIKit()
-      .initUIKit("b3babb0b3a89f4341d31dc1a01091edcd70f8de7b23d697f", "sg");
 
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      home: MyHomePage(),
+      routes: {
+        '/first': (context) => AmityApp(),
+      },
+    );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  final TextEditingController _apiKey = TextEditingController();
+  AmityRegion? _selectedRegion;
+  final TextEditingController _customUrl = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    _loadPreferences();
+  }
+
+  Future<void> _loadPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _apiKey.text = prefs.getString('apiKey') ?? "";
+      print(_apiKey);
+      String? selectedRegionString = prefs.getString('selectedRegion');
+      if (selectedRegionString != null) {
+        _selectedRegion = AmityRegion.values.firstWhere(
+          (e) => e.toString() == selectedRegionString,
+          orElse: () => AmityRegion.sg,
+        );
+      }
+      if (_selectedRegion == AmityRegion.custom) {
+        _customUrl.text = prefs.getString('customUrl') ?? "";
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('API Configuration'),
+      ),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            TextFormField(
+              controller: _apiKey,
+              decoration: InputDecoration(
+                labelText: 'API Key',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            SizedBox(height: 20),
+            Text('Select Region:'),
+            ...AmityRegion.values.map((region) {
+              return RadioListTile<AmityRegion>(
+                title: Text(region.toString().split('.').last.toUpperCase()),
+                value: region,
+                groupValue: _selectedRegion,
+                onChanged: (AmityRegion? value) {
+                  setState(() {
+                    _selectedRegion = value;
+                    if (value != AmityRegion.custom) {
+                      _customUrl.text = ""; // Reset custom URL
+                    }
+                  });
+                },
+              );
+            }).toList(),
+            if (_selectedRegion == AmityRegion.custom) ...[
+              SizedBox(height: 20),
+              TextFormField(
+                decoration: InputDecoration(
+                  labelText: 'Custom URL',
+                  border: OutlineInputBorder(),
+                ),
+                controller: _customUrl,
+              ),
+            ],
+            SizedBox(height: 40),
+            ElevatedButton(
+                child: Text('Initialize'),
+                onPressed: () async {
+                  if (_apiKey != null &&
+                      _selectedRegion != null &&
+                      (_selectedRegion != AmityRegion.custom ||
+                          _customUrl != null)) {
+                    final prefs = await SharedPreferences.getInstance();
+                    print(_apiKey);
+                    await prefs.setString('apiKey', _apiKey.text);
+                    await prefs.setString(
+                        'selectedRegion', _selectedRegion.toString());
+                    if (_selectedRegion == AmityRegion.custom &&
+                        _customUrl != null) {
+                      await prefs.setString('customUrl', _customUrl.text);
+                    }
+                    print("save pref");
+
+                    await AmitySLEUIKit().initUIKit(
+                        apikey: _apiKey.text,
+                        region: _selectedRegion!,
+                        customEndpoint: _customUrl.text);
+                    // Navigate to the nextx page
+                    await Navigator.of(context).pushNamed('/first');
+                  }
+                }),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class AmityApp extends StatelessWidget {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+  AmityApp({super.key});
   @override
   Widget build(BuildContext context) {
     return AmitySLEProvider(
@@ -27,16 +152,7 @@ class MyApp extends StatelessWidget {
         AmitySLEUIKit().configAmityThemeColor(context2, (config) {
           config.primaryColor = Color(0xFF1054DE);
         });
-        return MaterialApp(
-          navigatorKey: navigatorKey, // Use the same navigatorKey
-          title: 'Flutter Demo',
-
-          home: UserListPage(),
-          routes: {
-            '/second': (context) => SecondPage(),
-            '/third': (context) => ThirdPage(),
-          },
-        );
+        return UserListPage();
       }),
     );
   }
@@ -106,12 +222,16 @@ class _UserListPageState extends State<UserListPage> {
                 itemBuilder: (context, index) {
                   return ListTile(
                     title: Text(_usernames[index]),
-                    onTap: () {
+                    onTap: () async {
                       ///Step 3: login with Amity
-                      AmitySLEUIKit().registerDevice(
+                      await AmitySLEUIKit().registerDevice(
                           context: context, userId: _usernames[index]);
-                      Navigator.of(context)
-                          .pushNamed('/second', arguments: _usernames[index]);
+                      await Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              SecondPage(username: _usernames[index]),
+                        ),
+                      );
                     },
                   );
                 },
@@ -125,10 +245,10 @@ class _UserListPageState extends State<UserListPage> {
 }
 
 class SecondPage extends StatelessWidget {
+  const SecondPage({super.key, required this.username});
+  final String username;
   @override
   Widget build(BuildContext context) {
-    final username = ModalRoute.of(context)!.settings.arguments as String;
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Welcome, $username'),
@@ -139,8 +259,11 @@ class SecondPage extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: () {
-                Navigator.of(context).pushNamed('/third',
-                    arguments: {'username': username, 'feature': 'Social'});
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => ThirdPage(username: username),
+                  ),
+                );
               },
               child: Text('Social'),
             ),
@@ -159,15 +282,13 @@ class SecondPage extends StatelessWidget {
 }
 
 class ThirdPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final Map args = ModalRoute.of(context)!.settings.arguments as Map;
-    final username = args['username'];
-    final feature = args['feature'];
+  const ThirdPage({super.key, required this.username});
+  final String username;
 
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('$feature Feature'),
+        title: Text('Social'),
       ),
       body: Center(
         child: Column(

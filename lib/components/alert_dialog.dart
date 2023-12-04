@@ -91,6 +91,7 @@ class AmityLoadingDialog {
   }
 
   static void hideLoadingDialog() {
+    print("Hide Loading!");
     Navigator.of(
       NavigationService.navigatorKey.currentContext!,
     ).pop(); // Close the dialog
@@ -98,16 +99,15 @@ class AmityLoadingDialog {
 }
 
 class AmitySuccessDialog {
-  static Future<void> showTimedDialog(String text) async {
-    final context = NavigationService.navigatorKey.currentContext;
-
-    if (context == null) {
-      print("Context is null, cannot show dialog");
-      return Future.value();
-    }
+  static Future<void> showTimedDialog(String text,
+      {BuildContext? context}) async {
+    // if (context == null) {
+    //   print("Context is null, cannot show dialog");
+    //   return Future.value();
+    // }
 
     showDialog<void>(
-      context: context,
+      context: context ?? NavigationService.navigatorKey.currentContext!,
       barrierColor: Colors.transparent,
       barrierDismissible: true,
       builder: (BuildContext context) {

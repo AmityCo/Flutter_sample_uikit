@@ -260,3 +260,171 @@ class _MyVideoPlayer2State extends State<MyVideoPlayer2> {
     );
   }
 }
+
+class VideoPlayerScreen extends StatefulWidget {
+  final List<AmityPost> files;
+
+  const VideoPlayerScreen({Key? key, required this.files}) : super(key: key);
+
+  @override
+  _VideoPlayerScreenState createState() => _VideoPlayerScreenState();
+}
+
+class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
+  PageController _pageController = PageController();
+  int _currentIndex = 0;
+  List<VideoPlayerController>? _controllers; // Changed from late to nullable
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeControllers();
+  }
+
+  Future<void> _initializeControllers() async {
+    _controllers = await Future.wait(
+      widget.files.map((file) async {
+        var videoData = file.data
+            as VideoData; // Assuming VideoData is a type from your code
+        var fileURL = await videoData.getVideo(AmityVideoQuality.MEDIUM);
+        var controller =
+            VideoPlayerController.networkUrl(Uri.parse(fileURL.fileUrl!));
+        await controller.initialize();
+        return controller;
+      }),
+    );
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    _controllers?.forEach((controller) {
+      controller.dispose();
+    });
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _openFullScreenVideo(VideoPlayerController controller) {
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) =>
+          FullScreenVideoPlayerWidget(videoPlayerController: controller),
+    ));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        title: Text('${_currentIndex + 1}/${widget.files.length}'),
+        leading: IconButton(
+          icon: Icon(Icons.close),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+      ),
+      body: _controllers != null && _controllers!.isNotEmpty
+          ? PageView.builder(
+              controller: _pageController,
+              itemCount: widget.files.length,
+              onPageChanged: (index) {
+                setState(() {
+                  _currentIndex = index;
+                });
+              },
+              itemBuilder: (context, index) {
+                var controller = _controllers![index];
+                var videoData = widget.files[index].data as VideoData;
+                return GestureDetector(
+                  onTap: () {
+                    _openFullScreenVideo(controller);
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(2.0),
+                    child: Stack(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image:
+                                  NetworkImage(videoData.thumbnail!.fileUrl!),
+                              fit: BoxFit.fitWidth,
+                            ),
+                          ),
+                        ),
+                        const Align(
+                          alignment: Alignment.center,
+                          child: Icon(
+                            Icons.play_arrow,
+                            size: 70.0,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            )
+          : Center(child: CircularProgressIndicator()),
+    );
+  }
+}
+
+class FullScreenVideoPlayerWidget extends StatefulWidget {
+  final VideoPlayerController videoPlayerController;
+
+  FullScreenVideoPlayerWidget({Key? key, required this.videoPlayerController})
+      : super(key: key);
+
+  @override
+  _FullScreenVideoPlayerWidgetState createState() =>
+      _FullScreenVideoPlayerWidgetState();
+}
+
+class _FullScreenVideoPlayerWidgetState
+    extends State<FullScreenVideoPlayerWidget> {
+  late ChewieController _chewieController;
+
+  @override
+  void initState() {
+    super.initState();
+    _chewieController = ChewieController(
+      videoPlayerController: widget.videoPlayerController,
+      aspectRatio: widget.videoPlayerController.value.aspectRatio,
+      autoPlay: true,
+      looping: true,
+      // Additional Chewie configuration...
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DraggableScrollableSheet(
+        maxChildSize: 1.0,
+        minChildSize: 0.5,
+        initialChildSize: 1.0,
+        builder: (BuildContext context, ScrollController scrollController) {
+          return Scaffold(
+            backgroundColor: Colors.black,
+            appBar: AppBar(
+              backgroundColor: Colors.black,
+            ),
+            body: SafeArea(
+              child: Chewie(
+                controller: _chewieController,
+              ),
+            ),
+          );
+        });
+  }
+
+  @override
+  void dispose() {
+    _chewieController.dispose();
+    widget.videoPlayerController.pause();
+
+    super.dispose();
+  }
+}

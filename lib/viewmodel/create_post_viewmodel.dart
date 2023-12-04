@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:amity_sdk/amity_sdk.dart';
+import 'package:amity_uikit_beta_service/utils/navigation_key.dart';
+import 'package:amity_uikit_beta_service/viewmodel/media_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -19,12 +21,9 @@ class AmityFileInfoWithUploadStatus {
   bool isComplete = false;
   File? file;
 
-  void addFile(AmityFileInfo amityFileInfo) {
+  void addFile(AmityFileInfo amityFileInfo, File file) {
     fileInfo = amityFileInfo;
-    isComplete = true;
-  }
-
-  void addFilePath(File file) {
+    isComplete = false;
     this.file = file;
   }
 }
@@ -38,6 +37,7 @@ class CreatePostVM extends ChangeNotifier {
   AmityFileInfoWithUploadStatus? amityVideo;
   bool isloading = false;
   void inits() {
+    _progressMap.clear();
     textEditingController.clear();
     amityVideo = null;
     amityUploadFile.clear();
@@ -50,6 +50,23 @@ class CreatePostVM extends ChangeNotifier {
       }
     }
     return true; // No image file is selected
+  }
+
+  void deleteAmityFile(int index) {
+    if (index >= 0 && index < amityUploadFile.length) {
+      // Get the file path from the item at the specified index
+      String filePath = amityUploadFile[index].file?.path ?? "";
+
+      // Remove the item from the amityUploadFile list
+      amityUploadFile.removeAt(index);
+
+      // Remove the corresponding entries from the maps
+      _progressMap.remove(filePath);
+      _completeMap.remove(filePath);
+      checkAreAllPathsComplete();
+      // Notify listeners about the changes
+      notifyListeners();
+    }
   }
 
 // Declare the map outside the function
@@ -87,13 +104,48 @@ class CreatePostVM extends ChangeNotifier {
   }
 
   final Map<String, int> _progressMap = {};
+  final Map<String, bool> _completeMap = {};
+
+  bool areAllFilesComplete = true;
+  void checkAreAllPathsComplete() {
+    var files = Provider.of<MediaPickerVM>(
+            NavigationService.navigatorKey.currentContext!,
+            listen: false)
+        .selectedFiles;
+
+    // Start with the assumption that all files are complete
+    areAllFilesComplete = true;
+
+    for (var file in files) {
+      var path = file.path;
+      // Check if the path is in the map and if it is marked as complete
+      if (!_completeMap.containsKey(path) || !_completeMap[path]!) {
+        areAllFilesComplete =
+            false; // Found an incomplete file, set to false and break
+        break;
+      }
+    }
+  }
 
   int? getProgress(String filePath) {
     return _progressMap[filePath];
   }
 
+  bool? getCompletionStatus(String filePath) {
+    return _completeMap[filePath];
+  }
+
   void setProgress(String filePath, int progress) {
     _progressMap[filePath] = progress;
+  }
+
+  void setCompletionStatus(String filePath, bool isComplete) {
+    _completeMap[filePath] = isComplete;
+  }
+
+  void setfailUpload(String filePath) {
+    _progressMap.remove(filePath);
+    _completeMap.remove(filePath);
   }
 
   bool isNotSelectVideoYet() {
@@ -105,70 +157,103 @@ class CreatePostVM extends ChangeNotifier {
     return true; // No image file is selected
   }
 
-  Future<void> uploadFile(File file) async {
-    final completer = Completer<void>();
+  bool isNotSelectedFileYet() {
+    for (var file in amityUploadFile) {
+      if (file.fileInfo!.getFileProperties?.type != "image" &&
+          file.fileInfo!.getFileProperties?.type != "video") {
+        return false; // At least one non-image and non-video file is selected
+      }
+    }
+    return true; // No non-image and non-video file is selected
+  }
+
+  Future<void> uploadFile(File file,
+      {required Function onSuccess, required Function(String) onError}) async {
     print("FILE::::" + file.path);
 
     // Determine the MIME type of the file
     final mimeType = lookupMimeType(file.path);
 
     if (mimeType != null) {
-      if (mimeType.startsWith('image')) {
-        var client = AmityCoreClient.newFileRepository().uploadImage(file);
-        _performUpload(client, file, completer);
-      } else if (mimeType.startsWith('video')) {
-        var client = AmityCoreClient.newFileRepository().uploadVideo(file);
-        _performUpload(client, file, completer);
-      } else if (mimeType.startsWith('audio')) {
-        print("did not implement this feature yet");
-        // var client = AmityCoreClient.newFileRepository().uploadAudio(file);
-        // _performUpload(client, file, completer);
-      } else {
-        var client = AmityCoreClient.newFileRepository().uploadFile(file);
-        _performUpload(client, file, completer);
+      try {
+        if (mimeType.startsWith('image')) {
+          var client = AmityCoreClient.newFileRepository().uploadImage(file);
+          await _performUpload(client, file, onSuccess, onError);
+        } else if (mimeType.startsWith('video')) {
+          var client = AmityCoreClient.newFileRepository().uploadVideo(file);
+          await _performUpload(client, file, onSuccess, onError);
+        } else if (mimeType.startsWith('audio')) {
+          print("Audio upload not implemented yet");
+          onError("Audio upload not implemented yet");
+        } else {
+          print("upload File");
+          var client = AmityCoreClient.newFileRepository().uploadFile(file);
+          await _performUpload(client, file, onSuccess, onError);
+        }
+      } catch (e) {
+        onError(e.toString());
       }
     } else {
-      completer.completeError(Exception('Unsupported file type'));
+      onError('Unsupported file type');
     }
-
-    return completer.future;
   }
 
-  void _performUpload(
+  Future<void> _performUpload(
     StreamController<AmityUploadResult<dynamic>> client,
     File file,
-    Completer<void> completer,
+    Function onSuccess,
+    Function(String) onError,
   ) {
+    setProgress(file.path, 1);
+    final completer = Completer<void>();
+
     client.stream.listen(
       (amityUploadResult) {
         amityUploadResult.when(
           progress: (uploadInfo, cancelToken) {
             int progress = uploadInfo.getProgressPercentage();
             setProgress(file.path, progress);
+            setCompletionStatus(file.path, false);
+            checkAreAllPathsComplete();
             notifyListeners();
             print(progress);
           },
-          complete: (file) {
+          complete: (amityFile) {
             print("complete");
-            var uploadedImage = file;
-            amityUploadFile
-                .add(AmityFileInfoWithUploadStatus()..addFile(uploadedImage));
+            var uploadedImage = amityFile;
+            amityUploadFile.add(
+                AmityFileInfoWithUploadStatus()..addFile(uploadedImage, file));
+            setCompletionStatus(file.path, true);
+            checkAreAllPathsComplete();
             notifyListeners();
-            completer.complete();
+            onSuccess(); // Invoke the success callback
+            completer.complete(); // Mark the completer as complete
           },
           error: (error) async {
+            print("error");
+            // setProgress(file.path, -100);
+            setfailUpload(file.path);
             await AmityDialog().showAlertErrorDialog(
               title: "Amity Error!",
               message: error.toString(),
             );
-            completer.completeError(error);
+
+            notifyListeners();
+            onError(error.toString()); // Invoke the error callback
+            completer.completeError(error); // Propagate the error
           },
           cancel: () {
-            completer.completeError(Exception('Upload cancelled'));
+            checkAreAllPathsComplete();
+            notifyListeners();
+            onError('Upload cancelled'); // Invoke the error callback
+            completer.completeError(
+                Exception('Upload cancelled')); // Propagate the error
           },
         );
       },
     );
+
+    return completer.future; // Return the future from the completer
   }
 
 // List to store already selected image paths
@@ -183,7 +268,8 @@ class CreatePostVM extends ChangeNotifier {
         for (var image in images) {
           // Check if the image is already in the list of selected images
           if (_progressMap[image.path] == null) {
-            await uploadFile(File(image.path));
+            await uploadFile(File(image.path),
+                onSuccess: () {}, onError: (String) {});
             // Add the image path to the list after successful upload
           }
         }
@@ -204,7 +290,7 @@ class CreatePostVM extends ChangeNotifier {
             .then((value) {
           var fileInfo = value as AmityUploadComplete;
 
-          amityUploadFile.last.addFile(fileInfo.getFile);
+          amityUploadFile.last.addFile(fileInfo.getFile, File(image.path));
           notifyListeners();
         }).onError((error, stackTrace) async {
           log("error: $error");
@@ -274,60 +360,57 @@ class CreatePostVM extends ChangeNotifier {
     notifyListeners();
     HapticFeedback.heavyImpact();
     bool isCommunity = (communityId != null) ? true : false;
+
     if (isCommunity) {
       print("is community");
-      if (isNotSelectVideoYet() && isNotSelectedImageYet()) {
-        print("isNotSelectVideoYet() & isNotSelectVideoYet()");
-
-        ///create text post
-        await createTextpost(context, communityId: communityId).then((_) {
-          callback(true, null); // Successful callback
-        }).catchError((e) {
-          callback(false, e.toString()); // Error callback
-        });
-      } else if (isNotSelectedImageYet()) {
-        print("isNotSelectedImageYet");
-
-        ///create video post
-        await creatVideoPost(context, communityId: communityId).then((_) {
-          callback(true, null); // Successful callback
-        }).catchError((e) {
-          callback(false, e.toString()); // Error callback
-        });
-      } else if (isNotSelectVideoYet()) {
-        print("isNotSelectVideoYet");
-
-        ///create image post
-        await creatImagePost(context, communityId: communityId).then((_) {
-          callback(true, null); // Successful callback
-        }).catchError((e) {
-          callback(false, e.toString()); // Error callback
-        });
+      if (isNotSelectVideoYet() &&
+          isNotSelectedImageYet() &&
+          isNotSelectedFileYet()) {
+        print("No media selected - creating text post");
+        // Create text post
+        await createTextpost(context, communityId: communityId);
+        callback(true, null);
+      } else if (isNotSelectedImageYet() && isNotSelectedFileYet()) {
+        print("Video selected - creating video post");
+        // Create video post
+        await creatVideoPost(context, communityId: communityId);
+        callback(true, null);
+      } else if (isNotSelectVideoYet() && isNotSelectedFileYet()) {
+        print("Image selected - creating image post");
+        // Create image post
+        await creatImagePost(context, communityId: communityId);
+        callback(true, null);
+      } else if (isNotSelectVideoYet() && isNotSelectedImageYet()) {
+        print("File selected - creating file post");
+        // Assuming createFilePost handles file selection internally
+        await createFilePost(context, communityId: communityId);
+        callback(true, null);
       }
     } else {
-      if (isNotSelectVideoYet() && isNotSelectedImageYet()) {
-        log("isNotSelectImageYet() & isNotSelectVideoYet()");
-
-        ///create text post
-        await createTextpost(context).then((_) {
-          callback(true, null); // Successful callback
-        }).catchError((e) {
-          callback(false, e.toString()); // Error callback
-        });
-      } else if (isNotSelectedImageYet()) {
-        log("isNotSelectedImageYet");
-
-        ///create video post
+      if (isNotSelectVideoYet() &&
+          isNotSelectedImageYet() &&
+          isNotSelectedFileYet()) {
+        log("No media selected - creating text post");
+        // Create text post
+        await createTextpost(context);
+        callback(true, null);
+      } else if (isNotSelectedImageYet() && isNotSelectedFileYet()) {
+        log("Video selected - creating video post");
+        // Create video post
         await creatVideoPost(context);
-      } else if (isNotSelectVideoYet()) {
-        log("isNotSelectVideoYet");
-
-        ///create image post
+        callback(true, null);
+      } else if (isNotSelectVideoYet() && isNotSelectedFileYet()) {
+        log("Image selected - creating image post");
+        // Create image post
         await creatImagePost(context);
+        callback(true, null);
+      } else if (isNotSelectVideoYet() && isNotSelectedImageYet()) {
+        log("File selected - creating file post");
+        // Assuming createFilePost handles file selection internally
+        await createFilePost(context);
+        callback(true, null);
       }
     }
-    isloading = false;
-    notifyListeners();
   }
 
   Future<void> createTextpost(BuildContext context,
@@ -391,6 +474,74 @@ class CreatePostVM extends ChangeNotifier {
     }
   }
 
+  Future<void> createFilePost(BuildContext context,
+      {String? communityId}) async {
+    log("createFilePost...");
+    bool isCommunity = (communityId != null) ? true : false;
+    List<AmityFile> files = [];
+    print(amityUploadFile);
+    for (var amityFile in amityUploadFile) {
+      if (amityFile.fileInfo is AmityFile) {
+        var file = amityFile.fileInfo as AmityFile;
+        files.add(file);
+        log("add file to files");
+      }
+    }
+    if (isCommunity) {
+      // Creating a post with a file in a community
+      var builder = await AmitySocialClient.newPostRepository()
+          .createPost()
+          .targetCommunity(communityId)
+          .file(files);
+
+      if (textEditingController.text.isNotEmpty) {
+        builder.text(textEditingController.text);
+      }
+
+      builder.post().then((post) async {
+        // ///add post to feedx
+        // print("success");
+        // var viewModel = Provider.of<CommuFeedVM>(context, listen: false);
+        // viewModel.addPostToFeed(post);
+        // if (viewModel.scrollcontroller.hasClients) {
+        //   viewModel.scrollcontroller.jumpTo(0);
+        // }
+      });
+    } else {
+      // Creating a post with a file targeted at the user's own feed
+      var builder = await AmitySocialClient.newPostRepository()
+          .createPost()
+          .targetMe()
+          .file(files);
+
+      if (textEditingController.text.isNotEmpty) {
+        builder.text(textEditingController.text);
+      }
+
+      builder.post().then((post) async {
+        ///add post to feedx
+        print("success");
+        if (communityId != null) {
+          var viewModel = Provider.of<CommuFeedVM>(context, listen: false);
+          viewModel.addPostToFeed(post);
+          if (viewModel.scrollcontroller.hasClients) {
+            viewModel.scrollcontroller.jumpTo(0);
+          }
+        } else {
+          var viewModel = Provider.of<FeedVM>(context, listen: false);
+          viewModel.addPostToFeed(post);
+          if (viewModel.scrollcontroller.hasClients) {
+            viewModel.scrollcontroller.jumpTo(0);
+          }
+        }
+      });
+    }
+
+    // Add post to feed logic goes here...
+    // You can use similar logic as in createTextpost
+    // ...
+  }
+
   Future<void> creatImagePost(BuildContext context,
       {String? communityId}) async {
     print("creatImagePost...");
@@ -406,13 +557,16 @@ class CreatePostVM extends ChangeNotifier {
     log(images.toString());
     bool isCommunity = (communityId != null) ? true : false;
     if (isCommunity) {
-      await AmitySocialClient.newPostRepository()
+      var builder = await AmitySocialClient.newPostRepository()
           .createPost()
           .targetCommunity(communityId)
-          .image(images)
-          .text(textEditingController.text)
-          .post()
-          .then((AmityPost post) {
+          .image(images);
+
+      if (textEditingController.text.isNotEmpty) {
+        builder.text(textEditingController.text);
+      }
+
+      builder.post().then((post) async {
         ///add post to feedx
         print("success");
         var viewModel = Provider.of<CommuFeedVM>(context, listen: false);
@@ -426,13 +580,16 @@ class CreatePostVM extends ChangeNotifier {
             .showAlertErrorDialog(title: "Error!", message: error.toString());
       });
     } else {
-      await AmitySocialClient.newPostRepository()
+      var builder = await AmitySocialClient.newPostRepository()
           .createPost()
           .targetMe()
-          .image(images)
-          .text(textEditingController.text)
-          .post()
-          .then((AmityPost post) {
+          .image(images);
+
+      if (textEditingController.text.isNotEmpty) {
+        builder.text(textEditingController.text);
+      }
+
+      builder.post().then((post) async {
         ///add post to feedx
         if (communityId != null) {
           var viewModel = Provider.of<CommuFeedVM>(context, listen: false);
@@ -469,13 +626,16 @@ class CreatePostVM extends ChangeNotifier {
       print("creatVideoPost...${videos.length}");
       bool isCommunity = (communityId != null) ? true : false;
       if (isCommunity) {
-        await AmitySocialClient.newPostRepository()
+        var builder = await AmitySocialClient.newPostRepository()
             .createPost()
             .targetCommunity(communityId)
-            .video(videos)
-            .text(textEditingController.text)
-            .post()
-            .then((AmityPost post) {
+            .video(videos);
+
+        if (textEditingController.text.isNotEmpty) {
+          builder.text(textEditingController.text);
+        }
+
+        builder.post().then((post) async {
           print("create video success!");
 
           ///add post to feedx
@@ -488,13 +648,16 @@ class CreatePostVM extends ChangeNotifier {
               .showAlertErrorDialog(title: "Error!", message: error.toString());
         });
       } else {
-        await AmitySocialClient.newPostRepository()
+        var builder = await AmitySocialClient.newPostRepository()
             .createPost()
             .targetMe()
-            .video(videos)
-            .text(textEditingController.text)
-            .post()
-            .then((AmityPost post) {
+            .video(videos);
+
+        if (textEditingController.text.isNotEmpty) {
+          builder.text(textEditingController.text);
+        }
+
+        builder.post().then((post) async {
           print("create video success!");
           if (communityId != null) {
             var viewModel = Provider.of<CommuFeedVM>(context, listen: false);

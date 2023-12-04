@@ -29,6 +29,7 @@ class _UserListPageState extends State<UserListPage> {
       print(widget.preSelectMember);
       Provider.of<UserVM>(context, listen: false)
           .setSelectedUsersList(widget.preSelectMember!);
+      Provider.of<UserVM>(context, listen: false).initUserList("");
     }
     super.initState();
   }

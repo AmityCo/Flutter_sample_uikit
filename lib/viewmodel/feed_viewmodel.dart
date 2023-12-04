@@ -10,7 +10,7 @@ enum Feedtype { global, commu }
 class FeedVM extends ChangeNotifier {
   var _amityGlobalFeedPosts = <AmityPost>[];
 
-  late PagingController<AmityPost> _controllerGlobal;
+  PagingController<AmityPost>? _controllerGlobal;
 
   final scrollcontroller = ScrollController();
 
@@ -20,7 +20,9 @@ class FeedVM extends ChangeNotifier {
   }
 
   Future<void> addPostToFeed(AmityPost post) async {
-    _controllerGlobal.addAtIndex(0, post);
+    if (_controllerGlobal == null) {
+      _controllerGlobal?.addAtIndex(0, post);
+    }
     notifyListeners();
   }
 
@@ -45,8 +47,8 @@ class FeedVM extends ChangeNotifier {
     )..addListener(
         () async {
           log("initAmityGlobalfeed listener...");
-          if (_controllerGlobal.error == null) {
-            _amityGlobalFeedPosts = _controllerGlobal.loadedItems;
+          if (_controllerGlobal?.error == null) {
+            _amityGlobalFeedPosts = _controllerGlobal!.loadedItems;
 
             notifyListeners();
           } else {
@@ -54,13 +56,13 @@ class FeedVM extends ChangeNotifier {
 
             log("error");
             await AmityDialog().showAlertErrorDialog(
-                title: "Error!", message: _controllerGlobal.error.toString());
+                title: "Error!", message: _controllerGlobal!.error.toString());
           }
         },
       );
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _controllerGlobal.fetchNextPage();
+      _controllerGlobal?.fetchNextPage();
     });
     scrollcontroller.removeListener(() {});
     scrollcontroller.addListener(loadnextpage);
@@ -70,12 +72,12 @@ class FeedVM extends ChangeNotifier {
     // log(scrollcontroller.offset);
     if ((scrollcontroller.position.pixels >
             scrollcontroller.position.maxScrollExtent - 800) &&
-        _controllerGlobal.hasMoreItems &&
+        _controllerGlobal!.hasMoreItems &&
         !loadingNexPage) {
       loadingNexPage = true;
       notifyListeners();
       log("loading Next Page...");
-      await _controllerGlobal.fetchNextPage().then((value) {
+      await _controllerGlobal!.fetchNextPage().then((value) {
         loadingNexPage = false;
         notifyListeners();
       });
