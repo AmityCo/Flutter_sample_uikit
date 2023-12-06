@@ -232,7 +232,7 @@ class CommunityVM extends ChangeNotifier {
       AmityLoadingDialog.showLoadingDialog();
       //log(xFile.path);
 
-      AmityCoreClient.newFileRepository()
+      await AmityCoreClient.newFileRepository()
           .uploadImage(pickedFile!)
           .stream
           .listen((amityUploadResult) {

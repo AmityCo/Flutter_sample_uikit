@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -7,6 +8,7 @@ import 'package:amity_uikit_beta_service/model/amity_channel_model.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mime/mime.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
 enum FileStatus { uploading, rejected, complete }
@@ -122,37 +124,74 @@ class CreatePostVMV2 with ChangeNotifier {
     }
   }
 
-  // Modified uploadFile method to use UIKitFileSystem
-  void uploadFile(XFile xFile, UIKitFileSystem uikitFile) async {
+  Future<void> uploadFile(XFile xFile, UIKitFileSystem uikitFile) async {
     File uploadingFile = File(xFile.path);
 
-    AmityCoreClient.newFileRepository()
-        .uploadFile(uploadingFile)
-        .stream
-        .listen((AmityUploadResult<AmityFile> amityUploadResult) {
-      amityUploadResult.when(
-        progress: (uploadInfo, cancelToken) {
-          int progress = uploadInfo.getProgressPercentage();
-          uikitFile.progress = progress;
-          notifyListeners();
-        },
-        complete: (file) {
-          print(file);
-          uikitFile.status = FileStatus.complete;
-          uikitFile.fileInfo = file;
-          uikitFile.amityFile = file;
-          checkAllFilesUploaded();
-          notifyListeners();
-        },
-        error: (error) {
-          uikitFile.status = FileStatus.rejected;
-          notifyListeners();
-        },
-        cancel: () {
-          // Handle cancellation
-        },
-      );
-    });
+    // Determine the MIME type of the file
+    final mimeType = lookupMimeType(uploadingFile.path);
+    print("uploading...${mimeType}");
+    if (mimeType != null) {
+      try {
+        if (mimeType.startsWith('image')) {
+          await _performUpload(
+            AmityCoreClient.newFileRepository().uploadImage(uploadingFile),
+            uikitFile,
+          );
+        } else if (mimeType.startsWith('video')) {
+          await _performUpload(
+            AmityCoreClient.newFileRepository().uploadVideo(uploadingFile),
+            uikitFile,
+          );
+        } else {
+          print("_performUpload file");
+          await _performUpload(
+            AmityCoreClient.newFileRepository().uploadFile(uploadingFile),
+            uikitFile,
+          );
+        }
+      } catch (e) {
+        uikitFile.status = FileStatus.rejected;
+        notifyListeners();
+        // Handle the error as appropriate for your app
+      }
+    } else {
+      uikitFile.status = FileStatus.rejected;
+      notifyListeners();
+      // Handle unsupported file type
+    }
+  }
+
+  Future<void> _performUpload(
+    StreamController<AmityUploadResult<dynamic>> client,
+    UIKitFileSystem uikitFile,
+  ) async {
+    client.stream.listen(
+      (amityUploadResult) {
+        amityUploadResult.when(
+          progress: (uploadInfo, cancelToken) {
+            int progress = uploadInfo.getProgressPercentage();
+            uikitFile.progress = progress;
+            notifyListeners();
+          },
+          complete: (amityFile) {
+            uikitFile.status = FileStatus.complete;
+            uikitFile.fileInfo = amityFile;
+            uikitFile.amityFile = amityFile;
+
+            checkAllFilesUploaded();
+            notifyListeners();
+          },
+          error: (error) {
+            uikitFile.status = FileStatus.rejected;
+            notifyListeners();
+            // Handle the error as appropriate for your app
+          },
+          cancel: () {
+            // Handle cancellation
+          },
+        );
+      },
+    );
   }
 
   // Method to select files (e.g., using a file picker)
@@ -221,7 +260,7 @@ class CreatePostVMV2 with ChangeNotifier {
               .where((file) => file.path != null)
               .map((file) => XFile(file.path!))
               .toList();
-          selectFiles(pickedFiles, FileType.video);
+          selectFiles(pickedFiles, FileType.file);
         }
       }
     } catch (e) {
@@ -269,7 +308,9 @@ class CreatePostVMV2 with ChangeNotifier {
       }
 
       print("select Target...");
-
+      for (var file in files) {
+        print(file.fileType);
+      }
       // Check for file types and add them to the post
       var images =
           files.where((file) => file.fileType == FileType.image).toList();
@@ -331,6 +372,8 @@ class CreatePostVMV2 with ChangeNotifier {
               .showAlertErrorDialog(title: "Error!", message: error.toString());
         });
       } else if (otherFiles.isNotEmpty) {
+        print("file was selected");
+        print(otherFiles[0].fileType);
         var readyBuilder = postBuilder.file(otherFiles
             .map((f) => AmityFile(f.fileInfo!.getFileProperties!))
             .toList());

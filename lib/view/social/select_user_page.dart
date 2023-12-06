@@ -66,6 +66,7 @@ class _UserListPageState extends State<UserListPage> {
                       Provider.of<UserVM>(context, listen: false)
                           .selectedCommunityUsers);
                 }
+                Navigator.of(context).pop();
               },
               child: Text('Done',
                   style: TextStyle(

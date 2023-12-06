@@ -565,6 +565,7 @@ class CommentTextField extends StatelessWidget {
         ),
       ]),
       child: ListTile(
+        contentPadding: EdgeInsets.fromLTRB(8, 8, 8, 8),
         leading: getAvatarImage(
             Provider.of<AmityVM>(context).currentamityUser?.avatarUrl),
         title: ConstrainedBox(
