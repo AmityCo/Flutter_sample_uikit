@@ -190,11 +190,12 @@ class MemberManagementVM extends ChangeNotifier {
       // representing the roles of the current user in the community.
       // If it doesn’t, you might need to adjust this.
       currentUserRoles = await community.getCurentUserRoles();
+
       notifyListeners();
     }).onError((error, stackTrace) {
       print("${error},${stackTrace}");
-      AmityDialog()
-          .showAlertErrorDialog(title: "Error!", message: error.toString());
+      // AmityDialog()
+      //     .showAlertErrorDialog(title: "Error!", message: error.toString());
     });
   }
 

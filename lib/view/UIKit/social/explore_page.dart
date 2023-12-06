@@ -187,13 +187,21 @@ class RecommendationSection extends StatelessWidget {
                                 const SizedBox(
                                   height: 4,
                                 ),
-                                Text(
-                                  '${community.categories?[0]?.name}',
-                                  style: const TextStyle(
-                                      color: Colors.black, fontSize: 13),
-                                  overflow: TextOverflow
-                                      .ellipsis, // Handle text overflow
-                                ),
+                                community.categories!.isEmpty
+                                    ? Text(
+                                        '',
+                                        style: const TextStyle(
+                                            color: Colors.black, fontSize: 13),
+                                        overflow: TextOverflow
+                                            .ellipsis, // Handle text overflow
+                                      )
+                                    : Text(
+                                        '${community.categories?[0]?.name}',
+                                        style: const TextStyle(
+                                            color: Colors.black, fontSize: 13),
+                                        overflow: TextOverflow
+                                            .ellipsis, // Handle text overflow
+                                      ),
                                 const SizedBox(
                                   height: 4,
                                 ),

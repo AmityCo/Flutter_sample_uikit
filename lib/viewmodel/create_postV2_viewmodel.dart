@@ -40,6 +40,34 @@ class CreatePostVMV2 with ChangeNotifier {
   List<UIKitFileSystem> files = [];
   bool isUploadComplete = false;
   FileType? selectedFileType;
+  bool get isPostValid {
+    // Check if there are any files
+    bool hasFiles = files.isNotEmpty;
+
+    // Check if the text is empty
+    bool isTextEmpty = textEditingController.text.isEmpty;
+
+    // If there are no files and text is empty, return false
+    if (!hasFiles && isTextEmpty) {
+      return false;
+    }
+
+    // If there are files, then validity depends on whether the upload is complete
+    // If there are no files, the post is valid regardless of the upload status
+    return !hasFiles || isUploadComplete;
+  }
+
+  void updatePostValidity() {
+    // First, update the upload complete status
+    checkAllFilesUploaded();
+
+    // Then, update the isPostValid status
+
+    print("textEditingController: ${textEditingController.text.isNotEmpty}");
+    print("isUploadComplete: ${isUploadComplete}");
+
+    notifyListeners();
+  }
 
   void inits() {
     isUploadComplete = false;

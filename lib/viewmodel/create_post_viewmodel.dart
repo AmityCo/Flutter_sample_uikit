@@ -175,24 +175,24 @@ class CreatePostVM extends ChangeNotifier {
     final mimeType = lookupMimeType(file.path);
 
     if (mimeType != null) {
-      // try {
-      if (mimeType.startsWith('image')) {
-        var client = AmityCoreClient.newFileRepository().uploadImage(file);
-        await _performUpload(client, file, onSuccess, onError);
-      } else if (mimeType.startsWith('video')) {
-        var client = AmityCoreClient.newFileRepository().uploadVideo(file);
-        await _performUpload(client, file, onSuccess, onError);
-      } else if (mimeType.startsWith('audio')) {
-        print("Audio upload not implemented yet");
-        onError("Audio upload not implemented yet");
-      } else {
-        print("upload File");
-        var client = AmityCoreClient.newFileRepository().uploadFile(file);
-        await _performUpload(client, file, onSuccess, onError);
+      try {
+        if (mimeType.startsWith('image')) {
+          var client = AmityCoreClient.newFileRepository().uploadImage(file);
+          await _performUpload(client, file, onSuccess, onError);
+        } else if (mimeType.startsWith('video')) {
+          var client = AmityCoreClient.newFileRepository().uploadVideo(file);
+          await _performUpload(client, file, onSuccess, onError);
+        } else if (mimeType.startsWith('audio')) {
+          print("Audio upload not implemented yet");
+          onError("Audio upload not implemented yet");
+        } else {
+          print("upload File");
+          var client = AmityCoreClient.newFileRepository().uploadFile(file);
+          await _performUpload(client, file, onSuccess, onError);
+        }
+      } catch (e) {
+        onError(e.toString());
       }
-      // } catch (e) {
-      //   onError(e.toString());
-      // }
     } else {
       onError('Unsupported file type');
     }
@@ -303,41 +303,42 @@ class CreatePostVM extends ChangeNotifier {
 
   Future<void> addVideo() async {
     if (isNotSelectedImageYet()) {
-      // try {
-      final XFile? video = await _picker.pickVideo(source: ImageSource.gallery);
+      try {
+        final XFile? video =
+            await _picker.pickVideo(source: ImageSource.gallery);
 
-      if (video != null) {
-        print("got Video");
-        // var fileWithStatus = AmityFileInfoWithUploadStatus();
-        // amityVideo = fileWithStatus;
-        // amityVideo!.file = File(video.path);
+        if (video != null) {
+          print("got Video");
+          // var fileWithStatus = AmityFileInfoWithUploadStatus();
+          // amityVideo = fileWithStatus;
+          // amityVideo!.file = File(video.path);
 
-        // notifyListeners();
-        // await AmityCoreClient.newFileRepository()
-        //     .uploadImage(File(video.path))
-        //     .done
-        //     .then((value) {
-        //   var fileInfo = value as AmityUploadComplete;
+          // notifyListeners();
+          // await AmityCoreClient.newFileRepository()
+          //     .uploadImage(File(video.path))
+          //     .done
+          //     .then((value) {
+          //   var fileInfo = value as AmityUploadComplete;
 
-        //   amityVideo!.addFile(fileInfo.getFile);
-        //   log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>${fileInfo.getFile.fileId}");
+          //   amityVideo!.addFile(fileInfo.getFile);
+          //   log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>${fileInfo.getFile.fileId}");
 
-        //   notifyListeners();
-        // }).onError((error, stackTrace) async {
-        //   log("error: $error");
-        //   await AmityDialog()
-        //       .showAlertErrorDialog(title: "Error!", message: error.toString());
-        // });
-      } else {
-        log("error: video is null");
-        // await AmityDialog().showAlertErrorDialog(
-        //     title: "Error!", message: "error: video is null");
+          //   notifyListeners();
+          // }).onError((error, stackTrace) async {
+          //   log("error: $error");
+          //   await AmityDialog()
+          //       .showAlertErrorDialog(title: "Error!", message: error.toString());
+          // });
+        } else {
+          log("error: video is null");
+          // await AmityDialog().showAlertErrorDialog(
+          //     title: "Error!", message: "error: video is null");
+        }
+      } catch (error) {
+        log("error: $error");
+        await AmityDialog()
+            .showAlertErrorDialog(title: "Error!", message: error.toString());
       }
-      // } catch (error) {
-      //   log("error: $error");
-      //   await AmityDialog()
-      //       .showAlertErrorDialog(title: "Error!", message: error.toString());
-      // }
     }
   }
 

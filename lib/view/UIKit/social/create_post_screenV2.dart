@@ -112,7 +112,7 @@ class _AmityCreatePostV2ScreenState extends State<AmityCreatePostV2Screen> {
                     : null,
                 child: Text("Post",
                     style: TextStyle(
-                        color: vm.isUploadComplete
+                        color: vm.isPostValid
                             ? Provider.of<AmityUIConfiguration>(context)
                                 .primaryColor
                             : Colors.grey)),
@@ -129,6 +129,7 @@ class _AmityCreatePostV2ScreenState extends State<AmityCreatePostV2Screen> {
                       child: Column(
                         children: [
                           TextField(
+                            onChanged: (value) => vm.updatePostValidity(),
                             controller: vm.textEditingController,
                             scrollPhysics: const NeverScrollableScrollPhysics(),
                             maxLines: null,

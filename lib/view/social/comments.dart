@@ -107,6 +107,7 @@ class CommentScreenState extends State<CommentScreen> {
           stream: vm.amityPost.listen.stream,
           initialData: vm.amityPost,
           builder: (context, snapshot) {
+            var snapshotPostData = snapshot.data?.data as TextData;
             var actionSection = Column(
               children: [
                 Container(
@@ -359,7 +360,7 @@ class CommentScreenState extends State<CommentScreen> {
                                                     postData.text == null
                                                 ? const SizedBox()
                                                 : LinkWell(
-                                                    postData.text ?? "",
+                                                    snapshotPostData.text ?? "",
                                                     textAlign: TextAlign.left,
                                                     style: theme
                                                         .textTheme.headline6!
@@ -923,11 +924,11 @@ class _CommentComponentState extends State<CommentComponent> {
                                                         onConfirm: () {
                                                           vm.deleteComment(
                                                               comments);
-                                                          AmitySuccessDialog
-                                                              .showTimedDialog(
-                                                                  "Success",
-                                                                  context:
-                                                                      context);
+                                                          // AmitySuccessDialog
+                                                          //     .showTimedDialog(
+                                                          //         "Success",
+                                                          //         context:
+                                                          //             context);
                                                           Navigator.pop(
                                                               context);
                                                         });

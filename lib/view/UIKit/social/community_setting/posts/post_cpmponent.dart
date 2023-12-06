@@ -17,7 +17,7 @@ class PostMedia extends StatelessWidget {
       if (files.isEmpty) return Container();
 
       Widget _backgroundImage(UIKitFileSystem file, int index) {
-        var file = files[index];
+        // var file = files[index];
         int rawprogress =
             Provider.of<CreatePostVMV2>(context).files[0].progress;
         var progress = rawprogress / 100.0;
@@ -33,7 +33,7 @@ class PostMedia extends StatelessWidget {
                     Container(
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                          image: snapshot.data!,
+                          image: FileImage(file.file),
                           fit: BoxFit.cover,
                         ),
                       ),

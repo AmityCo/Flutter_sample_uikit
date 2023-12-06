@@ -340,15 +340,13 @@ class AmityPostWidgetState extends State<AmityPostWidget> {
           child: Column(
             children: [
               Expanded(child: _backgroundThumbnail(getURL(files[0].data!), 0)),
-              Expanded(
-                child: Row(
-                  children: [
-                    Expanded(
-                        child: _backgroundThumbnail(getURL(files[1].data!), 1)),
-                    Expanded(
-                        child: _backgroundThumbnail(getURL(files[2].data!), 2)),
-                  ],
-                ),
+              Row(
+                children: [
+                  Expanded(
+                      child: _backgroundThumbnail(getURL(files[1].data!), 1)),
+                  Expanded(
+                      child: _backgroundThumbnail(getURL(files[2].data!), 2)),
+                ],
               ),
             ],
           ),
@@ -360,29 +358,27 @@ class AmityPostWidgetState extends State<AmityPostWidget> {
           child: Column(
             children: [
               Expanded(child: _backgroundThumbnail(getURL(files[0].data!), 0)),
-              Expanded(
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: AspectRatio(
-                        aspectRatio: 1,
-                        child: _backgroundThumbnail(getURL(files[1].data!), 1),
-                      ),
+              Row(
+                children: [
+                  Expanded(
+                    child: AspectRatio(
+                      aspectRatio: 1,
+                      child: _backgroundThumbnail(getURL(files[1].data!), 1),
                     ),
-                    Expanded(
-                      child: AspectRatio(
-                        aspectRatio: 1,
-                        child: _backgroundThumbnail(getURL(files[2].data!), 2),
-                      ),
+                  ),
+                  Expanded(
+                    child: AspectRatio(
+                      aspectRatio: 1,
+                      child: _backgroundThumbnail(getURL(files[2].data!), 2),
                     ),
-                    Expanded(
-                      child: AspectRatio(
-                        aspectRatio: 1,
-                        child: _backgroundThumbnail(getURL(files[3].data!), 3),
-                      ),
+                  ),
+                  Expanded(
+                    child: AspectRatio(
+                      aspectRatio: 1,
+                      child: _backgroundThumbnail(getURL(files[3].data!), 3),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -394,52 +390,49 @@ class AmityPostWidgetState extends State<AmityPostWidget> {
           child: Column(
             children: [
               Expanded(child: _backgroundThumbnail(getURL(files[0].data!), 0)),
-              Expanded(
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: AspectRatio(
-                        aspectRatio: 1,
-                        child: _backgroundThumbnail(getURL(files[1].data!), 1),
-                      ),
+              Row(
+                children: [
+                  Expanded(
+                    child: AspectRatio(
+                      aspectRatio: 1,
+                      child: _backgroundThumbnail(getURL(files[1].data!), 1),
                     ),
-                    Expanded(
-                      child: AspectRatio(
-                        aspectRatio: 1,
-                        child: _backgroundThumbnail(getURL(files[2].data!), 2),
-                      ),
+                  ),
+                  Expanded(
+                    child: AspectRatio(
+                      aspectRatio: 1,
+                      child: _backgroundThumbnail(getURL(files[2].data!), 2),
                     ),
-                    Expanded(
-                      child: AspectRatio(
-                        aspectRatio: 1,
-                        child: Stack(
-                          children: [
-                            _backgroundThumbnail(getURL(files[3].data!), 3),
-                            // Black filter overlay
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.black
-                                    .withOpacity(0.3), // Semi-transparent black
+                  ),
+                  Expanded(
+                    child: AspectRatio(
+                      aspectRatio: 1,
+                      child: Stack(
+                        children: [
+                          _backgroundThumbnail(getURL(files[3].data!), 3),
+                          // Black filter overlay
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.black
+                                  .withOpacity(0.3), // Semi-transparent black
+                            ),
+                          ),
+                          // Centered Text "6+"
+                          Center(
+                            child: Text(
+                              "${files.length - 3}+",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 24, // Adjust the font size as needed
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                            // Centered Text "6+"
-                            Center(
-                              child: Text(
-                                "${files.length - 3}+",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize:
-                                      24, // Adjust the font size as needed
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -462,17 +455,14 @@ class AmityPostWidgetState extends State<AmityPostWidget> {
         },
         child: Padding(
           padding: const EdgeInsets.all(2.0),
-          child: Stack(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: NetworkImage("${fileUrl}"),
-                    fit: BoxFit.cover,
-                  ),
-                ),
+          child: Container(
+            padding: const EdgeInsets.all(2.0),
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: NetworkImage("${fileUrl}"),
+                fit: BoxFit.cover,
               ),
-            ],
+            ),
           ),
         ),
       );
@@ -532,29 +522,27 @@ class AmityPostWidgetState extends State<AmityPostWidget> {
           child: Column(
             children: [
               Expanded(child: _backgroundImage(getURL(files[0].data!), 0)),
-              Expanded(
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: AspectRatio(
-                        aspectRatio: 1,
-                        child: _backgroundImage(getURL(files[1].data!), 1),
-                      ),
+              Row(
+                children: [
+                  Expanded(
+                    child: AspectRatio(
+                      aspectRatio: 1,
+                      child: _backgroundImage(getURL(files[1].data!), 1),
                     ),
-                    Expanded(
-                      child: AspectRatio(
-                        aspectRatio: 1,
-                        child: _backgroundImage(getURL(files[2].data!), 2),
-                      ),
+                  ),
+                  Expanded(
+                    child: AspectRatio(
+                      aspectRatio: 1,
+                      child: _backgroundImage(getURL(files[2].data!), 2),
                     ),
-                    Expanded(
-                      child: AspectRatio(
-                        aspectRatio: 1,
-                        child: _backgroundImage(getURL(files[3].data!), 3),
-                      ),
+                  ),
+                  Expanded(
+                    child: AspectRatio(
+                      aspectRatio: 1,
+                      child: _backgroundImage(getURL(files[3].data!), 3),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -566,52 +554,49 @@ class AmityPostWidgetState extends State<AmityPostWidget> {
           child: Column(
             children: [
               Expanded(child: _backgroundImage(getURL(files[0].data!), 0)),
-              Expanded(
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: AspectRatio(
-                        aspectRatio: 1,
-                        child: _backgroundImage(getURL(files[1].data!), 1),
-                      ),
+              Row(
+                children: [
+                  Expanded(
+                    child: AspectRatio(
+                      aspectRatio: 1,
+                      child: _backgroundImage(getURL(files[1].data!), 1),
                     ),
-                    Expanded(
-                      child: AspectRatio(
-                        aspectRatio: 1,
-                        child: _backgroundImage(getURL(files[2].data!), 2),
-                      ),
+                  ),
+                  Expanded(
+                    child: AspectRatio(
+                      aspectRatio: 1,
+                      child: _backgroundImage(getURL(files[2].data!), 2),
                     ),
-                    Expanded(
-                      child: AspectRatio(
-                        aspectRatio: 1,
-                        child: Stack(
-                          children: [
-                            _backgroundImage(getURL(files[3].data!), 3),
-                            // Black filter overlay
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.black
-                                    .withOpacity(0.3), // Semi-transparent black
+                  ),
+                  Expanded(
+                    child: AspectRatio(
+                      aspectRatio: 1,
+                      child: Stack(
+                        children: [
+                          _backgroundImage(getURL(files[3].data!), 3),
+                          // Black filter overlay
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.black
+                                  .withOpacity(0.3), // Semi-transparent black
+                            ),
+                          ),
+                          // Centered Text "6+"
+                          Center(
+                            child: Text(
+                              "${files.length - 3}+",
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 24, // Adjust the font size as needed
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                            // Centered Text "6+"
-                            Center(
-                              child: Text(
-                                "${files.length - 3}+",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize:
-                                      24, // Adjust the font size as needed
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ],
           ),
