@@ -1,6 +1,8 @@
 import 'package:amity_sdk/amity_sdk.dart';
 import 'package:amity_uikit_beta_service/view/UIKit/social/community_setting/community_member_page.dart';
+import 'package:amity_uikit_beta_service/view/UIKit/social/community_setting/edit_community.dart';
 import 'package:amity_uikit_beta_service/view/UIKit/social/community_setting/setting_page.dart';
+import 'package:amity_uikit_beta_service/view/UIKit/social/create_post_screenV2.dart';
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:optimized_cached_image/optimized_cached_image.dart';
@@ -50,16 +52,13 @@ class CommunityScreenState extends State<CommunityScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        community.description == null
-            ? Container()
-            : const Text(
-                "About",
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-              ),
         const SizedBox(
           height: 5.0,
         ),
-        Text(community.description ?? ""),
+        Text(
+          community.description ?? "",
+          style: TextStyle(fontSize: 15),
+        ),
       ],
     );
   }
@@ -84,112 +83,36 @@ class CommunityScreenState extends State<CommunityScreen> {
     return Column(
       children: [
         Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisSize: MainAxisSize.max,
           children: [
-            Text(
-                community.displayName != null
-                    ? community.displayName!
-                    : "Community",
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
-            const Spacer(),
-            IconButton(
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context2) => CommunitySettingPage(
-                            community: community,
-                          )));
-                  // showModalBottomSheet(
-                  //     context: context,
-                  //     builder: (context) {
-                  //       return Wrap(
-                  //         children: [
-                  //           ListTile(
-                  //             leading: const Icon(Icons.edit),
-                  //             title: Text(
-                  //                 "Edit Community:${AmityCoreClient.getCurrentUser().roles}"),
-                  //             onTap: () {
-                  //               Navigator.of(context).pop();
-                  //               onCommunityOptionTap(
-                  //                   CommunityFeedMenuOption.edit);
-                  //             },
-                  //           ),
-                  //           ListTile(
-                  //             leading: const Icon(Icons.people_alt_rounded),
-                  //             title: const Text('Members'),
-                  //             onTap: () {
-                  //               onCommunityOptionTap(
-                  //                   CommunityFeedMenuOption.members);
-                  //             },
-                  //           ),
-                  //           const ListTile(
-                  //             title: Text(''),
-                  //           ),
-                  //         ],
-                  //       );
-                  //       // return SizedBox(
-                  //       //   height: 200,
-                  //       //   child: Column(
-                  //       //     crossAxisAlignment: CrossAxisAlignment.start,
-                  //       //     mainAxisSize: MainAxisSize.min,
-                  //       //     children: const <Widget>[],
-                  //       //   ),
-                  //       // );
-                  //     });
-                },
-                icon: const Icon(Icons.more_horiz_rounded, color: Colors.black))
+            Column(
+              children: [
+                Text(community.postsCount.toString(),
+                    style: TextStyle(fontSize: 16)),
+                Text('posts',
+                    style: TextStyle(fontSize: 16, color: Color(0xff898E9E)))
+              ],
+            ),
+            Container(
+              color: Color(0xffE5E5E5), // Divider color
+              height: 20,
+              width: 1,
+
+              margin: EdgeInsets.symmetric(horizontal: 8),
+            ),
+            Column(
+              children: [
+                Text(
+                  community.membersCount.toString(),
+                  style: TextStyle(fontSize: 16),
+                ),
+                Text('members',
+                    style: TextStyle(fontSize: 16, color: Color(0xff898E9E)))
+              ],
+            ),
           ],
         ),
-        Row(
-          children: [
-            const Icon(Icons.public_rounded, color: Colors.black),
-            const SizedBox(
-              width: 5,
-            ),
-            Text(community.isPublic != null
-                ? (community.isPublic! ? "Public" : "Private")
-                : "N/A"),
-            const SizedBox(
-              width: 20,
-            ),
-            Text("${community.membersCount} members"),
-            const Spacer(),
-            ElevatedButton(
-              style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all<Color>(
-                Provider.of<AmityUIConfiguration>(context).primaryColor,
-              )),
-              onPressed: () {
-                if (community.isJoined != null) {
-                  if (community.isJoined!) {
-                    AmitySocialClient.newCommunityRepository()
-                        .leaveCommunity(community.communityId!)
-                        .then((value) {
-                      setState(() {
-                        community.isJoined = !(community.isJoined!);
-                      });
-                    }).onError((error, stackTrace) {
-                      //handle error
-                      log(error.toString());
-                    });
-                  } else {
-                    AmitySocialClient.newCommunityRepository()
-                        .joinCommunity(community.communityId!)
-                        .then((value) {
-                      setState(() {
-                        community.isJoined = !(community.isJoined!);
-                      });
-                    }).onError((error, stackTrace) {
-                      log(error.toString());
-                    });
-                  }
-                }
-              },
-              child: Text(community.isJoined != null
-                  ? (community.isJoined! ? "Leave" : "Join")
-                  : "N/A"),
-            )
-          ],
-        )
       ],
     );
   }
@@ -197,23 +120,78 @@ class CommunityScreenState extends State<CommunityScreen> {
   Widget communityDetailSection(AmityCommunity community) {
     return Column(
       children: [
-        Row(
+        Stack(
+          alignment: AlignmentDirectional.bottomStart,
           children: [
-            Expanded(
-              child: community.avatarImage?.fileUrl == null ||
-                      community.avatarImage?.fileUrl == ""
-                  ? const SizedBox()
-                  : OptimizedCacheImage(
-                      height: 400,
-                      imageUrl: "${community.avatarImage!.fileUrl}?size=full",
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => Container(
-                        height: 400,
-                        color: Colors.grey,
-                      ),
-                      errorWidget: (context, url, error) =>
-                          const Icon(Icons.error),
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    width: double.infinity,
+                    height: MediaQuery.of(context).size.width * 0.7,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFD9E5FC),
+                      image: widget.community.avatarImage != null
+                          ? DecorationImage(
+                              image: NetworkImage(widget.community.avatarImage!
+                                  .getUrl(AmityImageSize.LARGE)),
+                              fit: BoxFit.cover,
+                            )
+                          : const DecorationImage(
+                              image: AssetImage("assets/images/IMG_5637.JPG",
+                                  package: 'amity_uikit_beta_service'),
+                              fit: BoxFit.cover),
                     ),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(
+                            0.4), // Applying a 40% dark filter to the entire container
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Container(
+              padding: EdgeInsets.only(left: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.lock,
+                        color: Colors.white,
+                        size: 16,
+                      ),
+                      SizedBox(
+                        width: 7,
+                      ),
+                      Text(
+                          community.displayName != null
+                              ? community.displayName!
+                              : "Community",
+                          style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white)),
+                    ],
+                  ),
+                  community.categories == null
+                      ? SizedBox()
+                      : Text(
+                          community.displayName != null
+                              ? community.categories!.isEmpty
+                                  ? "no category"
+                                  : community.categories![0]?.name ?? ""
+                              : "",
+                          style: const TextStyle(
+                              fontSize: 16, color: Colors.white)),
+                  SizedBox(
+                    height: 16,
+                  )
+                ],
+              ),
             ),
           ],
         ),
@@ -223,11 +201,26 @@ class CommunityScreenState extends State<CommunityScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               communityInfo(community),
-              const Divider(),
-              communityDescription(community)
+              SizedBox(
+                height: 16,
+              ),
+              communityDescription(community),
+              SizedBox(
+                height: 16,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                      child: EditProfileButton(
+                    community: community,
+                  )),
+                ],
+              )
             ],
           ),
-        )
+        ),
+        Divider()
       ],
     );
   }
@@ -243,6 +236,16 @@ class CommunityScreenState extends State<CommunityScreen> {
         },
         icon: const Icon(Icons.chevron_left),
       ),
+      actions: [
+        IconButton(
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context2) => CommunitySettingPage(
+                        community: widget.community,
+                      )));
+            },
+            icon: const Icon(Icons.more_horiz_rounded, color: Colors.black))
+      ],
       elevation: 0,
     );
     final theme = Theme.of(context);
@@ -258,20 +261,21 @@ class CommunityScreenState extends State<CommunityScreen> {
               appBar: myAppBar,
               floatingActionButton: (community.isJoined!)
                   ? FloatingActionButton(
-                      onPressed: () {
+                      onPressed: () async {
                         Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context2) => CreatePostScreen2(
-                                  communityID: community.communityId,
-                                  context: context,
+                            builder: (context2) => AmityCreatePostV2Screen(
+                                  community: community,
                                 )));
                       },
                       backgroundColor:
                           Provider.of<AmityUIConfiguration>(context)
                               .primaryColor,
-                      child: const Icon(Icons.add),
+                      child: Provider.of<AmityUIConfiguration>(context)
+                          .iconConfig
+                          .postIcon(iconSize: 28, color: Colors.white),
                     )
                   : null,
-              backgroundColor: Colors.grey[200],
+              backgroundColor: Colors.white,
               body: RefreshIndicator(
                 color: Provider.of<AmityUIConfiguration>(context).primaryColor,
                 onRefresh: () async {
@@ -287,16 +291,6 @@ class CommunityScreenState extends State<CommunityScreen> {
                       controller: vm.scrollcontroller,
                       child: Column(
                         children: [
-                          // Align(
-                          //   alignment: Alignment.topLeft,
-                          //   child: IconButton(
-                          //     onPressed: () {
-                          //       Navigator.of(context).pop();
-                          //     },
-                          //     icon: const Icon(Icons.chevron_left,
-                          //         color: Colors.black, size: 35),
-                          //   ),
-                          // ),
                           SizedBox(
                               width: double.infinity,
                               // height: (bHeight - 120) * 0.4,
@@ -306,28 +300,36 @@ class CommunityScreenState extends State<CommunityScreen> {
                             beginOffset: const Offset(0, 0.3),
                             endOffset: const Offset(0, 0),
                             slideCurve: Curves.linearToEaseOut,
-                            child: ListView.builder(
-                              physics: const NeverScrollableScrollPhysics(),
-                              shrinkWrap: true,
-                              itemCount: vm.getCommunityPosts().length,
-                              itemBuilder: (context, index) {
-                                return StreamBuilder<AmityPost>(
-                                    key: Key(
-                                        vm.getCommunityPosts()[index].postId!),
-                                    stream: vm
-                                        .getCommunityPosts()[index]
-                                        .listen
-                                        .stream,
-                                    initialData: vm.getCommunityPosts()[index],
-                                    builder: (context, snapshot) {
-                                      return PostWidget(
-                                        post: snapshot.data!,
-                                        theme: theme,
-                                        postIndex: index,
-                                        isCommunity: true,
-                                      );
-                                    });
-                              },
+                            child: Container(
+                              color: Colors.grey[200],
+                              child: ListView.builder(
+                                physics: const NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                itemCount: vm.getCommunityPosts().length,
+                                itemBuilder: (context, index) {
+                                  return StreamBuilder<AmityPost>(
+                                      key: Key(vm
+                                          .getCommunityPosts()[index]
+                                          .postId!),
+                                      stream: vm
+                                          .getCommunityPosts()[index]
+                                          .listen
+                                          .stream,
+                                      initialData:
+                                          vm.getCommunityPosts()[index],
+                                      builder: (context, snapshot) {
+                                        return PostWidget(
+                                          showCommunity: false,
+                                          showlatestComment: true,
+                                          isFromFeed: true,
+                                          post: snapshot.data!,
+                                          theme: theme,
+                                          postIndex: index,
+                                          isCommunity: true,
+                                        );
+                                      });
+                                },
+                              ),
                             ),
                           ),
                         ],
@@ -339,5 +341,118 @@ class CommunityScreenState extends State<CommunityScreen> {
             );
           });
     });
+  }
+}
+
+class EditProfileButton extends StatefulWidget {
+  final AmityCommunity community;
+  const EditProfileButton({super.key, required this.community});
+
+  @override
+  State<EditProfileButton> createState() => _EditProfileButtonState();
+}
+
+class _EditProfileButtonState extends State<EditProfileButton> {
+  @override
+  Widget build(BuildContext context) {
+    return !widget.community.hasPermission(AmityPermission.EDIT_COMMUNITY)
+        ? widget.community.isJoined!
+            ? SizedBox()
+            : InkWell(
+                onTap: () {
+                  // Navigate to Edit Profile Page or perform an action
+                  if (widget.community.isJoined != null) {
+                    if (widget.community.isJoined!) {
+                      AmitySocialClient.newCommunityRepository()
+                          .leaveCommunity(widget.community.communityId!)
+                          .then((value) {
+                        setState(() {
+                          widget.community.isJoined =
+                              !(widget.community.isJoined!);
+                        });
+                      }).onError((error, stackTrace) {
+                        //handle error
+                        log(error.toString());
+                      });
+                    } else {
+                      AmitySocialClient.newCommunityRepository()
+                          .joinCommunity(widget.community.communityId!)
+                          .then((value) {
+                        setState(() {
+                          widget.community.isJoined =
+                              !(widget.community.isJoined!);
+                        });
+                      }).onError((error, stackTrace) {
+                        log(error.toString());
+                      });
+                    }
+                  }
+                },
+                child: Container(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                  decoration: BoxDecoration(
+                    color:
+                        Provider.of<AmityUIConfiguration>(context).primaryColor,
+                    border: Border.all(
+                        color: Provider.of<AmityUIConfiguration>(context)
+                            .primaryColor), // Grey border color
+                    borderRadius: BorderRadius.circular(4), // Rounded corners
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize:
+                        MainAxisSize.min, // To wrap the content of the row
+                    children: <Widget>[
+                      Icon(
+                        Icons.add,
+                        color: Colors.white,
+                      ),
+                      SizedBox(width: 8.0), // Space between icon and text
+                      Text(
+                        "Join",
+                        style: TextStyle(
+                          color: Colors.white, // Text color
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+        : InkWell(
+            onTap: () {
+              // Navigate to Edit Profile Page or perform an action
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) =>
+                      AmityEditCommunityScreen(widget.community)));
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+              decoration: BoxDecoration(
+                color: Colors.transparent,
+                border: Border.all(
+                  color: Color(0xffA5A9B5),
+                ), // Grey border color
+                borderRadius: BorderRadius.circular(4), // Rounded corners
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize:
+                    MainAxisSize.min, // To wrap the content of the row
+                children: <Widget>[
+                  Provider.of<AmityUIConfiguration>(context)
+                      .iconConfig
+                      .editIcon(color: Colors.black),
+                  SizedBox(width: 8.0), // Space between icon and text
+                  Text(
+                    "Edit Profile",
+                    style: TextStyle(
+                      color: Colors.black, // Text color
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
   }
 }

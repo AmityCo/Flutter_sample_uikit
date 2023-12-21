@@ -68,8 +68,11 @@ class _PostReviewPageState extends State<PostReviewPage> {
               onChanged: (value) {
                 setState(() {
                   isPostReviewEnabled = value;
-                  communityVm.configPostReview(widget.community.communityId!,
-                      isPostReviewEnabled); // Call the function from the ViewModel when the switch is toggled
+                  communityVm.configPostReview(
+                      communityId: widget.community.communityId!,
+                      ispublic: widget.community.isPublic!,
+                      isEnabled:
+                          isPostReviewEnabled); // Call the function from the ViewModel when the switch is toggled
                 });
               },
               // activeColor: Color(0xff292B32),

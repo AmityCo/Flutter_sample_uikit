@@ -21,9 +21,10 @@ class UserVM extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> initAccessToken() async {
+  Future<void> initAccessToken({String? apikey}) async {
     var dio = Dio();
-    final response = await dio.post(
+    await dio
+        .post(
       "https://api.${env!.region}.amity.co/api/v3/sessions",
       data: {
         'userId': AmityCoreClient.getUserId(),
@@ -31,16 +32,19 @@ class UserVM extends ChangeNotifier {
       },
       options: Options(
         headers: {
-          "x-api-key": env!.apikey // set content-length
+          "x-api-key": env?.apikey // set content-length
         },
       ),
-    );
-    if (response.statusCode == 200) {
-      accessToken = response.data["accessToken"];
-    } else {
+    )
+        .then((value) {
+      print("success");
+      if (value.statusCode == 200) {
+        accessToken = value.data["accessToken"];
+      }
+    }).onError((error, stackTrace) async {
       await AmityDialog()
-          .showAlertErrorDialog(title: "Error!", message: response.data);
-    }
+          .showAlertErrorDialog(title: "Error!", message: error.toString());
+    });
   }
 
   Future<AmityUser?> getUserByID(String id) async {

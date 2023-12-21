@@ -40,172 +40,162 @@ class _AmityCreatePostV2ScreenState extends State<AmityCreatePostV2Screen> {
     final theme = Theme.of(context);
 
     return Consumer<CreatePostVMV2>(builder: (context, vm, _) {
-      return WillPopScope(
-        onWillPop: () async {
-          if (hasContent) {
-            _showDiscardDialog();
-            return false;
-          }
-          return true;
-        },
-        child: Scaffold(
+      return Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
           backgroundColor: Colors.white,
-          appBar: AppBar(
-            backgroundColor: Colors.white,
-            elevation: 0,
-            title: Text(
-              widget.community != null
-                  ? widget.community?.displayName ?? "Community"
-                  : "My Feed",
-              style: Provider.of<AmityUIConfiguration>(context).titleTextStyle,
+          elevation: 0,
+          title: Text(
+            widget.community != null
+                ? widget.community?.displayName ?? "Community"
+                : "My Feed",
+            style: Provider.of<AmityUIConfiguration>(context).titleTextStyle,
+          ),
+          leading: IconButton(
+            icon: Icon(
+              Icons.chevron_left,
+              color: Colors.black,
             ),
-            leading: IconButton(
-              icon: Icon(
-                Icons.chevron_left,
-                color: Colors.black,
-              ),
-              onPressed: () {
-                if (hasContent) {
-                  ConfirmationDialog().show(
-                    context: context,
-                    title: 'Discard Post?',
-                    detailText: 'Do you want to discard your post?',
-                    leftButtonText: 'Cancel',
-                    rightButtonText: 'Discard',
-                    onConfirm: () {
-                      Navigator.of(context).pop();
-                    },
-                  );
-                } else {
-                  Navigator.of(context).pop();
-                }
-              },
-            ),
-            actions: [
-              TextButton(
-                onPressed: hasContent
-                    ? () async {
-                        print(vm.isUploadComplete);
-                        if (vm.isUploadComplete) {
-                          if (widget.community == null) {
-                            //creat post in user Timeline
-                            await vm.createPost(context,
-                                callback: (isSuccess, error) {
-                              if (isSuccess) {
-                                Navigator.of(context).pop();
-                                Navigator.of(context).pop();
-                              } else {}
-                            });
-                          } else {
-                            //create post in Community
-                            await vm.createPost(context,
-                                communityId: widget.community?.communityId ??
-                                    "null", callback: (isSuccess, error) {
-                              if (isSuccess) {
-                                Navigator.of(context).pop();
-                                Navigator.of(context).pop();
-                              }
-                            });
-                          }
+            onPressed: () {
+              if (hasContent) {
+                ConfirmationDialog().show(
+                  context: context,
+                  title: 'Discard Post?',
+                  detailText: 'Do you want to discard your post?',
+                  leftButtonText: 'Cancel',
+                  rightButtonText: 'Discard',
+                  onConfirm: () {
+                    Navigator.of(context).pop();
+                  },
+                );
+              } else {
+                Navigator.of(context).pop();
+              }
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: hasContent
+                  ? () async {
+                      print(vm.isUploadComplete);
+                      if (vm.isUploadComplete) {
+                        if (widget.community == null) {
+                          //creat post in user Timeline
+                          await vm.createPost(context,
+                              callback: (isSuccess, error) {
+                            if (isSuccess) {
+                              Navigator.of(context).pop();
+                              Navigator.of(context).pop();
+                            } else {}
+                          });
+                        } else {
+                          //create post in Community
+                          await vm.createPost(context,
+                              communityId: widget.community?.communityId!,
+                              callback: (isSuccess, error) {
+                            if (isSuccess) {
+                              Navigator.of(context).pop();
+                            }
+                          });
                         }
                       }
-                    : null,
-                child: Text("Post",
-                    style: TextStyle(
-                        color: vm.isPostValid
-                            ? Provider.of<AmityUIConfiguration>(context)
-                                .primaryColor
-                            : Colors.grey)),
-              ),
-            ],
-          ),
-          body: SafeArea(
-            child: Column(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        children: [
-                          TextField(
-                            onChanged: (value) => vm.updatePostValidity(),
-                            controller: vm.textEditingController,
-                            scrollPhysics: const NeverScrollableScrollPhysics(),
-                            maxLines: null,
-                            decoration: const InputDecoration(
-                              border: InputBorder.none,
-                              hintText: "Write something to post",
-                            ),
-                            // style: t/1heme.textTheme.bodyText1.copyWith(color: Colors.grey),
+                    }
+                  : null,
+              child: Text("Post",
+                  style: TextStyle(
+                      color: vm.isPostValid
+                          ? Provider.of<AmityUIConfiguration>(context)
+                              .primaryColor
+                          : Colors.grey)),
+            ),
+          ],
+        ),
+        body: SafeArea(
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        TextField(
+                          onChanged: (value) => vm.updatePostValidity(),
+                          controller: vm.textEditingController,
+                          scrollPhysics: const NeverScrollableScrollPhysics(),
+                          maxLines: null,
+                          decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            hintText: "Write something to post",
                           ),
-                          Consumer<CreatePostVMV2>(
-                            builder: (context, vm, _) =>
-                                PostMedia(files: vm.files),
-                          )
-                        ],
-                      ),
+                          // style: t/1heme.textTheme.bodyText1.copyWith(color: Colors.grey),
+                        ),
+                        Consumer<CreatePostVMV2>(
+                          builder: (context, vm, _) =>
+                              PostMedia(files: vm.files),
+                        )
+                      ],
                     ),
                   ),
                 ),
-                Divider(),
-                Padding(
-                  padding: const EdgeInsets.only(top: 16, bottom: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _iconButton(
-                        Icons.camera_alt_outlined,
-                        isEnable:
-                            vm.availableFileSelectionOptions()[FileType.image]!,
-                        label: "Photo",
-                        // debugingText:
-                        //     "${vm2.isNotSelectVideoYet()}&& ${vm2.isNotSelectedFileYet()}",
-                        onTap: () {
-                          _handleCameraTap(context);
-                        },
-                      ),
-                      _iconButton(
-                        Icons.image_outlined,
-                        label: "Image",
-                        isEnable:
-                            vm.availableFileSelectionOptions()[FileType.image]!,
-                        onTap: () async {
-                          _handleImageTap(context);
-                        },
-                      ),
-                      _iconButton(
-                        Icons.play_circle_outline,
-                        label: "Video",
-                        isEnable:
-                            vm.availableFileSelectionOptions()[FileType.video]!,
-                        onTap: () async {
-                          _handleVideoTap(context);
-                        },
-                      ),
-                      _iconButton(
-                        Icons.attach_file_outlined,
-                        label: "File",
-                        isEnable:
-                            vm.availableFileSelectionOptions()[FileType.file]!,
-                        onTap: () async {
-                          _handleFileTap(context);
-                        },
-                      ),
-                      _iconButton(
-                        Icons.more_horiz,
-                        isEnable: true,
-                        label: "More",
-                        onTap: () {
-                          // TODO: Implement more options logic
-                          _showMoreOptions(context);
-                        },
-                      ),
-                    ],
-                  ),
+              ),
+              Divider(),
+              Padding(
+                padding: const EdgeInsets.only(top: 16, bottom: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _iconButton(
+                      Icons.camera_alt_outlined,
+                      isEnable:
+                          vm.availableFileSelectionOptions()[MyFileType.image]!,
+                      label: "Photo",
+                      // debugingText:
+                      //     "${vm2.isNotSelectVideoYet()}&& ${vm2.isNotSelectedFileYet()}",
+                      onTap: () {
+                        _handleCameraTap(context);
+                      },
+                    ),
+                    _iconButton(
+                      Icons.image_outlined,
+                      label: "Image",
+                      isEnable:
+                          vm.availableFileSelectionOptions()[MyFileType.image]!,
+                      onTap: () async {
+                        _handleImageTap(context);
+                      },
+                    ),
+                    _iconButton(
+                      Icons.play_circle_outline,
+                      label: "Video",
+                      isEnable:
+                          vm.availableFileSelectionOptions()[MyFileType.video]!,
+                      onTap: () async {
+                        _handleVideoTap(context);
+                      },
+                    ),
+                    _iconButton(
+                      Icons.attach_file_outlined,
+                      label: "File",
+                      isEnable:
+                          vm.availableFileSelectionOptions()[MyFileType.file]!,
+                      onTap: () async {
+                        _handleFileTap(context);
+                      },
+                    ),
+                    _iconButton(
+                      Icons.more_horiz,
+                      isEnable: true,
+                      label: "More",
+                      onTap: () {
+                        // TODO: Implement more options logic
+                        _showMoreOptions(context);
+                      },
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       );

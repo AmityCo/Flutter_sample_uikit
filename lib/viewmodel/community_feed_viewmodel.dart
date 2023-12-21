@@ -48,8 +48,8 @@ class CommuFeedVM extends ChangeNotifier {
             notifyListeners();
           } else {
             //error on pagination controller
-            await AmityDialog().showAlertErrorDialog(
-                title: "Error!", message: _controllerCommu.error.toString());
+            // await AmityDialog().showAlertErrorDialog(
+            //     title: "Error!", message: _controllerCommu.error.toString());
             //update widgets
           }
         },

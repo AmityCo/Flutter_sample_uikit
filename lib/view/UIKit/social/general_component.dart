@@ -1,4 +1,6 @@
+import 'package:amity_uikit_beta_service/utils/navigation_key.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class AmityGeneralCompomemt {
   static void showOptionsBottomSheet(
@@ -22,5 +24,36 @@ class AmityGeneralCompomemt {
         );
       },
     );
+  }
+}
+
+class TimeAgoWidget extends StatelessWidget {
+  final DateTime createdAt; // Assuming createdAt is a DateTime object
+
+  TimeAgoWidget({Key? key, required this.createdAt}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      _formatDate(createdAt),
+      style: TextStyle(
+          // Add your text style here
+          ),
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    DateTime localDate = date.toLocal();
+    Duration difference = DateTime.now().difference(localDate);
+
+    if (difference.inDays > 0) {
+      return '${difference.inDays} days ago';
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours} hours ago';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes} minutes ago';
+    } else {
+      return 'Just now';
+    }
   }
 }

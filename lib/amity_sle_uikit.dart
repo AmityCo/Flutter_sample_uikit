@@ -86,9 +86,11 @@ class AmitySLEUIKit {
     await Provider.of<AmityVM>(context, listen: false)
         .login(userID: userId, displayName: displayName, authToken: authToken)
         .then((value) async {
+      print("login success");
       await Provider.of<UserVM>(context, listen: false)
           .initAccessToken()
           .then((value) {
+        print("initAccessToken success");
         if (Provider.of<UserVM>(context, listen: false).accessToken != null ||
             Provider.of<UserVM>(context, listen: false).accessToken != "") {
           if (callback != null) {
@@ -99,9 +101,18 @@ class AmitySLEUIKit {
             callback(false, "Initialize accesstoken fail...");
           }
         }
+      }).onError((error, stackTrace) {
+        print("initAccessToken fail...");
+        print(error);
+        if (callback != null) {
+          callback(true, error.toString());
+        }
       });
     }).onError((error, stackTrace) {
       log("registerDevice...Error:$error");
+      if (callback != null) {
+        callback(false, "Initialize accesstoken fail...");
+      }
     });
   }
 

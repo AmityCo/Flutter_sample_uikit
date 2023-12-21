@@ -307,14 +307,22 @@ void _showOptionsBottomSheet(BuildContext context, AmityCommunityMember member,
                             color: Colors.red, fontWeight: FontWeight.w500),
                       ),
                       onTap: () async {
-                        await viewModel.removeMembers(
-                            viewModel.communityId, [member.userId!]);
+                        Navigator.pop(context);
+                        await ConfirmationDialog().show(
+                          context: context,
+                          title: 'Remove user from Community?',
+                          detailText:
+                              "This user won't no longer be able to search, post and interact in this community",
+                          onConfirm: () {
+                            viewModel.removeMembers(
+                                viewModel.communityId, [member.userId!]);
+                          },
+                        );
                         await viewModel.initModerators(
                             communityId: viewModel.communityId);
                         await viewModel.initMember(
                           communityId: viewModel.communityId,
                         );
-                        Navigator.pop(context);
                       },
                     ),
                   ]

@@ -5,24 +5,27 @@ import 'dart:typed_data';
 import 'package:amity_sdk/amity_sdk.dart';
 import 'package:amity_uikit_beta_service/components/alert_dialog.dart';
 import 'package:amity_uikit_beta_service/model/amity_channel_model.dart';
+import 'package:amity_uikit_beta_service/viewmodel/community_feed_viewmodel.dart';
+import 'package:amity_uikit_beta_service/viewmodel/feed_viewmodel.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
+import 'package:provider/provider.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
 enum FileStatus { uploading, rejected, complete }
 
 enum PickerAction { cameraImage, galleryImage, galleryVideo, filePicker }
 
-enum FileType { image, video, file }
+enum MyFileType { image, video, file }
 
 class UIKitFileSystem {
   AmityFileInfo? fileInfo;
   dynamic amityFile;
   FileStatus status;
   int progress;
-  FileType fileType;
+  MyFileType fileType;
   File file;
 
   UIKitFileSystem({
@@ -41,7 +44,7 @@ class CreatePostVMV2 with ChangeNotifier {
   final ImagePicker _picker = ImagePicker();
   List<UIKitFileSystem> files = [];
   bool isUploadComplete = false;
-  FileType? selectedFileType;
+  MyFileType? selectedFileType;
   bool get isPostValid {
     // Check if there are any files
     bool hasFiles = files.isNotEmpty;
@@ -79,28 +82,33 @@ class CreatePostVMV2 with ChangeNotifier {
   }
 
   // Function to determine which type of file can be selected
-  Map<FileType, bool> availableFileSelectionOptions() {
+  Map<MyFileType, bool> availableFileSelectionOptions() {
     // If no files have been selected yet, all options are available
     if (files.isEmpty) {
-      return {FileType.image: true, FileType.video: true, FileType.file: true};
+      return {
+        MyFileType.image: true,
+        MyFileType.video: true,
+        MyFileType.file: true
+      };
     }
 
     // If there are files, only allow selecting more of the same type
-    Map<FileType, bool> selectionOptions = {
-      FileType.image: false,
-      FileType.video: false,
-      FileType.file: false
+    Map<MyFileType, bool> selectionOptions = {
+      MyFileType.image: false,
+      MyFileType.video: false,
+      MyFileType.file: false
     };
 
     // Check the type of the first file (assuming all files are of the same type)
-    FileType currentType = files.first.fileType ?? FileType.file;
+    MyFileType currentType = files.first.fileType ?? MyFileType.file;
     selectionOptions[currentType] = true;
 
     return selectionOptions;
   }
 
   // Updated selectFiles method
-  Future<void> selectFiles(List<XFile> selectedFiles, FileType fileType) async {
+  Future<void> selectFiles(
+      List<XFile> selectedFiles, MyFileType fileType) async {
     // Ensure only one type of file is selected at a time
     if (selectedFileType != null && selectedFileType != fileType) {
       // Handle error: different file type selected
@@ -200,7 +208,7 @@ class CreatePostVMV2 with ChangeNotifier {
       XFile? pickedImage = await _picker.pickImage(source: ImageSource.camera);
 
       if (pickedImage != null) {
-        selectFiles([pickedImage], FileType.image);
+        selectFiles([pickedImage], MyFileType.image);
       }
     } catch (e) {
       print("Error picking images: $e");
@@ -213,7 +221,7 @@ class CreatePostVMV2 with ChangeNotifier {
       List<XFile>? pickedImages = await _picker.pickMultiImage();
 
       if (pickedImages != null && pickedImages.isNotEmpty) {
-        selectFiles(pickedImages, FileType.image);
+        selectFiles(pickedImages, MyFileType.image);
       }
     } catch (e) {
       print("Error picking images: $e");
@@ -225,7 +233,7 @@ class CreatePostVMV2 with ChangeNotifier {
     try {
       final XFile? video = await _picker.pickVideo(source: ImageSource.gallery);
       if (video != null) {
-        selectFiles([video], FileType.video);
+        selectFiles([video], MyFileType.video);
       }
     } catch (e) {
       print("Error picking video: $e");
@@ -239,28 +247,35 @@ class CreatePostVMV2 with ChangeNotifier {
         XFile? pickedImage =
             await _picker.pickImage(source: ImageSource.camera);
         if (pickedImage != null) {
-          selectFiles([pickedImage], FileType.image);
+          selectFiles([pickedImage], MyFileType.image);
         }
       } else if (action == PickerAction.galleryImage) {
         List<XFile>? pickedImages = await _picker.pickMultiImage();
         if (pickedImages != null && pickedImages.isNotEmpty) {
-          selectFiles(pickedImages, FileType.image);
+          selectFiles(pickedImages, MyFileType.image);
         }
       } else if (action == PickerAction.galleryVideo) {
         final XFile? video =
             await _picker.pickVideo(source: ImageSource.gallery);
         if (video != null) {
-          selectFiles([video], FileType.video);
+          selectFiles([video], MyFileType.video);
         }
       } else if (action == PickerAction.filePicker) {
-        FilePickerResult? result =
-            await FilePicker.platform.pickFiles(allowMultiple: true);
+        FilePickerResult? result = await FilePicker.platform.pickFiles(
+            allowMultiple: true,
+            type: FileType.custom,
+            allowedExtensions: [
+              'pdf',
+              'doc',
+              'txt'
+            ] // Specify your desired file types here
+            );
         if (result != null && result.files.isNotEmpty) {
           List<XFile> pickedFiles = result.files
               .where((file) => file.path != null)
               .map((file) => XFile(file.path!))
               .toList();
-          selectFiles(pickedFiles, FileType.file);
+          selectFiles(pickedFiles, MyFileType.file);
         }
       }
     } catch (e) {
@@ -302,22 +317,23 @@ class CreatePostVMV2 with ChangeNotifier {
 
       AmityPostCreateDataTypeSelector? postBuilder;
       if (isCommunity) {
+        print("set target as commu...");
         postBuilder = targetBuilder.targetCommunity(communityId);
       } else {
+        print("set target as user...");
         postBuilder = targetBuilder.targetMe();
       }
 
-      print("select Target...");
       for (var file in files) {
         print(file.fileType);
       }
       // Check for file types and add them to the post
       var images =
-          files.where((file) => file.fileType == FileType.image).toList();
+          files.where((file) => file.fileType == MyFileType.image).toList();
       var videos =
-          files.where((file) => file.fileType == FileType.video).toList();
+          files.where((file) => file.fileType == MyFileType.video).toList();
       var otherFiles =
-          files.where((file) => file.fileType == FileType.file).toList();
+          files.where((file) => file.fileType == MyFileType.file).toList();
 
       if (images.isNotEmpty) {
         print("image was selected");
@@ -337,11 +353,19 @@ class CreatePostVMV2 with ChangeNotifier {
           ///add post to feedx
           print("success");
           callback(true, null);
-          // var viewModel = Provider.of<CommuFeedVM>(context, listen: false);
-          // viewModel.addPostToFeed(post);
-          // if (viewModel.scrollcontroller.hasClients) {
-          //   viewModel.scrollcontroller.jumpTo(0);
-          // }
+          if (isCommunity) {
+            var viewModel = Provider.of<CommuFeedVM>(context, listen: false);
+            viewModel.addPostToFeed(post);
+            if (viewModel.scrollcontroller.hasClients) {
+              viewModel.scrollcontroller.jumpTo(0);
+            }
+          } else {
+            var viewModel = Provider.of<FeedVM>(context, listen: false);
+            viewModel.addPostToFeed(post);
+            if (viewModel.scrollcontroller.hasClients) {
+              viewModel.scrollcontroller.jumpTo(0);
+            }
+          }
         }).onError((error, stackTrace) async {
           await AmityDialog()
               .showAlertErrorDialog(title: "Error!", message: error.toString());
@@ -364,6 +388,19 @@ class CreatePostVMV2 with ChangeNotifier {
           print("success...");
           // Add post to feed logic goes here...
           // Notify listeners or update UI accordingly
+          if (isCommunity) {
+            var viewModel = Provider.of<CommuFeedVM>(context, listen: false);
+            viewModel.addPostToFeed(post);
+            if (viewModel.scrollcontroller.hasClients) {
+              viewModel.scrollcontroller.jumpTo(0);
+            }
+          } else {
+            var viewModel = Provider.of<FeedVM>(context, listen: false);
+            viewModel.addPostToFeed(post);
+            if (viewModel.scrollcontroller.hasClients) {
+              viewModel.scrollcontroller.jumpTo(0);
+            }
+          }
           callback(true, null);
           notifyListeners();
         }).onError((error, stackTrace) async {
@@ -383,6 +420,19 @@ class CreatePostVMV2 with ChangeNotifier {
         await readyBuilder.post().then((AmityPost post) {
           // Add post to feed logic goes here...
           // Notify listeners or update UI accordingly
+          if (isCommunity) {
+            var viewModel = Provider.of<CommuFeedVM>(context, listen: false);
+            viewModel.addPostToFeed(post);
+            if (viewModel.scrollcontroller.hasClients) {
+              viewModel.scrollcontroller.jumpTo(0);
+            }
+          } else {
+            var viewModel = Provider.of<FeedVM>(context, listen: false);
+            viewModel.addPostToFeed(post);
+            if (viewModel.scrollcontroller.hasClients) {
+              viewModel.scrollcontroller.jumpTo(0);
+            }
+          }
           callback(true, null);
           notifyListeners();
         }).onError((error, stackTrace) {
@@ -393,6 +443,19 @@ class CreatePostVMV2 with ChangeNotifier {
         await readyBuilder.createTextPost().then((AmityPost post) {
           // Add post to feed logic goes here...
           // Notify listeners or update UI accordingly
+          if (isCommunity) {
+            var viewModel = Provider.of<CommuFeedVM>(context, listen: false);
+            viewModel.addPostToFeed(post);
+            if (viewModel.scrollcontroller.hasClients) {
+              viewModel.scrollcontroller.jumpTo(0);
+            }
+          } else {
+            var viewModel = Provider.of<FeedVM>(context, listen: false);
+            viewModel.addPostToFeed(post);
+            if (viewModel.scrollcontroller.hasClients) {
+              viewModel.scrollcontroller.jumpTo(0);
+            }
+          }
           callback(true, null);
           notifyListeners();
         });
@@ -415,7 +478,7 @@ class CreatePostVMV2 with ChangeNotifier {
       print("Generating thumbnail...");
       final uint8list = await VideoThumbnail.thumbnailData(
         video: path,
-        imageFormat: ImageFormat.JPEG,
+        imageFormat: ImageFormat.PNG,
         maxWidth: 1000,
         maxHeight: 1000,
         quality: 0,

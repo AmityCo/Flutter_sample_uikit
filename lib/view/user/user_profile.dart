@@ -444,6 +444,8 @@ class UserProfileScreenState extends State<UserProfileScreen>
                                     initialData: vm.amityPosts[index],
                                     builder: (context, snapshot) {
                                       return PostWidget(
+                                        showCommunity: false,
+                                        showlatestComment: true,
                                         post: snapshot.data!,
                                         theme: theme,
                                         postIndex: index,

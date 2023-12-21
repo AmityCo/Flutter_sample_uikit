@@ -1,11 +1,15 @@
 import 'dart:io';
 
+import 'package:amity_uikit_beta_service/components/custom_user_avatar.dart';
 import 'package:amity_uikit_beta_service/viewmodel/create_postV2_viewmodel.dart';
 import 'package:amity_uikit_beta_service/viewmodel/media_viewmodel.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:mime/mime.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 
 class PostMedia extends StatelessWidget {
   final List<UIKitFileSystem> files;
@@ -21,57 +25,54 @@ class PostMedia extends StatelessWidget {
         int rawprogress =
             Provider.of<CreatePostVMV2>(context).files[0].progress;
         var progress = rawprogress / 100.0;
-        return FutureBuilder(
-            future: Provider.of<CreatePostVMV2>(context)
-                .getImageProvider(file.file.path),
-            builder:
-                (BuildContext context, AsyncSnapshot<ImageProvider> snapshot) {
-              return Padding(
-                padding: const EdgeInsets.all(2.0),
-                child: Stack(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: FileImage(file.file),
-                          fit: BoxFit.cover,
+
+        return Padding(
+          padding: const EdgeInsets.all(2.0),
+          child: Stack(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: file.fileType == MyFileType.video
+                        ? getImageProvider(file.file.path)
+                        : FileImage(file.file),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              progress == 1
+                  ? SizedBox()
+                  : Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: LinearProgressIndicator(
+                          value: progress,
+                          minHeight: 4.0,
+                          backgroundColor: Colors.black38,
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
                         ),
                       ),
                     ),
-                    progress == 1
-                        ? SizedBox()
-                        : Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Align(
-                              alignment: Alignment.center,
-                              child: LinearProgressIndicator(
-                                value: progress,
-                                minHeight: 4.0,
-                                backgroundColor: Colors.black38,
-                                valueColor:
-                                    AlwaysStoppedAnimation<Color>(Colors.white),
-                              ),
-                            ),
-                          ),
-                    Positioned(
-                      top: 0,
-                      right: 0,
-                      child: IconButton(
-                        icon: Icon(Icons.close, color: Colors.white),
-                        onPressed: () {
-                          print("delete file...");
-                          print("delete file...");
-                          Provider.of<CreatePostVMV2>(context, listen: false)
-                              .deselectFile(Provider.of<CreatePostVMV2>(context,
-                                      listen: false)
-                                  .files[index]);
-                        },
-                      ),
-                    ),
-                  ],
+              Positioned(
+                top: 0,
+                right: 0,
+                child: IconButton(
+                  icon: Icon(Icons.close, color: Colors.white),
+                  onPressed: () {
+                    print("delete file...");
+                    print("delete file...");
+                    Provider.of<CreatePostVMV2>(context, listen: false)
+                        .deselectFile(
+                            Provider.of<CreatePostVMV2>(context, listen: false)
+                                .files[index]);
+                  },
                 ),
-              );
-            });
+              ),
+            ],
+          ),
+        );
       }
 
       switch (files.length) {
@@ -239,6 +240,7 @@ class PostMedia extends StatelessWidget {
                         )))
                     : SizedBox(),
                 ListTile(
+                  onTap: () {},
                   contentPadding: EdgeInsets.symmetric(
                       vertical: 8, horizontal: 14), // Reduced padding
                   tileColor: Colors.white.withOpacity(0.0),

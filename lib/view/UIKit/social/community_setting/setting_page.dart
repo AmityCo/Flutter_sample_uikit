@@ -118,38 +118,38 @@ class CommunitySettingPage extends StatelessWidget {
                         ),
                       ),
 
-                // Section 2: Community Permission
-                !community.hasPermission(AmityPermission.EDIT_COMMUNITY)
-                    ? SizedBox()
-                    : const Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Text("Community Permission",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w600, fontSize: 17)),
-                      ),
-                !community.hasPermission(AmityPermission.EDIT_COMMUNITY)
-                    ? SizedBox()
-                    : ListTile(
-                        leading: Container(
-                            padding: EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(
-                                  4), // Adjust radius to your need
-                              color: const Color(
-                                  0xfff1f1f1), // Choose the color to fit your design
-                            ),
-                            child: Icon(Icons.fact_check,
-                                color: Color(0xff292B32))),
-                        title: Text("Post Review"),
-                        trailing:
-                            Icon(Icons.chevron_right, color: Color(0xff292B32)),
-                        onTap: () {
-                          // Navigate to Post Review Page or perform an action
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) =>
-                                  PostReviewPage(community: livecommunity)));
-                        },
-                      ),
+                // // Section 2: Community Permission
+                // !community.hasPermission(AmityPermission.EDIT_COMMUNITY)
+                //     ? SizedBox()
+                //     : const Padding(
+                //         padding: EdgeInsets.all(16.0),
+                //         child: Text("Community Permission",
+                //             style: TextStyle(
+                //                 fontWeight: FontWeight.w600, fontSize: 17)),
+                //       ),
+                // !community.hasPermission(AmityPermission.EDIT_COMMUNITY)
+                //     ? SizedBox()
+                //     : ListTile(
+                //         leading: Container(
+                //             padding: EdgeInsets.all(5),
+                //             decoration: BoxDecoration(
+                //               borderRadius: BorderRadius.circular(
+                //                   4), // Adjust radius to your need
+                //               color: const Color(
+                //                   0xfff1f1f1), // Choose the color to fit your design
+                //             ),
+                //             child: Icon(Icons.fact_check,
+                //                 color: Color(0xff292B32))),
+                //         title: Text("Post Review"),
+                //         trailing:
+                //             Icon(Icons.chevron_right, color: Color(0xff292B32)),
+                //         onTap: () {
+                //           // Navigate to Post Review Page or perform an action
+                //           Navigator.of(context).push(MaterialPageRoute(
+                //               builder: (context) =>
+                //                   PostReviewPage(community: livecommunity)));
+                //         },
+                //       ),
                 ListTile(
                   title: Text(
                     "Leave Community",
@@ -158,19 +158,27 @@ class CommunitySettingPage extends StatelessWidget {
                         fontSize: 15,
                         color: Colors.red),
                   ),
-                  onTap: () {
-                    // Perform Leave Community action
-                    final communityVm =
-                        Provider.of<CommunityVM>(context, listen: false);
-                    communityVm.leaveCommunity(community.communityId!,
-                        callback: (bool isSuccess) {
-                      if (isSuccess) {
-                        Navigator.of(context).pop();
-                        Navigator.of(context).pop();
-                        Provider.of<MyCommunityVM>(context, listen: false)
-                            .initMyCommunity();
-                      }
-                    });
+                  onTap: () async {
+                    await ConfirmationDialog().show(
+                        context: context,
+                        title: "Leave community",
+                        detailText:
+                            "You won't no longer be able to post and interact in this community after leaving.",
+                        onConfirm: () async {
+                          // Perform Leave Community action
+                          final communityVm = await Provider.of<CommunityVM>(
+                              context,
+                              listen: false);
+                          communityVm.leaveCommunity(community.communityId!,
+                              callback: (bool isSuccess) {
+                            if (isSuccess) {
+                              Navigator.of(context).pop();
+                              Navigator.of(context).pop();
+                              Provider.of<MyCommunityVM>(context, listen: false)
+                                  .initMyCommunity();
+                            }
+                          });
+                        });
                   },
                 ),
                 const Padding(
@@ -215,11 +223,19 @@ class CommunitySettingPage extends StatelessWidget {
                             leftButtonText: 'Cancel',
                             rightButtonText: 'Close',
                             onConfirm: () {
-                              print("onConfirm");
-                              Navigator.of(context).pop();
-                              Navigator.of(context).pop();
-                              Provider.of<MyCommunityVM>(context, listen: false)
-                                  .initMyCommunity();
+                              final communityVm = Provider.of<CommunityVM>(
+                                  context,
+                                  listen: false);
+                              communityVm
+                                  .deleteCommunity(community.communityId!,
+                                      callback: (bool isSuccess) {
+                                print("onConfirm");
+                                Navigator.of(context).pop();
+                                Navigator.of(context).pop();
+                                Provider.of<MyCommunityVM>(context,
+                                        listen: false)
+                                    .initMyCommunity();
+                              });
                             },
                           );
                         },
@@ -238,18 +254,5 @@ class CommunitySettingPage extends StatelessWidget {
             ),
           );
         });
-  }
-
-  void configPostReview(String communityId, bool isenable) {
-    AmitySocialClient.newCommunityRepository()
-        .updateCommunity(communityId)
-        .isPostReviewEnabled(isenable)
-        .update()
-        .then((value) => {
-              //handle result
-            })
-        .onError((error, stackTrace) => {
-              //handle error
-            });
   }
 }

@@ -1,4 +1,5 @@
 import 'package:amity_sdk/amity_sdk.dart';
+import 'package:amity_uikit_beta_service/view/UIKit/social/post_target_page.dart';
 import 'package:amity_uikit_beta_service/view/social/community_feed.dart';
 import 'package:amity_uikit_beta_service/view/social/global_feed.dart';
 import 'package:amity_uikit_beta_service/viewmodel/community_feed_viewmodel.dart';
@@ -32,7 +33,7 @@ class _CommunityPageState extends State<CommunityPage> {
       child: Scaffold(
         backgroundColor: Color(0xFFEBECEF),
         appBar: AppBar(
-          elevation: 0.0, // Add this line to remove the shadow
+          elevation: 0.05, // Add this line to remove the shadow
           backgroundColor: Colors.white,
           iconTheme: IconThemeData(color: Colors.blue),
           leading: IconButton(
@@ -49,47 +50,70 @@ class _CommunityPageState extends State<CommunityPage> {
             style: Provider.of<AmityUIConfiguration>(context).titleTextStyle,
           ),
           actions: [
-            IconButton(
-              icon: Icon(
-                Icons.search,
-                color: Colors.black,
-              ),
-              onPressed: () {
-                // Implement search functionality
-              },
-            )
+            // IconButton(
+            //   icon: Icon(
+            //     Icons.search,
+            //     color: Colors.black,
+            //   ),
+            //   onPressed: () {
+            //     // Implement search functionality
+            //   },
+            // )
           ],
           bottom: const PreferredSize(
             preferredSize: Size.fromHeight(
                 48.0), // Provide a height for the AppBar's bottom
-            child: Row(
+            child: Column(
               children: [
-                TabBar(
-                  isScrollable: true, // Ensure that the TabBar is scrollable
+                Row(
+                  children: [
+                    TabBar(
+                      isScrollable:
+                          true, // Ensure that the TabBar is scrollable
 
-                  labelColor: Color(0xFF1054DE), // #1054DE color
-                  unselectedLabelColor: Colors.grey,
-                  indicatorColor: Color(0xFF1054DE),
-                  labelStyle: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w600,
-                    fontFamily: 'SF Pro Text',
-                  ),
-                  tabs: [
-                    Tab(
-                      text: "Newfeed",
+                      labelColor: Color(0xFF1054DE), // #1054DE color
+                      unselectedLabelColor: Colors.grey,
+                      indicatorColor: Color(0xFF1054DE),
+                      labelStyle: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'SF Pro Text',
+                      ),
+                      tabs: [
+                        Tab(
+                          text: "Newfeed",
+                        ),
+                        Tab(text: "Explore"),
+                      ],
                     ),
-                    Tab(text: "Explore"),
                   ],
                 ),
+                // Divider(
+                //   color: Colors.grey,
+                //   height: 0,
+                // )
               ],
             ),
           ),
         ),
         body: TabBarView(
           children: [
-            GlobalFeedScreen(),
-            ExplorePage(),
+            Scaffold(
+              floatingActionButton: FloatingActionButton(
+                onPressed: () {
+                  // Navigate or perform action based on 'Newsfeed' tap
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const Scaffold(body: PostToPage()),
+                  ));
+                },
+                backgroundColor: AmityUIConfiguration().primaryColor,
+                child: Provider.of<AmityUIConfiguration>(context)
+                    .iconConfig
+                    .postIcon(iconSize: 28, color: Colors.white),
+              ),
+              body: const GlobalFeedScreen(),
+            ),
+            const ExplorePage(),
           ],
         ),
       ),
@@ -147,13 +171,8 @@ class RecommendationSection extends StatelessWidget {
                       child: GestureDetector(
                         onTap: () {
                           Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => ChangeNotifierProvider(
-                                    create: (context) => CommuFeedVM(),
-                                    child: CommunityScreen(
-                                      isFromFeed: true,
-                                      community: community,
-                                    ),
-                                  )));
+                              builder: (context) =>
+                                  CommunityScreen(community: community)));
                         },
                         child: Card(
                           shape: RoundedRectangleBorder(
@@ -168,13 +187,18 @@ class RecommendationSection extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                CircleAvatar(
-                                  backgroundImage: NetworkImage(
-                                      community.avatarImage?.fileUrl ??
-                                          'YOUR_DEFAULT_AVATAR_URL'),
-                                  radius:
-                                      20, // Adjusted the radius to get 40x40 size
-                                ),
+                                community.avatarImage == null
+                                    ? CircleAvatar(
+                                        backgroundColor: Color(0xFFD9E5FC),
+                                        child: Icon(Icons.people,
+                                            color: Color(0xff292B32)))
+                                    : CircleAvatar(
+                                        backgroundColor: Color(0xFFD9E5FC),
+                                        backgroundImage: NetworkImage(
+                                            community.avatarImage!.fileUrl!),
+                                        radius:
+                                            20, // Adjusted the radius to get 40x40 size
+                                      ),
                                 const SizedBox(height: 8.0),
                                 Text(
                                   community.displayName ?? '',

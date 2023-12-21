@@ -44,6 +44,10 @@ dependencies:
   video_thumbnail: ^0.5.3
   mime: ^1.0.4
   file_picker: ^6.0.0
+  open_file: ^3.3.2
+  flutter_svg: ^2.0.9
+  permission_handler: ^11.0.1
+  http: ^0.13.6
 
 
 
@@ -86,6 +90,7 @@ flutter:
   assets:
     - assets/images/IMG_5637.JPG
     - assets/images/fileType/
+    - assets/Icons/
 
 
 

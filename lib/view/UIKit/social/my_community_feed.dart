@@ -145,10 +145,134 @@ class CommunityWidget extends StatelessWidget {
               ),
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => CommunityScreen(
-                        community:
-                            communityStream))); // Replace with your CreateCommunityPage
+                    builder: (context) =>
+                        CommunityScreen(community: communityStream)));
               },
+            ),
+          );
+        });
+  }
+}
+
+class CommunityIconList extends StatelessWidget {
+  final List<AmityCommunity> amityCommunites;
+
+  const CommunityIconList({super.key, required this.amityCommunites});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.white,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            height: 40,
+            color: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'My Community',
+                  style: TextStyle(
+                    fontSize: 17.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => Scaffold(body: MyCommunityPage()),
+                      ));
+                    },
+                    child: Container(child: Icon(Icons.chevron_right))),
+              ],
+            ),
+          ),
+          Container(
+            color: Colors.white,
+            height: 90.0,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: amityCommunites.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Container(
+                  padding: EdgeInsets.only(left: index != 0 ? 0 : 16),
+                  child: CommunityIconWidget(
+                      amityCommunity: amityCommunites[index]),
+                );
+              },
+            ),
+          ),
+          Divider(
+            color: Color(0xffEBECEF),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class CommunityIconWidget extends StatelessWidget {
+  final AmityCommunity amityCommunity;
+
+  const CommunityIconWidget({super.key, required this.amityCommunity});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<AmityCommunity>(
+        stream: amityCommunity.listen.stream,
+        builder: (context, snapshot) {
+          var communityStream = snapshot.data ?? amityCommunity;
+          return GestureDetector(
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) =>
+                      CommunityScreen(community: communityStream)));
+            },
+            child: Container(
+              width: 62,
+              margin: const EdgeInsets.only(right: 4, bottom: 10),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: (amityCommunity.avatarImage != null)
+                        ? CircleAvatar(
+                            radius: 20,
+                            backgroundColor: Colors.transparent,
+                            backgroundImage: NetworkImage(amityCommunity
+                                .avatarImage!
+                                .getUrl(AmityImageSize.SMALL)),
+                          )
+                        : Container(
+                            height: 40,
+                            width: 40,
+                            decoration: const BoxDecoration(
+                                color: Color(0xFFD9E5FC),
+                                shape: BoxShape.circle),
+                            child: const Icon(
+                              Icons.group,
+                              color: Colors.white,
+                            ),
+                          ),
+                  ),
+                  Row(
+                    children: [
+                      !amityCommunity.isPublic!
+                          ? Icon(
+                              Icons.lock,
+                              size: 12,
+                            )
+                          : SizedBox(),
+                      Expanded(
+                        child: Text(amityCommunity.displayName ?? "",
+                            style: TextStyle(overflow: TextOverflow.ellipsis)),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           );
         });

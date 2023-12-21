@@ -160,7 +160,7 @@ class CommunityVM extends ChangeNotifier {
     });
   }
 
-  void leaveCommunity(String communityId,
+  Future<void> leaveCommunity(String communityId,
       {CommunityListType? type,
       required void Function(bool isSuccess) callback}) async {
     AmitySocialClient.newCommunityRepository()
@@ -342,9 +342,14 @@ class CommunityVM extends ChangeNotifier {
     });
   }
 
-  void configPostReview(String communityId, bool isEnabled) {
+  void configPostReview(
+      {required String communityId,
+      required bool isEnabled,
+      required bool ispublic,
+      required}) {
     AmitySocialClient.newCommunityRepository()
         .updateCommunity(communityId)
+        .isPublic(ispublic)
         .isPostReviewEnabled(isEnabled)
         .update()
         .then((value) {

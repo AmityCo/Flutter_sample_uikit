@@ -1,4 +1,6 @@
 import 'package:amity_uikit_beta_service/amity_sle_uikit.dart';
+import 'package:amity_uikit_beta_service/amity_uikit_beta_service.dart';
+import 'package:amity_uikit_beta_service/components/alert_dialog.dart';
 
 import 'package:amity_uikit_beta_service/view/UIKit/social/my_community_feed.dart';
 
@@ -22,9 +24,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       home: MyHomePage(),
-      routes: {
-        '/first': (context) => AmityApp(),
-      },
     );
   }
 }
@@ -131,7 +130,10 @@ class _MyHomePageState extends State<MyHomePage> {
                         region: _selectedRegion!,
                         customEndpoint: _customUrl.text);
                     // Navigate to the nextx page
-                    await Navigator.of(context).pushNamed('/first');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => AmityApp()),
+                    );
                   }
                 }),
           ],
@@ -142,14 +144,11 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class AmityApp extends StatelessWidget {
-  AmityApp({super.key});
+  const AmityApp({super.key});
   @override
   Widget build(BuildContext context) {
     return AmitySLEProvider(
       child: Builder(builder: (context2) {
-        AmitySLEUIKit().configAmityThemeColor(context2, (config) {
-          config.primaryColor = Color(0xFF1054DE);
-        });
         return UserListPage();
       }),
     );
@@ -190,53 +189,62 @@ class _UserListPageState extends State<UserListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        return false;
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('User List'),
-        ),
-        body: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                controller: _controller,
-                decoration: InputDecoration(
-                  labelText: 'Username',
-                  border: OutlineInputBorder(),
-                ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('User List'),
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: _controller,
+              decoration: InputDecoration(
+                labelText: 'Username',
+                border: OutlineInputBorder(),
               ),
             ),
-            ElevatedButton(
-              onPressed: _addUsername,
-              child: Text('Add Username'),
+          ),
+          ElevatedButton(
+            onPressed: _addUsername,
+            child: Text('Add Username'),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: _usernames.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(_usernames[index]),
+                  onTap: () async {
+                    print("login");
+
+                    ///Step 3: login with Amity
+                    await AmitySLEUIKit().registerDevice(
+                      context: context,
+                      userId: _usernames[index],
+                      callback: (isSuccess, error) {
+                        print("callback:${isSuccess}");
+                        if (isSuccess) {
+                          print("success");
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  SecondPage(username: _usernames[index]),
+                            ),
+                          );
+                        } else {
+                          print(error);
+                          AmityDialog().showAlertErrorDialog(
+                              title: "Error", message: error.toString());
+                        }
+                      },
+                    );
+                  },
+                );
+              },
             ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: _usernames.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(_usernames[index]),
-                    onTap: () async {
-                      ///Step 3: login with Amity
-                      await AmitySLEUIKit().registerDevice(
-                          context: context, userId: _usernames[index]);
-                      await Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              SecondPage(username: _usernames[index]),
-                        ),
-                      );
-                    },
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -292,6 +300,16 @@ class ThirdPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            ListTile(
+              title: Text('Register push notification'),
+              onTap: () {
+                // Navigate or perform action based on 'Global Feed' tap
+                AmitySLEUIKit().registerNotification("asdasdasdasd",
+                    (isSuccess, error) {
+                  return;
+                });
+              },
+            ),
             ListTile(
               title: Text('Global Feed'),
               onTap: () {

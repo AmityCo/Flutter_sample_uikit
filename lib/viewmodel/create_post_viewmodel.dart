@@ -73,6 +73,7 @@ class CreatePostVM extends ChangeNotifier {
   Map<String, Uint8List> thumbnailCache = {};
 
   Future<ImageProvider> getImageProvider(String path) async {
+    print("video path${path}");
     if (path.endsWith('.mp4') || path.endsWith('.MOV')) {
       print("Checking for thumbnail...");
 
