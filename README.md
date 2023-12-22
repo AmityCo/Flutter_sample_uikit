@@ -1,6 +1,5 @@
 # Amity UIKit for Flutter[Beta Service]
 
-Amity UIkit opensource developed by SLE team to enable social feature in Flutter.
 
 ## Usage
 Example main.dart
@@ -125,36 +124,5 @@ class InitialWidget extends StatelessWidget {
 }
 
 ```
-
-## Note
-
-For Android
-Please enable multiDexEnabled in android/app/build.gradle
-
-```
-    defaultConfig {
-        multiDexEnabled true
-
-    }
-
-```
-
-## Changelog
-
-In version 0.2.0
-
-```dart
-/// replicated
-  AmitySLEUIKit.openChatRoomPage(context, "<Channel_ID>");
-
-/// new
-    await Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => const SingleChatRoom(
-                      channelId: "Flutter_Flutter",
-                    ),
-                  ));
-
-```
-
 
 

@@ -9,7 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class CommunityPage extends StatefulWidget {
-  const CommunityPage({super.key});
+  final bool isShowMyCommunity;
+  const CommunityPage({super.key, this.isShowMyCommunity = true});
 
   @override
   State<CommunityPage> createState() => _CommunityPageState();
@@ -111,7 +112,9 @@ class _CommunityPageState extends State<CommunityPage> {
                     .iconConfig
                     .postIcon(iconSize: 28, color: Colors.white),
               ),
-              body: const GlobalFeedScreen(),
+              body: GlobalFeedScreen(
+                isShowMyCommunity: widget.isShowMyCommunity,
+              ),
             ),
             const ExplorePage(),
           ],

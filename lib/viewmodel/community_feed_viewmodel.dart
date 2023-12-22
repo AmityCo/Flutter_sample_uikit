@@ -19,7 +19,7 @@ class CommuFeedVM extends ChangeNotifier {
   }
 
   void addPostToFeed(AmityPost post) {
-    _controllerCommu.addAtIndex(0, post);
+    _amityCommunityFeedPosts.insert(0, post);
     notifyListeners();
   }
 

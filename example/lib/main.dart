@@ -1,5 +1,4 @@
 import 'package:amity_uikit_beta_service/amity_sle_uikit.dart';
-import 'package:amity_uikit_beta_service/amity_uikit_beta_service.dart';
 import 'package:amity_uikit_beta_service/components/alert_dialog.dart';
 
 import 'package:amity_uikit_beta_service/view/UIKit/social/my_community_feed.dart';
@@ -308,6 +307,13 @@ class ThirdPage extends StatelessWidget {
                     (isSuccess, error) {
                   return;
                 });
+              },
+            ),
+            ListTile(
+              title: Text('unregister'),
+              onTap: () {
+                // Navigate or perform action based on 'Global Feed' tap
+                AmitySLEUIKit().unRegisterDevice();
               },
             ),
             ListTile(
